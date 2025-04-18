@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+const posts = await getCollection("posts");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Blog | Hackerspace Mumbai</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <header>
+      <h1>Hackerspace Mumbai Blog</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="https://hackerspacemumbai.org/">Main Site</a>
+      </nav>
+    </header>
+    <main>
+      <ul>
+        {posts.map(post => (
+          <li>
+            <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+            <p>{post.data.description}</p>
+            <small>
+              By {post.data.author} on {post.data.date}
+            </small>
+          </li>
+        ))}
+      </ul>
+    </main>
+  </body>
+</html>

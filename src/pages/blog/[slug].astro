@@ -1,0 +1,121 @@
+---
+import { getEntry, type CollectionEntry } from "astro:content";
+import { Image } from 'astro:assets'; // Import the Image component
+
+// Get all possible cover images from the assets directory
+// Adjust the glob pattern if your images have different extensions or locations
+const images = import.meta.glob('/src/assets/images/**/*.{jpeg,jpg,png,gif,webp,avif,svg}');
+
+export async function getStaticPaths() {
+  const { getCollection } = await import("astro:content");
+  const posts = await getCollection("posts");
+  return posts.map(post => ({ params: { slug: post.slug } }));
+}
+
+const { slug } = Astro.params;
+
+if (typeof slug !== 'string') {
+  throw new Error(`Invalid slug: ${slug}`);
+}
+
+const post = await getEntry("posts", slug);
+
+if (!post) {
+  throw new Error(`Post not found: ${slug}`);
+}
+
+// Render the post content
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
+
+// Find and load the cover image module based on frontmatter
+let coverImageImport = null;
+if (post.data.cover) {
+  const imagePath = `/src/assets/images/${post.data.cover}`;
+  if (images[imagePath]) {
+    try {
+      // Dynamically import the image module
+      coverImageImport = (await images[imagePath]()).default;
+    } catch (e) {
+       console.error(`Error importing cover image: ${imagePath}`, e);
+    }
+  } else {
+    console.warn(`Cover image specified in frontmatter not found in src/assets/images: ${post.data.cover}`);
+    console.warn(`Looked for path: ${imagePath}`);
+    console.warn(`Available images: ${Object.keys(images).join(', ')}`);
+  }
+}
+---
+
+<style>
+  .cover-image {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 1.5rem; /* Add some space below the cover */
+  }
+  /* Add other styles as needed */
+</style>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{post.data.title} | Hackerspace Mumbai Blog</title>
+    <meta name="description" content={post.data.description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="https://hackerspacemumbai.org/">Main Site</a>
+      </nav>
+    </header>
+    <main>
+      <h1>{post.data.title}</h1>
+      <p>
+        <small>
+          By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-us', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </small>
+      </p>
+      {/* Use Astro's Image component for optimized cover images */}
+      {coverImageImport && (
+        <Image
+          src={coverImageImport}
+          alt={post.data.title + " cover image"}
+          class="cover-image"
+          loading="eager" /* Load cover image eagerly */
+        />
+      )}
+      <article>
+        <Content />
+      </article>
+      <div>
+        {post.data.tags && post.data.tags.length > 0 && (
+          <p>
+            Tags: {post.data.tags.map((tag, index) => (
+              <>
+                <a href={`/tags/${tag}`}>{tag}</a>{index < post.data.tags.length - 1 ? ', ' : ''}
+              </>
+            ))}
+          </p>
+        )}
+        {post.data.categories && post.data.categories.length > 0 && (
+          <p>
+            Categories: {post.data.categories.map((category, index) => (
+              <>
+                <a href={`/categories/${category}`}>{category}</a>{index < post.data.categories.length - 1 ? ', ' : ''}
+              </>
+            ))}
+          </p>
+        )}
+      </div>
+    </main>
+  </body>
+</html>
