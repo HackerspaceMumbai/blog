@@ -2,18 +2,20 @@
 title: The MVP Challenge
 date: 2021-06-11
 description: Microsoft Learn Path for M365, Power Platform and, AI & Data
+# Assuming cover is handled by schema or layout, leaving as is for now.
 cover: HM-Sharepoint.png
 author: "Augustine Correa"
 tags:
   - blog
 categories: ["Visage"]
 ---
+import { Image } from 'astro:assets';
 
 Being the largest OSS community in Bombay, we are hosting its longest-running tech meetup [over 8 years] #mumtechup. #COVID19 has brought an abrupt halt to all in-person events.
 
 Whenever confronted by uncertainty, the below quote from Gladiator would help to show the path ahead:
 
-![Quote by Maximus from the movie Gladiator - "Imagine where you will be and it will be so"](/src/assets/images/Gladiator.jpg)
+<Image src={import('../../assets/images/Gladiator.jpg')} alt="Quote by Maximus from the movie Gladiator - Imagine where you will be and it will be so" />
 
 And we are preparing for the day when we can all meet in person.
 
@@ -33,7 +35,7 @@ So while I use the subscription for community activities, I still wanted to appl
 
 The biggest eye-opener was when I came across the Microsoft Secure Score module [Organizational productivity - Learn | Microsoft Docs](https://docs.microsoft.com/en-us/learn/modules/manage-your-business-with-microsoft-365/2-organizational-productivity). Never heard of it before, but it had enough gravitas for me to check it out. And our score was abysmal. We owed it to ourselves and our community members to do much better, and I'm glad to report that I have corrected this.
 
-![Hackerspace Mumbai's M365 Microsoft Secure Score](/src/assets/images/HM-MicrosoftSecurityScore.png)
+<Image src={import('../../assets/images/HM-MicrosoftSecurityScore.png')} alt="Hackerspace Mumbai's M365 Microsoft Secure Score" />
 
 ### Sharepoint
 
@@ -42,7 +44,7 @@ Over the years, we have accumulated quite a lot of data. We needed to ensure the
 For us, Sharepoint fits that bill perfectly.
 [File storage and sharing with OneDrive and SharePoint - Learn | Microsoft Docs](https://docs.microsoft.com/en-us/learn/modules/file-storage-sharing-with-onedrive-sharepoint/?WT.mc_id=M365-MVP-5003041)
 
-![Hackerspace Mumbai Sharepoint](/src/assets/images/HM-Sharepoint.png)
+<Image src={import('../../assets/images/HM-Sharepoint.png')} alt="Hackerspace Mumbai Sharepoint" />
 
   a. The title for our communication site is in Marathi, which translates to communication [a nod to localization]
   b. Our hero web part :
@@ -51,13 +53,13 @@ For us, Sharepoint fits that bill perfectly.
   c. Our Twitter timeline
 
 Bonus: You can search for your content right from Microsoft Edge
-![Search Sharepoint date on Microsoft Edge](/src/assets/images/MSEdge_Sharepoint.png)
+<Image src={import('../../assets/images/MSEdge_Sharepoint.png')} alt="Search Sharepoint date on Microsoft Edge" />
 
 ### M365 Compliance Manager
 
 Across eight years and over 150 events and communicating with more than 5000 unique contacts, we have accumulated a lot of privileged information that folks have entrusted with us.
 
-![Uncle Ben famous quote in Spiderman: With Great Power Comes Great responsibility](/src/assets/images/Spidey.gif)
+<Image src={import('../../assets/images/Spidey.gif')} alt="Uncle Ben famous quote in Spiderman: With Great Power Comes Great responsibility" />
 
 With M365, we get Compliance Manager, which provides an out-of-the-box enterprise-grade tool to ensure we are safeguarding privacy as per regulations enforced in the world.
 
@@ -67,7 +69,7 @@ With M365, we get Compliance Manager, which provides an out-of-the-box enterpris
 
 During this pandemic, all our events have been online. And for us, Microsoft Teams has been our workhorse that has helped folks stay connected, collaborate, and hold virtual meetups.
 
-![Wearing an MS Office T-shirt and taking part in a Microsoft Build 2021 session that we recorded in MS Teams](/src/assets/images/Build_2021_Teams.png)
+<Image src={import('../../assets/images/Build_2021_Teams.png')} alt="Wearing an MS Office T-shirt and taking part in a Microsoft Build 2021 session that we recorded in MS Teams" />
 
 MS Teams related modules form the backbone of my learning path collection
 
@@ -103,7 +105,7 @@ We will use Power BI to display metrics important to us but are missing from mos
 
 One of the time-consuming aspects for me is the evaluation of event registration. Usually, a registrant's answers to our registration questions will indicate the likelihood of a candidate attending. An even more worrying trend in the last few years has been bot-generated bogus registrations.
 
-![Hackerspace Mumbai screening question](/src/assets/images/HM_Screening_Process.png)
+<Image src={import('../../assets/images/HM_Screening_Process.png')} alt="Hackerspace Mumbai screening question" />
 
 Going through the AI & Data learning path of the Challenge, it struck me that the below Classification module would help in identifying such registrations
 
@@ -129,7 +131,7 @@ Some stretch features that this learning path has got us thinking:
   2. Analyse an  audience's expression during a session which is valuable feedback to a speaker
   Identify faces and expressions by using the Computer Vision API in Azure Cognitive Services - Learn | Microsoft Docs
 
-  ![Microsoft Vision AI kit](/src/assets/images/MicrosoftVisionAIKit.jpg)
+  <Image src={import('../../assets/images/MicrosoftVisionAIKit.jpg')} alt="Microsoft Vision AI kit" />
 
 ## Diversity and Inclusion
 
@@ -139,7 +141,7 @@ All three learning paths had a set of modules for Diversity and Inclusion. It br
 
 I was eager to undertake the Accessibility and Diversity module after attending the [Ability Summit](https://sway.office.com/Dbr2Uz14PIn31Dq8?ref=Link). And was inspired by that summit to have a mantra for everything I do: "Accessibility by Design."
 
-![Ability Summit](/src/assets/images/AbilitySummit21.png)
+<Image src={import('../../assets/images/AbilitySummit21.png')} alt="Ability Summit" />
 
 If you are a community organizer who has an M365 and an Azure subscription, then [my Microsoft Learning collection](https://docs.microsoft.com/en-us/users/augustinecorrea-4621/collections/7dr4u7g4e462j4) would be a great way for you to ease into these technologies.
 

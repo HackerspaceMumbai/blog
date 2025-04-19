@@ -2,13 +2,14 @@
 title: A Well-Architected Cloud Application
 date: 2021-07-28
 description: Beginning Visage as a well-architected cloud application with cost optimization incl. budget & alerts 
+# Assuming cover is handled by schema or layout, leaving as is for now.
 cover: Visage_Architecture.png
 author: "Augustine Correa"
 tags:
   - blog
 categories: ["Visage"]
 ---
-
+import { Image } from 'astro:assets';
 
 > If **"World Peace"** is a beauty pageant contestant's most cliched answer, then **"Well-Architected"** is that of a cloud developer describing their app.
 
@@ -17,7 +18,7 @@ An app to deliver business value at quality relies on code and infrastructure. M
 ## The Smaller Picture
 
 Right from our first [blog post](./Strategic_Domain_Driven_Design#big-picture-event-storming), we have been progressively narrowing our focus. Back then, our proposed Architecture for the entire solution looked somewhat like 👇
-![Visage Architecture](/src/assets/images/Visage_Architecture.png)
+<Image src={import('../../assets/images/Visage_Architecture.png')} alt="Visage Architecture" />
 
 ### Honey, Azure SWA shrunk the Architecture Diagram
 
@@ -27,7 +28,7 @@ While we were muddling through our design, the good folks at Microsoft had raced
 
 For the 1st iteration ["MVP"](https://dev.azure.com/augcor/Visage/_sprints/backlog/Visage%20Team/Visage/MVP), our erstwhile Architecture diagram has slimmed down considerably.
 
-![Visage Architecture Diagram - MVP](/src/assets/images/VisageArchitectureMVP.png)
+<Image src={import('../../assets/images/VisageArchitectureMVP.png')} alt="Visage Architecture Diagram - MVP" />
 
 - Our frontend and API have fused into a single Azure-managed service. [Yo, imma also gonna be drinking some of that [minimal API](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/?WT.mc_id=AZ-MVP-5003041) Kool-Aid.]
   
@@ -51,7 +52,9 @@ Both [AWS](https://aws.amazon.com/architecture/well-architected/?wa-lens-whitepa
 
 From a project management perspective, these pillars render themselves quite naturally as epics. And that's how we roll with them on our [Azure Boards](https://azure.microsoft.com/en-in/services/devops/boards/?WT.mc_id=AZ-MVP-5003041).
 
-[![Azure DevOps Boards Epics](/src/assets/images/epics_pillars_devops.png)](https://dev.azure.com/augcor/Visage/_workitems/recentlyupdated/?WT.mc_id=AZ-MVP-5003041)
+<a href="https://dev.azure.com/augcor/Visage/_workitems/recentlyupdated/?WT.mc_id=AZ-MVP-5003041">
+  <Image src={import('../../assets/images/epics_pillars_devops.png')} alt="Azure DevOps Boards Epics" />
+</a>
 
 ### Cost Optimization
 
@@ -67,21 +70,27 @@ Let's ring up our resources on the calculator [[click here for the estimate](htt
 
 - Initially, we will be developing with the free version of the Azure SWA, but I'm opting for the run-rate of the Standard version because we will be using Custom Authentication [[Auth0](https://auth0.com/)].
 
-  [![Azure SWA Standard Pricing](/src/assets/images/AzureSWA_Pricing.png)](https://dev.azure.com/augcor/Visage/_workitems/edit/114/?workitem=124&WT.mc_id=AZ-MVP-5003041)
+  <a href="https://dev.azure.com/augcor/Visage/_workitems/edit/114/?workitem=124&WT.mc_id=AZ-MVP-5003041">
+    <Image src={import('../../assets/images/AzureSWA_Pricing.png')} alt="Azure SWA Standard Pricing" />
+  </a>
 
 - Going with the [serverless pricing of Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/serverless/?WT.mc_id=AZ-MVP-5003041) and a modest 1 GB storage.
 
-  [![Azure CosmosDB Pricing](/src/assets/images/AzureCosmosDB_Pricing.png)](https://dev.azure.com/augcor/Visage/_workitems/edit/114/?workitem=124&WT.mc_id=AZ-MVP-5003041)
+  <a href="https://dev.azure.com/augcor/Visage/_workitems/edit/114/?workitem=124&WT.mc_id=AZ-MVP-5003041">
+    <Image src={import('../../assets/images/AzureCosmosDB_Pricing.png')} alt="Azure CosmosDB Pricing" />
+  </a>
 
 - [Event Grid](https://docs.microsoft.com/en-us/azure/event-grid/overview/?WT.mc_id=AZ-MVP-5003041) is free for the first 100,000 operations. I'm always amazed at these prices; 10 years ago, we would have been shelling a few lakhs for a fraction of such a service.
   
-  [![Azure Event Grid Pricing](/src/assets/images/EventGrid_Pricing.png)](https://dev.azure.com/augcor/Visage/_boards/board/t/Visage%20Team/Stories/?workitem=126&WT.mc_id=AZ-MVP-5003041)
+  <a href="https://dev.azure.com/augcor/Visage/_boards/board/t/Visage%20Team/Stories/?workitem=126&WT.mc_id=AZ-MVP-5003041">
+    <Image src={import('../../assets/images/EventGrid_Pricing.png')} alt="Azure Event Grid Pricing" />
+  </a>
 
 - With [Key Vault](https://azure.microsoft.com/en-in/services/key-vault/?WT.mc_id=AZ-MVP-5003041), we come to the first service not offered in any of the Azure regions in India, as per the Pricing Calculator. But it's available in the Central India region [bug ???]
-  ![Key vault Pricing](/src/assets/images/KeyVault_Pricing.png)
+  <Image src={import('../../assets/images/KeyVault_Pricing.png')} alt="Key vault Pricing" />
 
 - For [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/?WT.mc_id=AZ-MVP-5003041), I have been liberal with the number of logs and metrics that are being captured because during the early days, you are trying to get familiar with your application. And this ties in with other pillars, which we will touch upon in forthcoming posts.
-  ![Azure Monitor Pricing](/src/assets/images/AzureMonitor_Pricing.png)
+  <Image src={import('../../assets/images/AzureMonitor_Pricing.png')} alt="Azure Monitor Pricing" />
 
 - We have attached the excel sheet estimate with the [Pricing Calculator user story](https://dev.azure.com/augcor/Visage/_boards/board/t/Visage%20Team/Stories/?workitem=123) and checked it in our git repository.
   
@@ -93,9 +102,9 @@ With ACM, we can get a quick look at our costs with a detailed breakup. And more
 
 For the MVP iteration, we have allocated a budget of ₹2000, a buffer of ~18% over our Pricing Calculator estimate. We have set a threshold alert for 75% of the actual cost and 110% of the forecasted budget.
 
-![Azure Budget Cost Alerts](/src/assets/images/AzureBudget_Alerts.png)
+<Image src={import('../../assets/images/AzureBudget_Alerts.png')} alt="Azure Budget Cost Alerts" />
 
 At the day's end, our items on our Azure Boards are "shifting right" -> unlike in DevOps, good news in Project Management.
-![Azure Boards Post Budget](/src/assets/images/AzureDevBoard_PostBudget.png)
+<Image src={import('../../assets/images/AzureDevBoard_PostBudget.png')} alt="Azure Boards Post Budget" />
 
 In our upcoming blog posts, we will start incorporating best practices from other pillars into our solution. Up next, though, I will be leaving my comfort zone to plunge into UI/UX wireframing and prototyping. Stay safe 💪.
