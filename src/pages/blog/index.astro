@@ -1,6 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-const posts = await getCollection("posts");
+const posts = (await getCollection("posts")).sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
 ---
 
 <html lang="en">
