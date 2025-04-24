@@ -1,8 +1,10 @@
 ---
+import Layout from "../../components/Layout.astro";
 import { getCollection } from "astro:content";
 const posts = (await getCollection("posts")).sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
 );
+
 ---
 
 <html lang="en">
@@ -12,27 +14,28 @@ const posts = (await getCollection("posts")).sort(
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>
+  <>
   <body>
-    <header>
-      <h1>Hackerspace Mumbai Blog</h1>
-      <nav>
-        <a href="/">Home</a>
-        <a href="/blog/">Blog</a>
-        <a href="https://hackerspacemumbai.org/">Main Site</a>
-      </nav>
-    </header>
-    <main>
-      <ul>
+  <Layout>
+      <article>
+        <h1 class="text-2xl my-8 mx-4">POSTS</h1>
+        <p class="mx-4">Welcome to the Hackerspace Mumbai blog! Here you can find our latest posts.</p>
+        <ul>
         {posts.map(post => (
-          <li>
-            <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+          <li class="mb-4 p-4 border-b border-gray-300 last:border-b-0">
+            <a href={`/blog/${post.slug}/`}>
+            <div class="text-xl underline">{post.data.title}</div>
             <p>{post.data.description}</p>
-            <small>
-              By {post.data.author} on {post.data.date}
+            </a>
+            <small class="text-accent">
+                By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
             </small>
+            
           </li>
         ))}
-      </ul>
-    </main>
+        </ul>
+      </article>
+  </Layout>
   </body>
+  
 </html>

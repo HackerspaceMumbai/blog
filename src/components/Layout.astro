@@ -1,0 +1,12 @@
+---
+import "../styles/global.css";
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+---
+<div class="min-h-screen flex flex-col">
+  <Header />
+  <main class="flex-1 text-primary bg-background">
+    <slot/>
+  </main>
+  <Footer />
+</div>
