@@ -1,0 +1,6 @@
+<!-- This is a placeholder SVG for social media sharing previews -->
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#111"/>
+  <text x="50%" y="50%" font-family="Arial" font-size="48" fill="#F9C412" text-anchor="middle">Hackerspace Mumbai</text>
+  <text x="50%" y="60%" font-family="Arial" font-size="24" fill="#FFF" text-anchor="middle">Mumbai's largest open source community & longest-running tech meetup</text>
+</svg>

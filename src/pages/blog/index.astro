@@ -1,41 +1,197 @@
 ---
 import Layout from "../../components/Layout.astro";
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+
 const posts = (await getCollection("posts")).sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
 );
 
+// Function to calculate reading time
+function calculateReadingTime(text) {
+  // Average reading speed: 200 words per minute
+  const wordsPerMinute = 200;
+  const words = text.split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return minutes || 1;
+}
+
+// Get all possible cover images from the assets directory
+const images = import.meta.glob('/src/assets/images/**/*.{jpeg,jpg,png,gif,webp,avif,svg}');
 ---
+
+<style>
+  .blog-header {
+    padding: 3rem 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('/hero-background.jpg');
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .blog-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .post-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: var(--card-foreground);
+  }
+  
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--primary);
+  }
+  
+  .card-image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    background: var(--secondary);
+  }
+  
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .post-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+  
+  .card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--card-foreground);
+    line-height: 1.3;
+  }
+  
+  .card-description {
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    color: var(--muted-foreground);
+  }
+  
+  .card-meta {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+  }
+  
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  
+  .tag-list a {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+  
+  .tag-list a:hover {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    transform: translateY(-1px);
+  }
+</style>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Blog | Hackerspace Mumbai</title>
     <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Latest articles, tutorials, and news from the Hackerspace Mumbai community." />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>
-  <>
   <body>
-  <Layout>
-      <article>
-        <h1 class="text-2xl my-8 mx-4">POSTS</h1>
-        <p class="mx-4">Welcome to the Hackerspace Mumbai blog! Here you can find our latest posts.</p>
-        <ul>
-        {posts.map(post => (
-          <li class="mb-4 p-4 border-b border-gray-300 last:border-b-0">
-            <a href={`/blog/${post.slug}/`}>
-            <div class="text-xl underline">{post.data.title}</div>
-            <p>{post.data.description}</p>
-            </a>
-            <small class="text-accent">
-                By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </small>
+    <Layout>
+      <header class="blog-header">
+        <div class="blog-container">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4 text-accent">Hackerspace Mumbai Blog</h1>
+          <p class="text-xl text-accent opacity-90">Latest articles, tutorials, and insights from our community</p>
+        </div>
+      </header>
+      
+      <main class="blog-container">
+        <div class="post-grid">
+          {posts.map(post => {
+            // Estimate reading time
+            const readingTime = calculateReadingTime(post.body);
             
-          </li>
-        ))}
-        </ul>
-      </article>
-  </Layout>
+            // Try to find cover image
+            const coverImage = post.data.cover ? `/src/assets/images/${post.data.cover}` : null;
+            
+            return (
+              <article class="post-card">
+                <a href={`/blog/${post.slug}/`} class="card-image">
+                  {/* Placeholder for post image - would be replaced with actual cover */}
+                  <div class="w-full h-full bg-background flex items-center justify-center">
+                    <p class="text-primary opacity-70">{post.data.title}</p>
+                  </div>
+                </a>
+                <div class="card-content">
+                  <a href={`/blog/${post.slug}/`}>
+                    <h2 class="card-title">{post.data.title}</h2>
+                  </a>
+                  <p class="card-description">{post.data.description}</p>
+                  {Array.isArray(post.data.tags) && post.data.tags.length > 0 && (
+                    <div class="tag-list">
+                      {post.data.tags.slice(0, 3).map(tag => (
+                        <a href={`/tags/${tag}`}>#{tag}</a>
+                      ))}
+                      {post.data.tags.length > 3 && <span>+{post.data.tags.length - 3} more</span>}
+                    </div>
+                  )}
+                  <div class="card-meta">
+                    <span>{post.data.author}</span>
+                    <span>{readingTime} min read</span>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </main>
+    </Layout>
   </body>
-  
 </html>

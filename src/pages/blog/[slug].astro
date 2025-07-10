@@ -31,6 +31,28 @@ if (!post) {
 // Render the post content
 const { Content, headings, remarkPluginFrontmatter } = await post.render();
 
+// --- Reading time estimate ---
+function calculateReadingTime(text) {
+  // Average reading speed: 200 words per minute
+  const wordsPerMinute = 200;
+  const words = text.split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return minutes;
+}
+
+// Get plain text from the post content for reading time calculation
+let readingTime = 1;
+try {
+  // Try to get the raw markdown content if available
+  if (post.body) {
+    readingTime = calculateReadingTime(post.body);
+  } else if (post.data && post.data.content) {
+    readingTime = calculateReadingTime(post.data.content);
+  }
+} catch (e) {
+  readingTime = 1;
+}
+
 // Find and load the cover image module based on frontmatter
 let coverImageImport = null;
 if (post.data.cover) {
@@ -56,9 +78,172 @@ if (post.data.cover) {
     max-width: 1200px;
     height: auto;
     object-fit: cover;
-    margin-bottom: 1.5rem; /* Add some space below the cover */
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
   }
-  /* Add other styles as needed */
+  
+  .progress-bar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 6px;
+    z-index: 1000;
+    background: transparent;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  
+  .blog-header {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .blog-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .blog-meta {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+  }
+  
+  .blog-meta .dot {
+    margin: 0 0.5rem;
+  }
+  
+  .blog-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+  
+  .blog-content {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  
+  .blog-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .tag-list a {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+  
+  .tag-list a:hover {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    transform: translateY(-1px);
+  }
+  
+  .blog-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .blog-navigation a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  
+  .blog-navigation a:hover {
+    text-decoration: underline;
+    color: var(--primary-foreground);
+  }
+  
+  /* Improved typography for content */
+  .blog-content h2 {
+    font-size: 1.75rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  
+  .blog-content h3 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .blog-content p {
+    margin-bottom: 1.5rem;
+  }
+  
+  .blog-content ul, .blog-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  
+  .blog-content li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .blog-content pre {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  
+  .blog-content blockquote {
+    border-left: 4px solid var(--primary, #F9C412);
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+  
+  .blog-content img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    .blog-title {
+      font-size: 2rem;
+    }
+    
+    .blog-content {
+      font-size: 1rem;
+    }
+  }
 </style>
 <html lang="en">
   <head>
@@ -69,51 +254,91 @@ if (post.data.cover) {
     <meta name="viewport" content="width=device-width" />
   </head>
   <body>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="scroll-progress-bar"></div>
+    </div>
     <Layout>
-      <h1 class="text-4xl mt-4">{post.data.title}</h1>
-      <p class="mb-4">
-        <small>
-          By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-in', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </small>
-      </p>
-      {/* Use Astro's Image component for optimized cover images */}
-      {coverImageImport && (
-        <Image
-          src={coverImageImport}
-          alt={post.data.title + " cover image"}
-          class="cover-image"
-          loading="eager" /* Load cover image eagerly */
-        />
-      )}
-      <article class="p-4 text-accent">
-        <Prose>
-          <Content />
-        </Prose>
-      </article>
-      <div>
-        {post.data.tags && post.data.tags.length > 0 && (
-          <p>
-            Tags: {post.data.tags.map((tag, index) => (
-              <>
-                <a href={`/tags/${tag}`}>{tag}</a>{index < post.data.tags.length - 1 ? ', ' : ''}
-              </>
-            ))}
-          </p>
-        )}
-        {post.data.categories && post.data.categories.length > 0 && (
-          <p>
-            Categories: {post.data.categories.map((category, index) => (
-              <>
-                <a href={`/categories/${category}`}>{category}</a>{index < post.data.categories.length - 1 ? ', ' : ''}
-              </>
-            ))}
-          </p>
-        )}
+      <div class="blog-container">
+        <header class="blog-header">
+          <h1 class="blog-title text-foreground">{post.data.title}</h1>
+          <div class="blog-meta">
+            <span>By {post.data.author}</span>
+            <span class="dot">•</span>
+            <span>{new Date(post.data.date).toLocaleDateString('en-in', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}</span>
+            <span class="dot">•</span>
+            <span>{readingTime} min read</span>
+          </div>
+          
+          {/* Use Astro's Image component for optimized cover images */}
+          {coverImageImport && (
+            <Image
+              src={coverImageImport}
+              alt={post.data.title + " cover image"}
+              class="cover-image"
+              loading="eager"
+            />
+          )}
+        </header>
+        
+        <article class="blog-content text-foreground">
+          <Prose>
+            <Content />
+          </Prose>
+        </article>
+        
+        <footer class="blog-footer">
+          {Array.isArray(post.data.tags) && post.data.tags.length > 0 && (
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Tags</h3>
+              <div class="tag-list">
+                {post.data.tags.map((tag) => (
+                  <a href={`/tags/${tag}`}>#{tag}</a>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {Array.isArray(post.data.categories) && post.data.categories.length > 0 && (
+            <div class="mt-4">
+              <h3 class="text-xl font-semibold mb-2">Categories</h3>
+              <div class="tag-list">
+                {post.data.categories.map((category) => (
+                  <a href={`/categories/${category}`}>{category}</a>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div class="blog-navigation">
+            <a href="/blog">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              Back to all posts
+            </a>
+            {/* This would be replaced with actual next/previous post links when implemented */}
+            <div></div>
+          </div>
+        </footer>
       </div>
     </Layout>
+    
+    <script>
+      // Progress bar scroll logic
+      window.addEventListener('scroll', () => {
+        const bar = document.getElementById('scroll-progress-bar');
+        if (!bar) return;
+        const doc = document.documentElement;
+        const body = document.body;
+        const scrollTop = window.scrollY || doc.scrollTop || body.scrollTop;
+        const scrollHeight = (doc.scrollHeight || body.scrollHeight) - window.innerHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        bar.style.width = progress + '%';
+      });
+    </script>
   </body>
 </html>

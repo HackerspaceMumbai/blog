@@ -9,9 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.2.4",
+    "@astrojs/mdx": "^4.3.0",
     "@tailwindcss/vite": "^4.1.4",
-    "astro": "^5.7.0",
+    "astro": "^5.9.3",
+    "daisyui": "^5.0.46",
     "sharp": "^0.34.1",
     "tailwindcss": "^4.1.4"
   },
