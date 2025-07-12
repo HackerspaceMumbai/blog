@@ -10,7 +10,7 @@
 - **Pages:** Route-based files in `src/pages/` (e.g., `index.astro`, `blog/`).
 - **Content:** Blog posts and config in `src/content/`.
 - **Assets:** Images and static files in `src/assets/images/` and `public/`.
-- **Styling:** Global styles in `src/styles/global.css`; component styles are colocated or imported. Uses Tailwind CSS v4 for utility-first styling. And its uses ShadCN theme as a base which is in `src/styles/global.css`.
+- **Styling:** Global styles in `src/styles/global.css`; component styles are colocated or imported. Uses DaisyUI v5, which is turn depends on Tailwind CSS v4 for utility-first styling.
 - **Config:** Project-wide config in `astro.config.mjs`, TypeScript in `tsconfig.json`.
 
 ## Developer Workflows

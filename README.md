@@ -22,7 +22,6 @@ This site has been migrated from [Eleventy High Performance Blog](https://github
 
 See the [Product Requirements Document](#product-requirements-document) below for full details.
 
-
 ## 📁 Project Structure
 
 ```
@@ -73,6 +72,7 @@ Create a modern, engaging, and high-performance home page for Hackerspace Mumbai
 - Footer with quick links
 
 ### Technical Requirements (Astro-specific)
+
 - Integration with external event platforms (e.g., Meetup.com API)
 - Custom analytics integration (if not using Astro integrations)
 - Automated build, test, and deployment workflows (CI/CD)

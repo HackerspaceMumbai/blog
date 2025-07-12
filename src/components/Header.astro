@@ -1,12 +1,12 @@
 ---
-import ModeToggle from './ModeToggle.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
  <header class="flex justify-between bg-primary text-primary-content font-bold px-4 py-3 shadow-md">
-    <h1 class="text-lg md:text-xl hover:text-accent-foreground transition-colors">Hackerspace Mumbai Blog</h1>
+    <h1 class="text-lg md:text-xl hover:text-accent-foreground transition-colors">Hackerspace Mumbai</h1>
     <nav class="flex space-x-8">
         <a href="/" class="hover:text-accent-foreground transition-colors">Home</a>
         <a href="/blog/" class="hover:text-accent-foreground transition-colors">Blog</a>
         <a href="https://hackerspacemumbai.org/" class="hover:text-accent-foreground transition-colors">Main Site</a>
-        <ModeToggle client:load />
+    <ThemeToggle />
     </nav>
 </header>
