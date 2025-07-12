@@ -1,0 +1,29 @@
+    ---
+const { posts } = Astro.props;
+---
+<section class="py-16 px-4 bg-background text-accent">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold mb-12 text-center">Latest Blog Posts</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      {posts.map(post => (
+        <div class="card bg-background border border-primary p-6 rounded-lg hover:shadow-lg hover:shadow-primary">
+          <h3 class="text-xl font-bold mb-2">{post.data.title}</h3>
+          <p class="text-sm text-primary mb-4">
+            By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-in', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+          <p class="mb-6">{post.data.description}</p>
+          <a href={`/blog/${post.slug}/`} class="inline-block text-primary
+           font-bold hover:underline">Read More →</a>
+        </div>
+      ))}
+    </div>
+    <div class="text-center mt-10">
+      <a href="/blog" class="inline-block border-2 border-primary text-primary px-6 py-3 
+        rounded-md font-bold hover:bg-primary hover:text-primary-content hover:bg-opacity-10">View All Posts</a>
+    </div>
+  </div>
+</section>

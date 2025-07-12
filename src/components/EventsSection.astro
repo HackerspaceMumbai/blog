@@ -1,0 +1,30 @@
+---
+export interface Event {
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  rsvpLink: string;
+}
+const { events } = Astro.props;
+---
+<section id="events" class="py-16 px-4 bg-background text-accent">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold mb-12 text-center">Upcoming Events</h2>
+    <div class="grid md:grid-cols-2 gap-8">
+      {events.map(event => (
+        <div class="card bg-background border border-primary p-6 rounded-lg hover:shadow-lg hover:shadow-primary">
+          <h3 class="text-xl font-bold mb-2">{event.title}</h3>
+          <p class="text-primary mb-1">{event.date}</p>
+          <p class="mb-4">{event.location}</p>
+          <p class="mb-6">{event.description}</p>
+          <a href={event.rsvpLink} target="_blank" rel="noopener" class="inline-block bg-primary text-black px-4 py-2 rounded font-semibold hover:bg-opacity-90">RSVP Now</a>
+        </div>
+      ))}
+    </div>
+    <div class="text-center mt-10">
+      <a href="https://meetup.com/hackerspace-mumbai" target="_blank" rel="noopener" class="inline-block
+       border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-primary-content hover:bg-opacity-10">View All Events</a>
+    </div>
+  </div>
+</section>

@@ -10,7 +10,8 @@
 - **Pages:** Route-based files in `src/pages/` (e.g., `index.astro`, `blog/`).
 - **Content:** Blog posts and config in `src/content/`.
 - **Assets:** Images and static files in `src/assets/images/` and `public/`.
-- **Styling:** Global styles in `src/styles/global.css`; component styles are colocated or imported. Uses DaisyUI v5, which is turn depends on Tailwind CSS v4 for utility-first styling.
+- **Styling:** Global styles in `src/styles/global.css`; component styles are colocated or imported. The site is styled using DaisyUI, which is added as a plugin for Tailwind CSS, enhancing the design system with pre-built components. DaisyUI llmS.txt can be found at `.vscode/daisyui.md` 
+
 - **Config:** Project-wide config in `astro.config.mjs`, TypeScript in `tsconfig.json`.
 
 ## Developer Workflows
