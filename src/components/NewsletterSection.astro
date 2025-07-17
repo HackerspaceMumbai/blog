@@ -1,23 +1,18 @@
 ---
-// No props needed
+import CTAButton from './CTAButton.astro';
 ---
-<section id="newsletter" class="py-16 px-4 bg-background text-accent">
+<section id="newsletter" class="py-16 px-4 bg-base-200 text-base-content">
   <div class="max-w-4xl mx-auto text-center">
-    <h2 class="text-3xl font-bold mb-6">Stay Updated</h2>
-    <p class="mb-8">Subscribe to our newsletter for the latest events, blog posts, and community news.</p>
+    <h2 class="text-3xl font-bold mb-6 text-primary">Stay Updated</h2>
+    <p class="mb-8 text-base-content">Subscribe to our newsletter for the latest events, blog posts, and community news.</p>
     <form class="flex flex-col md:flex-row gap-4 justify-center">
       <input 
         type="email" 
         placeholder="Your email address" 
-        class="px-4 py-3 rounded-md bg-background border border-primary text-accent focus:outline-none focus:ring-2 focus:ring-primary md:min-w-[300px]" 
+        class="input input-primary md:min-w-[300px]" 
         required
       />
-      <button 
-        type="submit" 
-        class="bg-primary text-black px-6 py-3 rounded-md font-bold hover:bg-opacity-90"
-      >
-        Subscribe
-      </button>
+      <CTAButton type="submit" variant="primary">Subscribe</CTAButton>
     </form>
   </div>
 </section>

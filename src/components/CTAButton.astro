@@ -1,0 +1,37 @@
+---
+export interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'outline' | 'link' | 'primary-link' | 'soft';
+  target?: string;
+  extraClass?: string;
+}
+const { href, type = 'button', variant = 'primary', target, extraClass = '' } = Astro.props;
+---
+{href ? (
+  <a
+    href={href}
+    target={target}
+    rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+    class={`btn ${
+      variant === 'primary' ? 'btn-primary' :
+      variant === 'soft' ? 'btn-soft btn-primary' :
+      variant === 'outline' ? 'btn-outline' :
+      variant === 'link' ? 'btn-link' : 
+      variant === 'primary-link' ? 'btn-link btn-primary' : '' 
+    } ${extraClass}`.trim()}
+  >
+    <slot />
+  </a>
+) : (
+  <button
+    type={type}
+    class={`btn ${
+      variant === 'primary' ? 'btn-primary text-primary hover:bg-primary hover:text-primary-content' :
+      variant === 'outline' ? 'btn-outline' :
+      variant === 'link' ? 'btn-link' : ''
+    } ${extraClass}`.trim()}
+  >
+    <slot />
+  </button>
+)}

@@ -1,29 +1,50 @@
-    ---
-const { posts } = Astro.props;
 ---
-<section class="py-16 px-4 bg-background text-accent">
+import CTAButton from './CTAButton.astro';
+import Card from './Card.astro';
+import type { CollectionEntry } from 'astro:content';
+const { posts } = Astro.props;
+const formattedPosts = posts.map((post: CollectionEntry<'posts'>) => {
+  const subtitle = `By ${post.data.author} on ${new Date(post.data.date).toLocaleDateString('en-in', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })}`;
+  return { ...post, subtitle };
+});
+---
+<section class="py-16 px-4 bg-background text-foreground">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center">Latest Blog Posts</h2>
+    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Latest Blog Posts</h2>
     <div class="grid md:grid-cols-3 gap-8">
-      {posts.map(post => (
-        <div class="card bg-background border border-primary p-6 rounded-lg hover:shadow-lg hover:shadow-primary">
-          <h3 class="text-xl font-bold mb-2">{post.data.title}</h3>
-          <p class="text-sm text-primary mb-4">
-            By {post.data.author} on {new Date(post.data.date).toLocaleDateString('en-in', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
-          <p class="mb-6">{post.data.description}</p>
-          <a href={`/blog/${post.slug}/`} class="inline-block text-primary
-           font-bold hover:underline">Read More →</a>
-        </div>
-      ))}
+      {formattedPosts.map((post) => {
+        let coverPath = post.data.cover;
+        if (coverPath && !coverPath.startsWith('/')) {
+          // Try both asset and public paths, prefer public if you move images there
+          coverPath = `/src/assets/images/${coverPath}`;
+        }
+        return (
+          <Card className="h-full flex flex-col overflow-hidden p-4">
+            {coverPath && (
+              <div class="w-full h-40 overflow-hidden flex-shrink-0">
+                <img src={coverPath} alt={post.data.title} class="w-full h-full object-cover" />
+              </div>
+            )}
+            <div class="flex flex-col flex-1 p-2">
+              <h3 class="text-2xl font-bold text-primary mb-1 text-left line-clamp-3 overflow-hidden" style="min-height:3.6em; max-height:4.5em;">{post.data.title}</h3>
+              <p class="text-sm text-primary mb-2 text-left">{post.subtitle}</p>
+              <p class="text-left line-clamp-3 overflow-hidden" style="min-height:3.6em; max-height:4.5em;">{post.data.description}</p>
+              <div class="mt-auto flex justify-center">
+                <span slot="actions">
+                  <CTAButton href={`/blog/${post.slug}/`} variant="link" extraClass="mt-2">Read More →</CTAButton>
+                </span>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
     </div>
     <div class="text-center mt-10">
-      <a href="/blog" class="inline-block border-2 border-primary text-primary px-6 py-3 
-        rounded-md font-bold hover:bg-primary hover:text-primary-content hover:bg-opacity-10">View All Posts</a>
+      <CTAButton href="/blog" variant="soft">View All Posts</CTAButton>
     </div>
   </div>
 </section>

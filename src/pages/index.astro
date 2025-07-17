@@ -24,6 +24,7 @@ const upcomingEvents = [
     location: "WeWork, Bandra Kurla Complex",
     description: "Join us for talks on Rust, WebAssembly, and modern web development practices.",
     rsvpLink: "https://meetup.com/hackerspace-mumbai/events/123456789",
+    coverImage: "/images/social-preview.jpg",
   },
   {
     title: "Open Source Saturday",
@@ -31,6 +32,7 @@ const upcomingEvents = [
     location: "Microsoft Reactor, Powai",
     description: "Contribute to open source projects with guidance from experienced maintainers.",
     rsvpLink: "https://meetup.com/hackerspace-mumbai/events/987654321",
+    coverImage: "/images/hero-background.jpg",
   }
 ];
 
@@ -48,8 +50,8 @@ const testimonials = [
 
 // Sample stats
 const stats = {
-  yearsRunning: 7,
-  meetupsHosted: 84,
+  yearsRunning: 12,
+  meetupsHosted: 110,
   membersCount: "2,500+",
   projectsSupported: 35,
 };
@@ -60,74 +62,50 @@ const sponsors = [
   { name: "Google", logo: "google.png" },
   { name: "DigitalOcean", logo: "digitalocean.png" },
 ];
+
+// SEO and social sharing metadata
+export const title = "Hackerspace Mumbai - Mumbai's Largest Open Source Community";
+export const description = "Hackerspace Mumbai is the largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
+<Layout title={title} description={description}>
+  <style>
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('/hero-background.jpg');
+      background-size: cover;
+      background-position: center;
+    }
     
-    <!-- SEO and social sharing metadata -->
-    <title>Hackerspace Mumbai - Mumbai's Largest Open Source Community</title>
-    <meta name="description" content="Hackerspace Mumbai is the largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!" />
+    .card {
+      transition: transform 0.3s ease;
+    }
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://hackmum.in/" />
-    <meta property="og:title" content="Hackerspace Mumbai - Mumbai's Largest OSS Community" />
-    <meta property="og:description" content="Join Mumbai's largest open source community for tech meetups, workshops and collaborative learning!" />
-    <meta property="og:image" content="/social-preview.jpg" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="http://hackmum.in/" />
-    <meta property="twitter:title" content="Hackerspace Mumbai - Mumbai's Largest OSS Community" />
-    <meta property="twitter:description" content="Join Mumbai's largest open source community for tech meetups, workshops and collaborative learning!" />
-    <meta property="twitter:image" content="/social-preview.jpg" />
+    .card:hover {
+      transform: translateY(-5px);
+    }
     
-    <style>
-      .hero {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('/hero-background.jpg');
-        background-size: cover;
-        background-position: center;
-      }
-      
-      .card {
-        transition: transform 0.3s ease;
-      }
-      
-      .card:hover {
-        transform: translateY(-5px);
-      }
-      
-      .stats-item {
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      .stats-item:last-child {
-        border-right: none;
-      }
-    </style>
-  </head>
-  <body>
-    <Layout>
-      <HeroSection />
+    .stats-item {
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .stats-item:last-child {
+      border-right: none;
+    }
+  </style>
 
-      <EventsSection events={upcomingEvents} />
+  <HeroSection />
 
-      <BlogSection posts={posts} />
+  <EventsSection events={upcomingEvents} />
 
-      <AboutSection stats={stats} testimonials={testimonials} />
+  <BlogSection posts={posts} />
 
-      <JoinSection />
+  <AboutSection stats={stats} testimonials={testimonials} />
 
-      <SponsorsSection sponsors={sponsors} />
+  <JoinSection />
 
-      <GallerySection />
+  <SponsorsSection sponsors={sponsors} />
 
-      <NewsletterSection />
-    </Layout>
-  </body>
-</html>
+  <GallerySection />
+
+  <NewsletterSection />
+</Layout>

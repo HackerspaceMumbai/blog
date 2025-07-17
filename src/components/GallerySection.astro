@@ -1,18 +1,18 @@
 ---
-// No props needed for now
+import CTAButton from './CTAButton.astro';
 ---
-<section class="py-16 px-4 bg-background text-accent">
+<section class="py-16 px-4 bg-base-100 text-base-content">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center">Media Gallery</h2>
+    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Media Gallery</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-        <div class="aspect-square bg-background border border-primary rounded-md flex items-center justify-center">
+        <div class="aspect-square bg-base-200 border border-primary rounded-md flex items-center justify-center">
           <p class="text-primary">Event Photo {i}</p>
         </div>
       ))}
     </div>
     <div class="text-center mt-10">
-      <a href="/gallery" class="inline-block border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-primary-content hover:bg-opacity-10">View Full Gallery</a>
+      <CTAButton href="/gallery" variant="outline">View Full Gallery</CTAButton>
     </div>
   </div>
 </section>

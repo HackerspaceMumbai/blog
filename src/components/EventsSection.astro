@@ -1,30 +1,40 @@
 ---
+import CTAButton from './CTAButton.astro';
+import Card from './Card.astro';
+
 export interface Event {
   title: string;
   date: string;
   location: string;
   description: string;
   rsvpLink: string;
+  coverImage?: string;
 }
 const { events } = Astro.props;
 ---
-<section id="events" class="py-16 px-4 bg-background text-accent">
+<section id="events" class="py-16 px-4 bg-base-100 text-base-content">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center">Upcoming Events</h2>
+    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Upcoming Events</h2>
     <div class="grid md:grid-cols-2 gap-8">
-      {events.map(event => (
-        <div class="card bg-background border border-primary p-6 rounded-lg hover:shadow-lg hover:shadow-primary">
-          <h3 class="text-xl font-bold mb-2">{event.title}</h3>
-          <p class="text-primary mb-1">{event.date}</p>
-          <p class="mb-4">{event.location}</p>
-          <p class="mb-6">{event.description}</p>
-          <a href={event.rsvpLink} target="_blank" rel="noopener" class="inline-block bg-primary text-black px-4 py-2 rounded font-semibold hover:bg-opacity-90">RSVP Now</a>
-        </div>
+      {events.map((event: Event) => (
+        <Card
+          title={event.title}
+          subtitle={`${event.date} | ${event.location}`}
+          className="h-full flex flex-col relative overflow-hidden"
+          style={event.coverImage ? `background-image: url('${event.coverImage}'); background-size: cover; background-position: center;` : ''}
+        >
+          <div class={event.coverImage ? 'absolute inset-0 bg-black/60 z-0' : ''}></div>
+          <div class={event.coverImage ? 'relative z-10' : ''}>
+            <p class="mb-6">{event.description}</p>
+            <div slot="actions">
+              <CTAButton href={event.rsvpLink} variant="primary" extraClass="w-full flex justify-center mt-2" target="_blank">RSVP Now</CTAButton>
+            </div>
+          </div>
+        </Card>
       ))}
     </div>
     <div class="text-center mt-10">
-      <a href="https://meetup.com/hackerspace-mumbai" target="_blank" rel="noopener" class="inline-block
-       border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-primary-content hover:bg-opacity-10">View All Events</a>
+      <CTAButton href="https://meetup.com/hackerspace-mumbai" variant="soft" target="_blank">View All Events</CTAButton>
     </div>
   </div>
 </section>

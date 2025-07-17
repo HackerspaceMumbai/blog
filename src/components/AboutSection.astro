@@ -1,44 +1,47 @@
 ---
 const { stats, testimonials } = Astro.props;
 ---
-<section id="about" class="py-16 px-4 bg-background text-accent">
+<section id="about" class="py-16 px-4 bg-base-200 text-base-content">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center">About Our Community</h2>
-    <div class="grid md:grid-cols-2 gap-12 items-center">
+    <div class="grid lg:grid-cols-2 gap-12">
       <div>
+        <h2 class="text-3xl font-bold mb-6 text-primary">About Us</h2>
         <p class="mb-4">Hackerspace Mumbai is the largest open source community in Mumbai and hosts the city's longest-running tech meetup series. Founded in 2018, we bring together developers, designers, and tech enthusiasts to learn, collaborate, and build together.</p>
         <p class="mb-4">Our mission is to foster a vibrant, inclusive tech community that promotes knowledge sharing, collaboration, and innovation through open source principles.</p>
         <p>We organize regular meetups, workshops, hackathons, and other events to help members grow their skills, connect with peers, and contribute to meaningful projects.</p>
       </div>
-      <div>
-        <div class="grid grid-cols-2 text-center">
-          <div class="stats-item p-6">
-            <p class="text-4xl font-bold text-primary">{stats.yearsRunning}</p>
-            <p>Years Running</p>
-          </div>
-          <div class="stats-item p-6">
-            <p class="text-4xl font-bold text-primary">{stats.meetupsHosted}</p>
-            <p>Meetups Hosted</p>
-          </div>
-          <div class="stats-item p-6">
-            <p class="text-4xl font-bold text-primary">{stats.membersCount}</p>
-            <p>Community Members</p>
-          </div>
-          <div class="stats-item p-6">
-            <p class="text-4xl font-bold text-primary">{stats.projectsSupported}</p>
-            <p>Projects Supported</p>
-          </div>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-100 border-2 border-solid border-primary text-primary p-6 rounded-lg text-center content-center">
+          <div class="text-5xl font-bold">{stats.yearsRunning}+</div>
+          <div class="text-sm">Years Running</div>
+        </div>
+        <div class="bg-100 border-2 border-solid border-primary text-primary p-6 rounded-lg text-center content-center">
+          <div class="text-5xl font-bold">{stats.meetupsHosted}+</div>
+          <div class="text-sm">Meetups Hosted</div>
+        </div>
+        <div class="bg-100 border-2 border-solid border-primary text-primary p-6 rounded-lg text-center content-center">
+          <div class="text-5xl font-bold">{stats.membersCount}</div>
+          <div class="text-sm">Active Members</div>
+        </div>
+        <div class="bg-100 border-2 border-solid border-primary text-primary p-6 rounded-lg text-center content-center">
+          <div class="text-5xl font-bold">{stats.projectsSupported}+</div>
+          <div class="text-sm">Projects Supported</div>
         </div>
       </div>
     </div>
-    <h3 class="text-2xl font-bold mt-16 mb-8 text-center">What Our Community Says</h3>
-    <div class="grid md:grid-cols-2 gap-8">
-      {testimonials.map(testimonial => (
-        <div class="bg-background border border-primary p-6 rounded-lg">
-          <p class="italic mb-4">"{testimonial.quote}"</p>
-          <p class="font-bold text-primary">— {testimonial.author}</p>
-        </div>
-      ))}
+    
+    <!-- Testimonials -->
+    <div class="mt-16">
+      <h3 class="text-2xl font-bold mb-8 text-center text-primary">What Our Members Say</h3>
+      <div class="grid md:grid-cols-2 gap-8">
+        {testimonials.map(testimonial => (
+          <div class="bg-base-100 border border-primary p-6 rounded-lg">
+            <p class="italic mb-4">"{testimonial.quote}"</p>
+            <p class="font-semibold text-accent">— {testimonial.author}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>

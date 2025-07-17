@@ -1,13 +1,13 @@
 ---
-// No props needed
+import CTAButton from './CTAButton.astro';
 ---
-<section class="hero py-20 px-4 text-center text-accent">
+<section class="hero py-20 px-4 text-center">
   <div class="max-w-4xl mx-auto">
     <h1 class="text-4xl md:text-6xl font-bold mb-4">Hackerspace Mumbai</h1>
     <p class="text-xl md:text-2xl mb-8">Mumbai's largest open source community & longest-running tech meetup</p>
     <div class="flex flex-wrap justify-center gap-4 mb-8">
-      <a href="#events" class="bg-primary text-black px-6 py-3 rounded-md font-bold hover:bg-opacity-90">Attend #meetup</a>
-      <a href="#join" class="border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:bg-opacity-10">Join Community</a>
+      <CTAButton href="#events" variant="primary">Attend #mumtechup</CTAButton>
+      <CTAButton href="#join" variant="soft">Join Community</CTAButton>
     </div>
     <div class="flex justify-center space-x-4">
       <a href="https://twitter.com/hackmum" target="_blank" rel="noopener" aria-label="Twitter">

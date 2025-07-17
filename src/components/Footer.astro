@@ -1,14 +1,14 @@
 ---
-// filepath: /home/indcoder/dev/hackmum_blog/blog/src/components/Footer.astro
+// Footer component with consistent styling and typography
 ---
-<footer class="py-4 px-8 bg-primary text-primary-content mt-auto">
+<footer class="py-4 px-8 bg-primary text-primary-content font-bold mt-auto">
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-      <p>&copy; {new Date().getFullYear()} Hackerspace Mumbai's blog</p>
-      <div class="flex space-x-4">
-        <a href="https://github.com/HackerspaceMumbai" class="hover:text-accent-foreground transition-colors">GitHub</a>
-        <a href="/blog" class="hover:text-accent-foreground transition-colors">Blog</a>
-        <a href="https://hackerspacemumbai.org/" class="hover:text-accent-foreground transition-colors">Main Site</a>
+      <p class="text-lg md:text-xl">&copy; {new Date().getFullYear()} Hackerspace Mumbai's blog</p>
+      <div class="flex space-x-8">
+        <a href="https://github.com/HackerspaceMumbai" class="hover:text-accent transition-colors">GitHub</a>
+        <a href="/blog" class="hover:text-accent transition-colors">Blog</a>
+        <a href="https://hackerspacemumbai.org/" class="hover:text-accent transition-colors">Main Site</a>
       </div>
     </div>
   </div>
