@@ -1,0 +1,50 @@
+---
+// EventCard.astro: Renders a single event card for EventsSection with DaisyUI card aesthetics
+import CTAButton from './CTAButton.astro';
+export interface EventCardProps {
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  rsvpLink: string;
+  coverImage?: string;
+}
+const { title, date, location, description, rsvpLink, coverImage } = Astro.props;
+---
+<div
+  class="card bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary hover:scale-[1.02] hover:-translate-y-1 group cursor-pointer transition-all duration-300 ease-out overflow-hidden h-full flex flex-col min-h-[480px] md:min-h-[520px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+  tabindex="0"
+  role="article"
+  aria-label={title}
+>
+  {coverImage && (
+    <figure class="relative aspect-[3/1] w-full overflow-hidden">
+      <img src={coverImage} alt={title + ' event cover'} class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+      <div class="absolute inset-0 bg-black/50 pointer-events-none"></div>
+    </figure>
+  )}
+  <div class="card-body flex flex-col flex-1 px-8 py-7 md:px-12 md:py-8">
+  <h3 class="card-title text-primary text-2xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
+    <p class="text-base-content/70 text-base mb-3">{date} | {location}</p>
+    <p class="mb-6 text-base-content line-clamp-3 text-base md:text-lg">{description}</p>
+    <div class="card-actions mt-auto">
+      <CTAButton href={rsvpLink} variant="primary" extraClass="w-full flex justify-center group-focus-within:ring-2 group-focus-within:ring-primary group-focus-within:ring-offset-2" target="_blank">RSVP Now</CTAButton>
+    </div>
+  </div>
+</div>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
