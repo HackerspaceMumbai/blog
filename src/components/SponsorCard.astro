@@ -1,0 +1,378 @@
+---
+import type { Sponsor } from './types';
+
+export interface Props {
+  sponsor: Sponsor;
+  size?: 'sm' | 'md' | 'lg';
+  showDescription?: boolean;
+  className?: string;
+}
+
+const { 
+  sponsor, 
+  size = 'md', 
+  showDescription = false, 
+  className = '' 
+} = Astro.props;
+
+// Size configurations - using fixed heights for consistency
+const sizeClasses = {
+  sm: 'p-4 h-[120px]',
+  md: 'p-6 h-[160px]',
+  lg: 'p-8 h-[200px]'
+};
+
+const logoSizes = {
+  sm: 'max-h-12',
+  md: 'max-h-16',
+  lg: 'max-h-20'
+};
+
+// Enhanced tier-based styling with improved depth and contrast
+const tierStyles = {
+  platinum: 'ring-1 ring-yellow-400/40 bg-gradient-to-br from-yellow-50/90 to-yellow-100/90 dark:from-yellow-900/25 dark:to-yellow-800/25 border-yellow-300/60 dark:border-yellow-600/60 shadow-yellow-400/20',
+  gold: 'ring-1 ring-amber-400/40 bg-gradient-to-br from-amber-50/90 to-amber-100/90 dark:from-amber-900/25 dark:to-amber-800/25 border-amber-300/60 dark:border-amber-600/60 shadow-amber-400/20',
+  silver: 'ring-1 ring-gray-400/40 bg-gradient-to-br from-gray-50/90 to-gray-100/90 dark:from-gray-800/25 dark:to-gray-700/25 border-gray-300/60 dark:border-gray-500/60 shadow-gray-400/20',
+  bronze: 'ring-1 ring-orange-400/40 bg-gradient-to-br from-orange-50/90 to-orange-100/90 dark:from-orange-900/25 dark:to-orange-800/25 border-orange-300/60 dark:border-orange-600/60 shadow-orange-400/20',
+  community: 'ring-1 ring-blue-400/40 bg-gradient-to-br from-blue-50/90 to-blue-100/90 dark:from-blue-900/25 dark:to-blue-800/25 border-blue-300/60 dark:border-blue-600/60 shadow-blue-400/20',
+  startup: 'ring-1 ring-green-400/40 bg-gradient-to-br from-green-50/90 to-green-100/90 dark:from-green-900/25 dark:to-green-800/25 border-green-300/60 dark:border-green-600/60 shadow-green-400/20',
+  partner: 'ring-1 ring-purple-400/40 bg-gradient-to-br from-purple-50/90 to-purple-100/90 dark:from-purple-900/25 dark:to-purple-800/25 border-purple-300/60 dark:border-purple-600/60 shadow-purple-400/20'
+};
+
+// Standardized tier labels with consistent iconography
+const tierLabels = {
+  platinum: '💎 Platinum',
+  gold: '🥇 Gold',
+  silver: '🥈 Silver', 
+  bronze: '🥉 Bronze',
+  community: '🤝 Community',
+  startup: '🚀 Startup',
+  partner: '🤝 Partner'
+};
+
+// Enhanced tier-specific text colors with improved contrast for dark theme
+const tierTextColors = {
+  platinum: 'text-yellow-800 dark:text-yellow-200',
+  gold: 'text-amber-800 dark:text-amber-200',
+  silver: 'text-gray-800 dark:text-gray-200',
+  bronze: 'text-orange-800 dark:text-orange-200',
+  community: 'text-blue-800 dark:text-blue-200',
+  startup: 'text-green-800 dark:text-green-200',
+  partner: 'text-purple-800 dark:text-purple-200'
+};
+
+// Enhanced card classes with refined shadows and depth
+const cardClasses = `
+  rounded-xl shadow-lg hover:shadow-2xl group cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 relative border
+  ${sizeClasses[size]}
+  ${sponsor.tier ? tierStyles[sponsor.tier] : 'bg-base-100 border-base-300 hover:border-primary/50'}
+  ${sponsor.featured ? 'featured-sponsor ring-2 ring-primary/40 shadow-primary/10' : ''}
+  backdrop-blur-sm
+  ${className}
+`.trim();
+
+const isClickable = sponsor.url && sponsor.status === 'active';
+---
+
+<div 
+  class={cardClasses}
+  role={isClickable ? 'button' : 'img'}
+  aria-label={`${sponsor.name} sponsor${sponsor.tier ? ` - ${tierLabels[sponsor.tier]}` : ''}`}
+  tabindex={isClickable ? 0 : -1}
+  data-sponsor-tier={sponsor.tier}
+  data-sponsor-status={sponsor.status}
+>
+  {isClickable ? (
+    <a 
+      href={sponsor.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block h-full w-full text-decoration-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl"
+      aria-describedby={showDescription && sponsor.description ? `sponsor-desc-${sponsor.name.replace(/\s+/g, '-').toLowerCase()}` : undefined}
+    >
+      <div class="flex flex-col items-center justify-center h-full text-center space-y-3">
+        <!-- Tier Badge -->
+        {sponsor.tier && (
+          <div class="absolute top-2 right-2">
+            <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-base-100/95 dark:bg-base-200/95 backdrop-blur-sm border shadow-md ${tierTextColors[sponsor.tier]} border-current/30`}>
+              {tierLabels[sponsor.tier]}
+            </span>
+          </div>
+        )}
+        
+        <!-- Featured Badge -->
+        {sponsor.featured && (
+          <div class="absolute top-2 left-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary text-primary-content shadow-md">
+              ⭐ Featured
+            </span>
+          </div>
+        )}
+        
+        <!-- Logo -->
+        {sponsor.logo ? (
+          <div class="flex-shrink-0">
+            <img 
+              src={sponsor.logo} 
+              alt={`${sponsor.name} logo`}
+              class={`${logoSizes[size]} w-auto object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md`}
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <div class="hidden">
+              <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>
+                <span class="text-base-content/60 dark:text-base-content/80 font-medium text-sm">
+                  {sponsor.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>
+            <span class="text-base-content/60 dark:text-base-content/80 font-medium text-lg">
+              {sponsor.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+        
+        <!-- Sponsor Name -->
+        <h3 class="font-semibold text-base-content group-hover:text-primary transition-colors duration-300 text-sm sm:text-base md:text-lg leading-tight tracking-wide line-clamp-2 px-2">
+          {sponsor.name}
+        </h3>
+        
+        <!-- Description -->
+        {showDescription && sponsor.description && (
+          <p 
+            id={`sponsor-desc-${sponsor.name.replace(/\s+/g, '-').toLowerCase()}`}
+            class="text-xs sm:text-sm text-base-content/80 dark:text-base-content/90 line-clamp-2 max-w-full leading-relaxed px-2"
+          >
+            {sponsor.description}
+          </p>
+        )}
+        
+        <!-- Status Indicator -->
+        {sponsor.status && sponsor.status !== 'active' && (
+          <div class="absolute bottom-2 right-2">
+            <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium shadow-sm ${
+              sponsor.status === 'pending' ? 'bg-warning text-warning-content' :
+              sponsor.status === 'expired' ? 'bg-error text-error-content' :
+              'bg-base-300 text-base-content/70'
+            }`}>
+              {sponsor.status}
+            </span>
+          </div>
+        )}
+        
+        <!-- External Link Indicator -->
+        <div class="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <svg class="w-4 h-4 text-base-content/60 dark:text-base-content/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </div>
+      </div>
+    </a>
+  ) : (
+    <div class="h-full w-full">
+      <div class="flex flex-col items-center justify-center h-full text-center space-y-3">
+        <!-- Tier Badge -->
+        {sponsor.tier && (
+          <div class="absolute top-2 right-2">
+            <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-base-100/95 dark:bg-base-200/95 backdrop-blur-sm border shadow-md ${tierTextColors[sponsor.tier]} border-current/30`}>
+              {tierLabels[sponsor.tier]}
+            </span>
+          </div>
+        )}
+        
+        <!-- Featured Badge -->
+        {sponsor.featured && (
+          <div class="absolute top-2 left-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary text-primary-content shadow-md">
+              ⭐ Featured
+            </span>
+          </div>
+        )}
+        
+        <!-- Logo -->
+        {sponsor.logo ? (
+          <div class="flex-shrink-0">
+            <img 
+              src={sponsor.logo} 
+              alt={`${sponsor.name} logo`}
+              class={`${logoSizes[size]} w-auto object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md`}
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <div class="hidden">
+              <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>
+                <span class="text-base-content/60 dark:text-base-content/80 font-medium text-sm">
+                  {sponsor.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>
+            <span class="text-base-content/60 dark:text-base-content/80 font-medium text-lg">
+              {sponsor.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+        
+        <!-- Sponsor Name -->
+        <h3 class="font-semibold text-base-content group-hover:text-primary transition-colors duration-300 text-sm sm:text-base md:text-lg leading-tight tracking-wide line-clamp-2 px-2">
+          {sponsor.name}
+        </h3>
+        
+        <!-- Description -->
+        {showDescription && sponsor.description && (
+          <p 
+            id={`sponsor-desc-${sponsor.name.replace(/\s+/g, '-').toLowerCase()}`}
+            class="text-xs sm:text-sm text-base-content/80 dark:text-base-content/90 line-clamp-2 max-w-full leading-relaxed px-2"
+          >
+            {sponsor.description}
+          </p>
+        )}
+        
+        <!-- Status Indicator -->
+        {sponsor.status && sponsor.status !== 'active' && (
+          <div class="absolute bottom-2 right-2">
+            <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium shadow-sm ${
+              sponsor.status === 'pending' ? 'bg-warning text-warning-content' :
+              sponsor.status === 'expired' ? 'bg-error text-error-content' :
+              'bg-base-300 text-base-content/70'
+            }`}>
+              {sponsor.status}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  /* Enhanced hover effects for different tiers with improved shadow depth */
+  [data-sponsor-tier="platinum"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(251, 191, 36, 0.35), 0 10px 20px -5px rgba(251, 191, 36, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="gold"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.35), 0 10px 20px -5px rgba(245, 158, 11, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="silver"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(156, 163, 175, 0.35), 0 10px 20px -5px rgba(156, 163, 175, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="bronze"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(234, 88, 12, 0.35), 0 10px 20px -5px rgba(234, 88, 12, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="community"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.35), 0 10px 20px -5px rgba(59, 130, 246, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="startup"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.35), 0 10px 20px -5px rgba(22, 163, 74, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  [data-sponsor-tier="partner"]:hover {
+    box-shadow: 0 25px 50px -12px rgba(147, 51, 234, 0.35), 0 10px 20px -5px rgba(147, 51, 234, 0.2);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  /* Enhanced default hover for sponsors without tiers */
+  [data-sponsor-tier=""]:hover,
+  .group:not([data-sponsor-tier]):hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+    transform: scale(1.02) translateY(-3px);
+  }
+  
+  /* Dark theme specific enhancements */
+  @media (prefers-color-scheme: dark) {
+    [data-sponsor-tier=""]:hover,
+    .group:not([data-sponsor-tier]):hover {
+      box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.1), 0 10px 20px -5px rgba(255, 255, 255, 0.05);
+    }
+  }
+  
+  /* Standardized status-based styling with consistent opacity and effects */
+  [data-sponsor-status="inactive"] {
+    opacity: 0.6;
+    filter: grayscale(100%);
+    pointer-events: none;
+  }
+  
+  [data-sponsor-status="expired"] {
+    opacity: 0.5;
+    filter: grayscale(100%);
+    pointer-events: none;
+  }
+  
+  [data-sponsor-status="pending"] {
+    opacity: 0.8;
+    filter: saturate(0.7);
+  }
+  
+  /* Enhanced featured sponsor styling with improved animation */
+  .featured-sponsor {
+    position: relative;
+  }
+  
+  .featured-sponsor::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.25;
+    animation: pulse 3s ease-in-out infinite alternate;
+  }
+  
+  @keyframes pulse {
+    0% { 
+      opacity: 0.25; 
+      transform: scale(1);
+    }
+    100% { 
+      opacity: 0.4; 
+      transform: scale(1.005);
+    }
+  }
+  
+  /* Enhanced smooth transitions for all interactive elements */
+  .group {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .group:hover {
+    transition-duration: 0.2s;
+  }
+  
+  /* Focus state enhancements for better accessibility */
+  .group:focus-visible {
+    outline: none;
+    ring: 2px;
+    ring-color: hsl(var(--primary));
+    ring-offset: 2px;
+    ring-offset-color: hsl(var(--base-100));
+  }
+  
+  /* Typography enhancements for better readability */
+  .group h3 {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .group h3 {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+</style>

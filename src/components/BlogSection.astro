@@ -1,50 +1,169 @@
 ---
 import CTAButton from './CTAButton.astro';
-import Card from './Card.astro';
+import BlogCard from './BlogCard.astro';
 import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+}
+
 const { posts } = Astro.props;
-const formattedPosts = posts.map((post: CollectionEntry<'posts'>) => {
-  const subtitle = `By ${post.data.author} on ${new Date(post.data.date).toLocaleDateString('en-in', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })}`;
-  return { ...post, subtitle };
-});
----
-<section class="py-16 px-4 bg-background text-foreground">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Latest Blog Posts</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      {formattedPosts.map((post) => {
-        let coverPath = post.data.cover;
-        if (coverPath && !coverPath.startsWith('/')) {
-          // Try both asset and public paths, prefer public if you move images there
-          coverPath = `/src/assets/images/${coverPath}`;
+
+// Validate and sanitize posts array
+const validatePosts = (posts: CollectionEntry<'posts'>[]): CollectionEntry<'posts'>[] => {
+  try {
+    if (!Array.isArray(posts)) {
+      console.warn('Posts is not an array, using empty array');
+      return [];
+    }
+    
+    // Filter out invalid posts and limit to reasonable number
+    const validPosts = posts
+      .filter(post => {
+        // Basic validation for post structure
+        if (!post || typeof post !== 'object') {
+          console.warn('Invalid post object found, skipping');
+          return false;
         }
-        return (
-          <Card className="h-full flex flex-col overflow-hidden p-4">
-            {coverPath && (
-              <div class="w-full h-40 overflow-hidden flex-shrink-0">
-                <img src={coverPath} alt={post.data.title} class="w-full h-full object-cover" />
-              </div>
-            )}
-            <div class="flex flex-col flex-1 p-2">
-              <h3 class="text-2xl font-bold text-primary mb-1 text-left line-clamp-3 overflow-hidden" style="min-height:3.6em; max-height:4.5em;">{post.data.title}</h3>
-              <p class="text-sm text-primary mb-2 text-left">{post.subtitle}</p>
-              <p class="text-left line-clamp-3 overflow-hidden" style="min-height:3.6em; max-height:4.5em;">{post.data.description}</p>
-              <div class="mt-auto flex justify-center">
-                <span slot="actions">
-                  <CTAButton href={`/blog/${post.slug}/`} variant="link" extraClass="mt-2">Read More →</CTAButton>
-                </span>
-              </div>
-            </div>
-          </Card>
-        );
-      })}
-    </div>
-    <div class="text-center mt-10">
-      <CTAButton href="/blog" variant="soft">View All Posts</CTAButton>
-    </div>
+        
+        if (!post.data || typeof post.data !== 'object') {
+          console.warn('Post missing data object, skipping');
+          return false;
+        }
+        
+        if (!post.slug || typeof post.slug !== 'string') {
+          console.warn('Post missing valid slug, skipping');
+          return false;
+        }
+        
+        return true;
+      })
+      .slice(0, 12); // Limit to maximum 12 posts for performance
+    
+    return validPosts;
+  } catch (error) {
+    console.error('Error validating posts:', error);
+    return [];
+  }
+};
+
+const validatedPosts = validatePosts(posts);
+
+// Determine grid layout based on number of posts
+const getGridClasses = (postCount: number): string => {
+  if (postCount === 0) return '';
+  if (postCount === 1) return 'grid-cols-1 max-w-md mx-auto';
+  if (postCount === 2) return 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto';
+  return 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3';
+};
+
+const gridClasses = getGridClasses(validatedPosts.length);
+---
+<section 
+  class="py-20 px-4 bg-base-200"
+  aria-labelledby="blog-section-title"
+  role="region"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Section Header -->
+    <header class="mb-16 text-center">
+      <h2 
+        id="blog-section-title"
+        class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
+        tabindex="-1"
+      >
+        Latest Blog Posts
+      </h2>
+      <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">
+        Discover insights, tutorials, and updates from the Hackerspace Mumbai community
+      </p>
+    </header>
+    
+    <!-- Enhanced Responsive Grid with improved accessibility and dynamic layout -->
+    {validatedPosts.length > 0 && (
+      <div 
+        class={`grid ${gridClasses} gap-8 items-start`}
+        role="feed"
+        aria-label={`${validatedPosts.length} blog post${validatedPosts.length === 1 ? '' : 's'} from Hackerspace Mumbai`}
+        aria-live="polite"
+        aria-busy="false"
+      >
+        {validatedPosts.map((post, index) => (
+          <BlogCard 
+            post={post} 
+            className={`
+              focus-within:ring-2 
+              focus-within:ring-primary 
+              focus-within:ring-offset-2 
+              focus-within:ring-offset-background
+            `}
+          />
+        ))}
+      </div>
+    )}
+    
+    <!-- Empty state for when no posts are available -->
+    {posts.length === 0 && (
+      <div 
+        class="text-center py-16"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="mb-4">
+          <svg 
+            class="w-16 h-16 mx-auto text-base-content/40" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 011 1l4 4v9a2 2 0 01-2 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2v4a2 2 0 002 2h4"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-base-content mb-2">No blog posts available</h3>
+        <p class="text-base-content/70">Check back soon for new content from our community!</p>
+      </div>
+    )}
+    
+    <!-- CTA Section with enhanced accessibility -->
+    <footer class="text-center mt-12">
+      <CTAButton 
+        href="/blog" 
+        variant="soft"
+        aria-describedby="view-all-posts-desc"
+      >
+        View All Posts
+      </CTAButton>
+      <p 
+        id="view-all-posts-desc" 
+        class="sr-only"
+      >
+        Navigate to the complete blog archive to explore all articles from Hackerspace Mumbai
+      </p>
+    </footer>
   </div>
 </section>
+
+<!-- Skip link for keyboard navigation -->
+<a 
+  href="#main-content" 
+  class="
+    sr-only 
+    focus:not-sr-only 
+    focus:absolute 
+    focus:top-4 
+    focus:left-4 
+    focus:z-50 
+    focus:px-4 
+    focus:py-2 
+    focus:bg-primary 
+    focus:text-primary-content 
+    focus:rounded-md 
+    focus:shadow-lg
+    focus:ring-2 
+    focus:ring-primary-focus
+  "
+>
+  Skip to main content
+</a>

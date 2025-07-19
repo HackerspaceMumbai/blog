@@ -1,0 +1,38 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  showRetry?: boolean;
+  className?: string;
+}
+
+const { 
+  title = 'Something went wrong',
+  description = 'An error occurred while loading this content. Please try again.',
+  showRetry = true,
+  className = ''
+} = Astro.props;
+---
+
+<div class={`error-state text-center py-8 px-4 ${className}`}>
+  <div class="text-4xl mb-4" role="img" aria-label="Error icon">
+    ⚠️
+  </div>
+  
+  <h3 class="text-lg font-semibold text-error mb-2">
+    {title}
+  </h3>
+  
+  <p class="text-base-content/70 mb-4 max-w-md mx-auto">
+    {description}
+  </p>
+  
+  {showRetry && (
+    <button 
+      class="btn btn-outline btn-error"
+      onclick="window.location.reload()"
+    >
+      Try Again
+    </button>
+  )}
+</div>

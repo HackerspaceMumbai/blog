@@ -1,21 +1,105 @@
 ---
 import CTAButton from './CTAButton.astro';
-const { sponsors } = Astro.props;
+import SponsorCard from './SponsorCard.astro';
+import type { Sponsor } from './types';
+import { sortSponsors, getSponsorStats } from './sponsorUtils';
+
+interface Props {
+  sponsors: Sponsor[];
+  /** Optional title override */
+  title?: string;
+  /** Optional CTA button text */
+  ctaText?: string;
+  /** Optional CTA button URL */
+  ctaUrl?: string;
+  /** Whether to sort sponsors by priority (default: true) */
+  sortByPriority?: boolean;
+  /** Whether to show sponsor statistics (for future admin features) */
+  showStats?: boolean;
+}
+
+const { 
+  sponsors, 
+  title = "Our Sponsors",
+  ctaText = "Become a Sponsor",
+  ctaUrl = "/sponsors",
+  sortByPriority = true,
+  showStats = false
+} = Astro.props;
+
+// Enhanced sponsor processing
+const processedSponsors = sortByPriority ? sortSponsors(sponsors) : sponsors;
+const sponsorStats = getSponsorStats(sponsors);
+
+// Generate optimized grid classes for better visual balance
+const getGridClasses = (count: number): string => {
+  if (count === 1) return "grid-cols-1 max-w-sm mx-auto";
+  if (count === 2) return "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto";
+  if (count === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto";
+  if (count <= 6) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto";
+  return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4";
+};
+
+const gridClasses = getGridClasses(processedSponsors.length);
 ---
-<section class="py-16 px-4 bg-base-200 text-base-content">
-  <div class="max-w-6xl mx-auto text-center">
-    <h2 class="text-3xl font-bold mb-12 text-primary">Our Sponsors</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-      {sponsors.map(sponsor => (
-        <div class="flex justify-center">
-          <div class="w-32 h-32 bg-base-100 border border-primary rounded-md flex items-center justify-center">
-            <span class="text-sm font-medium text-accent">{sponsor.name}</span>
-          </div>
+<section 
+  class="py-16 bg-base-200 text-base-content"
+  aria-labelledby="sponsors-heading"
+  role="region"
+>
+  <div class="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+    <h2 
+      id="sponsors-heading"
+      class="
+        text-2xl
+        sm:text-3xl 
+        font-bold 
+        mb-8
+        sm:mb-12 
+        text-primary
+        drop-shadow-sm
+      "
+    >
+      {title}
+    </h2>
+    <div 
+      class={`
+        grid 
+        ${gridClasses}
+        gap-6
+        sm:gap-8
+        lg:gap-10
+        mb-8
+        sm:mb-12
+        items-stretch
+        justify-items-center
+        w-full
+        mx-auto
+      `}
+      role="list"
+      aria-label={`List of ${processedSponsors.length} sponsors supporting Hackerspace Mumbai`}
+      aria-live="polite"
+    >
+      {processedSponsors.map((sponsor, index) => (
+        <div 
+          role="listitem" 
+          class="w-full max-w-sm mx-auto"
+          aria-setsize={processedSponsors.length}
+          aria-posinset={index + 1}
+        >
+          <SponsorCard sponsor={sponsor} />
         </div>
       ))}
     </div>
+    
+    {showStats && (
+      <div class="mb-8 text-sm text-base-content/70">
+        <p>Total Sponsors: {sponsorStats.total} | Active: {sponsorStats.active} | Featured: {sponsorStats.featured}</p>
+      </div>
+    )}
+    
     <div class="text-center">
-      <CTAButton href="/sponsors" variant="outline">Become a Sponsor</CTAButton>
+      <CTAButton href={ctaUrl} variant="outline">{ctaText}</CTAButton>
     </div>
   </div>
 </section>

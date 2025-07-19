@@ -1,0 +1,42 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  icon?: string;
+  actionText?: string;
+  actionHref?: string;
+  className?: string;
+}
+
+const { 
+  title = 'No items found',
+  description = 'There are no items to display at the moment.',
+  icon = '📭',
+  actionText,
+  actionHref,
+  className = ''
+} = Astro.props;
+---
+
+<div class={`text-center py-12 px-4 ${className}`}>
+  <div class="text-6xl mb-4" role="img" aria-label="Empty state icon">
+    {icon}
+  </div>
+  
+  <h3 class="text-xl font-semibold text-base-content mb-2">
+    {title}
+  </h3>
+  
+  <p class="text-base-content/70 mb-6 max-w-md mx-auto">
+    {description}
+  </p>
+  
+  {actionText && actionHref && (
+    <a 
+      href={actionHref}
+      class="btn btn-primary"
+    >
+      {actionText}
+    </a>
+  )}
+</div>

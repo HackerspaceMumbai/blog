@@ -56,11 +56,47 @@ const stats = {
   projectsSupported: 35,
 };
 
-// Sample sponsors
+// Sample sponsors - Enhanced for future features
 const sponsors = [
-  { name: "Microsoft", logo: "microsoft.png" },
-  { name: "Google", logo: "google.png" },
-  { name: "DigitalOcean", logo: "digitalocean.png" },
+  { 
+    name: "Microsoft", 
+    logo: "microsoft.png",
+    url: "https://microsoft.com",
+    tier: "platinum" as const,
+    description: "Leading technology company providing cloud services and developer tools",
+    featured: true
+  },
+  { 
+    name: "Google", 
+    logo: "google.png",
+    url: "https://google.com",
+    tier: "platinum" as const,
+    description: "Global technology leader in search, cloud computing, and AI",
+    featured: true
+  },
+  { 
+    name: "DigitalOcean", 
+    logo: "digitalocean.png",
+    url: "https://digitalocean.com",
+    tier: "gold" as const,
+    description: "Cloud infrastructure provider for developers and businesses"
+  },
+  {
+    name: "GitHub",
+    url: "https://github.com",
+    tier: "silver" as const,
+    description: "World's leading software development platform"
+  },
+  {
+    name: "Very Long Company Name Technologies Private Limited",
+    tier: "bronze" as const,
+    description: "Testing sponsor with very long name to ensure proper text wrapping and layout"
+  },
+  {
+    name: "StartupXYZ",
+    tier: "community" as const,
+    description: "Local startup supporting the developer community"
+  }
 ];
 
 // SEO and social sharing metadata
