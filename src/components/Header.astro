@@ -1,11 +1,89 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 ---
-<header class="flex justify-between bg-primary text-primary-content font-bold px-4 py-3 shadow-md">
-    <h1 class="text-lg md:text-xl hover:text-accent transition-colors">Hackerspace Mumbai</h1>
-    <nav class="flex space-x-8">
-        <a href="/" class="hover:text-accent transition-colors">Home</a>
-        <a href="/blog/" class="hover:text-accent transition-colors">Blog</a>
-        <a href="https://hackerspacemumbai.org/" class="hover:text-accent transition-colors">Main Site</a>
+<header class="bg-primary text-primary-content font-bold shadow-md">
+  <div class="flex justify-between items-center px-4 py-3">
+    <h1 class="text-lg md:text-xl hover:text-accent transition-colors">
+      <a href="/" class="hover:text-accent transition-colors">Hackerspace Mumbai</a>
+    </h1>
+    
+    <!-- Mobile menu button -->
+    <button 
+      class="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+      id="mobile-menu-button"
+    >
+      <span class="w-6 h-0.5 bg-current transition-all duration-300"></span>
+      <span class="w-6 h-0.5 bg-current transition-all duration-300"></span>
+      <span class="w-6 h-0.5 bg-current transition-all duration-300"></span>
+    </button>
+    
+    <!-- Desktop navigation -->
+    <nav class="hidden md:flex space-x-8">
+      <a href="/" class="hover:text-accent transition-colors">Home</a>
+      <a href="/blog/" class="hover:text-accent transition-colors">Blog</a>
+      <a href="https://hackerspacemumbai.org/" class="hover:text-accent transition-colors" target="_blank" rel="noopener noreferrer">Main Site</a>
     </nav>
+  </div>
+  
+  <!-- Mobile navigation -->
+  <nav 
+    class="md:hidden bg-primary border-t border-primary-content/20 hidden"
+    id="mobile-menu"
+    aria-label="Mobile navigation"
+  >
+    <div class="px-4 py-2 space-y-2">
+      <a href="/" class="block py-2 hover:text-accent transition-colors">Home</a>
+      <a href="/blog/" class="block py-2 hover:text-accent transition-colors">Blog</a>
+      <a href="https://hackerspacemumbai.org/" class="block py-2 hover:text-accent transition-colors" target="_blank" rel="noopener noreferrer">Main Site</a>
+    </div>
+  </nav>
 </header>
+
+<script>
+  // Mobile menu toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function() {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+        
+        // Toggle menu visibility
+        mobileMenu.classList.toggle('hidden');
+        
+        // Update aria-expanded
+        mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+        
+        // Animate hamburger icon
+        const spans = mobileMenuButton.querySelectorAll('span');
+        if (!isExpanded) {
+          spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+          spans[1].style.opacity = '0';
+          spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+        } else {
+          spans[0].style.transform = 'none';
+          spans[1].style.opacity = '1';
+          spans[2].style.transform = 'none';
+        }
+      });
+      
+      // Close mobile menu when clicking on links
+      const mobileLinks = mobileMenu.querySelectorAll('a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mobileMenu.classList.add('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+          
+          // Reset hamburger icon
+          const spans = mobileMenuButton.querySelectorAll('span');
+          spans[0].style.transform = 'none';
+          spans[1].style.opacity = '1';
+          spans[2].style.transform = 'none';
+        });
+      });
+    }
+  });
+</script>

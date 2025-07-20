@@ -5,33 +5,131 @@ export interface Props {
   variant?: 'primary' | 'outline' | 'link' | 'primary-link' | 'soft';
   target?: string;
   extraClass?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+  size?: 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
+  icon?: 'left' | 'right' | 'none';
 }
-const { href, type = 'button', variant = 'primary', target, extraClass = '' } = Astro.props;
+
+const { 
+  href, 
+  type = 'button', 
+  variant = 'primary', 
+  target, 
+  extraClass = '',
+  disabled = false,
+  loading = false,
+  size = 'md',
+  fullWidth = false,
+  icon = 'none',
+  ...ariaProps
+} = Astro.props;
+
+// Generate base classes with accessibility and responsive considerations
+const baseClasses = [
+  'btn',
+  'inline-flex',
+  'items-center',
+  'justify-center',
+  'transition-all',
+  'duration-300',
+  'ease-in-out',
+  'focus:outline-none',
+  'focus:ring-2',
+  'focus:ring-offset-2',
+  'focus:ring-primary',
+  'disabled:opacity-50',
+  'disabled:cursor-not-allowed',
+  'disabled:pointer-events-none',
+  // Ensure minimum touch target size (44px)
+  size === 'sm' ? 'min-h-[44px] px-4 py-2 text-sm' :
+  size === 'lg' ? 'min-h-[52px] px-8 py-3 text-lg' :
+  'min-h-[44px] px-6 py-2.5 text-base', // default md size
+  fullWidth ? 'w-full' : '',
+];
+
+// Variant-specific classes
+const variantClasses = {
+  'primary': 'btn-primary text-primary-content bg-primary hover:bg-primary/90 border-primary',
+  'soft': 'btn-soft bg-primary/10 text-primary hover:bg-primary/20 border-primary/20',
+  'outline': 'btn-outline border-2 border-primary text-primary hover:bg-primary hover:text-primary-content',
+  'link': 'btn-link text-primary hover:text-primary/80 underline-offset-4 hover:underline',
+  'primary-link': 'btn-link text-primary hover:text-primary/80 underline-offset-4 hover:underline font-semibold'
+};
+
+// Loading state classes
+const loadingClasses = loading ? 'loading loading-spinner' : '';
+
+// Combine all classes
+const buttonClasses = [
+  ...baseClasses,
+  variantClasses[variant] || variantClasses.primary,
+  loadingClasses,
+  extraClass
+].filter(Boolean).join(' ').trim();
 ---
 {href ? (
   <a
-    href={href}
+    href={disabled ? undefined : href}
     target={target}
     rel={target === '_blank' ? 'noopener noreferrer' : undefined}
-    class={`btn ${
-      variant === 'primary' ? 'btn-primary' :
-      variant === 'soft' ? 'btn-soft btn-primary' :
-      variant === 'outline' ? 'btn-outline' :
-      variant === 'link' ? 'btn-link' : 
-      variant === 'primary-link' ? 'btn-link btn-primary' : '' 
-    } ${extraClass}`.trim()}
+    class={buttonClasses}
+    aria-disabled={disabled}
+    tabindex={disabled ? -1 : undefined}
+    role="button"
+    {...ariaProps}
   >
-    <slot />
+    {loading && (
+      <span class="loading loading-spinner loading-sm mr-2" aria-hidden="true"></span>
+    )}
+    {icon === 'left' && !loading && (
+      <span class="mr-3 flex-shrink-0" aria-hidden="true">
+        <slot name="icon-left" />
+      </span>
+    )}
+    <span class={loading ? 'opacity-70' : ''}>
+      <slot />
+    </span>
+    {icon === 'right' && !loading && (
+      <span class="ml-3 flex-shrink-0" aria-hidden="true">
+        <slot name="icon-right" />
+      </span>
+    )}
+    {loading && (
+      <span class="sr-only">Loading...</span>
+    )}
   </a>
 ) : (
   <button
     type={type}
-    class={`btn ${
-      variant === 'primary' ? 'btn-primary text-primary hover:bg-primary hover:text-primary-content' :
-      variant === 'outline' ? 'btn-outline' :
-      variant === 'link' ? 'btn-link' : ''
-    } ${extraClass}`.trim()}
+    class={buttonClasses}
+    disabled={disabled || loading}
+    aria-disabled={disabled || loading}
+    {...ariaProps}
   >
-    <slot />
+    {loading && (
+      <span class="loading loading-spinner loading-sm mr-2" aria-hidden="true"></span>
+    )}
+    {icon === 'left' && !loading && (
+      <span class="mr-3 flex-shrink-0" aria-hidden="true">
+        <slot name="icon-left" />
+      </span>
+    )}
+    <span class={loading ? 'opacity-70' : ''}>
+      <slot />
+    </span>
+    {icon === 'right' && !loading && (
+      <span class="ml-3 flex-shrink-0" aria-hidden="true">
+        <slot name="icon-right" />
+      </span>
+    )}
+    {loading && (
+      <span class="sr-only">Loading...</span>
+    )}
   </button>
 )}

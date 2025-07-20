@@ -1,0 +1,699 @@
+---
+// Manual accessibility audit component for comprehensive testing
+export interface Props {
+  enableInDevelopment?: boolean;
+  showResults?: boolean;
+  autoFix?: boolean;
+}
+
+const {
+  enableInDevelopment = true,
+  showResults = true,
+  autoFix = false
+} = Astro.props;
+
+const isDevelopment = import.meta.env.DEV;
+const shouldRun = isDevelopment && enableInDevelopment;
+---
+
+{shouldRun && (
+  <script define:vars={{ showResults, autoFix }}>
+    // Manual Accessibility Audit Suite
+    class AccessibilityAudit {
+      constructor(options = {}) {
+        this.showResults = options.showResults ?? true;
+        this.autoFix = options.autoFix ?? false;
+        this.auditResults = [];
+        
+        this.init();
+      }
+      
+      init() {
+        // Run audit when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => this.runFullAudit());
+        } else {
+          this.runFullAudit();
+        }
+        
+        // Set up manual audit trigger
+        window.runAccessibilityAudit = () => this.runFullAudit();
+        
+        // Keyboard shortcut (Ctrl+Shift+U for aUdit)
+        document.addEventListener('keydown', (event) => {
+          if (event.ctrlKey && event.shiftKey && event.key === 'U') {
+            event.preventDefault();
+            this.runFullAudit();
+          }
+        });
+      }
+      
+      async runFullAudit() {
+        console.log('🔍 Running comprehensive accessibility audit...');
+        const startTime = performance.now();
+        
+        this.auditResults = [];
+        
+        // Run all audit checks
+        await Promise.all([
+          this.auditHeadingStructure(),
+          this.auditImages(),
+          this.auditForms(),
+          this.auditLinks(),
+          this.auditColorContrast(),
+          this.auditKeyboardNavigation(),
+          this.auditARIA(),
+          this.auditLandmarks(),
+          this.auditFocusManagement(),
+          this.auditSemanticHTML(),
+          this.auditTableAccessibility(),
+          this.auditMediaAccessibility()
+        ]);
+        
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        // Process and display results
+        this.processAuditResults(duration);
+        
+        return this.auditResults;
+      }
+      
+      addResult(category, type, message, element = null, severity = 'warning', autoFixable = false) {
+        this.auditResults.push({
+          category,
+          type,
+          message,
+          element,
+          severity, // 'error', 'warning', 'info'
+          autoFixable,
+          timestamp: Date.now(),
+          selector: element ? this.getElementSelector(element) : null
+        });
+      }
+      
+      async auditHeadingStructure() {
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        let previousLevel = 0;
+        let hasH1 = false;
+        
+        headings.forEach((heading, index) => {
+          const level = parseInt(heading.tagName.charAt(1));
+          
+          // Check for H1
+          if (level === 1) {
+            if (hasH1) {
+              this.addResult('Structure', 'heading', 'Multiple H1 elements found - should have only one per page', heading, 'warning');
+            }
+            hasH1 = true;
+          }
+          
+          // Check heading order
+          if (index > 0 && level > previousLevel + 1) {
+            this.addResult('Structure', 'heading', `Heading level jumps from H${previousLevel} to H${level} - should be sequential`, heading, 'error');
+          }
+          
+          // Check for empty headings
+          if (!heading.textContent.trim()) {
+            this.addResult('Structure', 'heading', 'Empty heading found', heading, 'error', true);
+          }
+          
+          previousLevel = level;
+        });
+        
+        // Check if page has H1
+        if (!hasH1) {
+          this.addResult('Structure', 'heading', 'Page missing H1 element', null, 'error');
+        }
+      }
+      
+      async auditImages() {
+        const images = document.querySelectorAll('img');
+        
+        images.forEach(img => {
+          // Check for alt attribute
+          if (!img.hasAttribute('alt')) {
+            this.addResult('Images', 'alt-text', 'Image missing alt attribute', img, 'error', true);
+          } else if (img.alt === '') {
+            // Check if decorative image is properly marked
+            if (!img.hasAttribute('role') || img.getAttribute('role') !== 'presentation') {
+              this.addResult('Images', 'alt-text', 'Empty alt text should be accompanied by role="presentation"', img, 'warning', true);
+            }
+          } else if (img.alt.length > 125) {
+            this.addResult('Images', 'alt-text', 'Alt text is too long (>125 characters)', img, 'warning');
+          }
+          
+          // Check for redundant alt text
+          const redundantPhrases = ['image of', 'picture of', 'photo of', 'graphic of'];
+          if (redundantPhrases.some(phrase => img.alt.toLowerCase().includes(phrase))) {
+            this.addResult('Images', 'alt-text', 'Alt text contains redundant phrases', img, 'info');
+          }
+          
+          // Check for loading attribute
+          if (!img.hasAttribute('loading')) {
+            this.addResult('Images', 'performance', 'Image missing loading attribute for performance', img, 'info', true);
+          }
+        });
+      }
+      
+      async auditForms() {
+        const forms = document.querySelectorAll('form');
+        const inputs = document.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+          // Check for labels
+          const id = input.id;
+          const label = id ? document.querySelector(`label[for="${id}"]`) : null;
+          const ariaLabel = input.getAttribute('aria-label');
+          const ariaLabelledby = input.getAttribute('aria-labelledby');
+          
+          if (!label && !ariaLabel && !ariaLabelledby) {
+            this.addResult('Forms', 'labels', 'Form control missing label', input, 'error', true);
+          }
+          
+          // Check for required field indicators
+          if (input.hasAttribute('required')) {
+            const requiredIndicator = input.getAttribute('aria-required') === 'true' ||
+                                    input.closest('.form-group, .field')?.querySelector('[aria-label*="required"], .required');
+            
+            if (!requiredIndicator) {
+              this.addResult('Forms', 'required', 'Required field not properly indicated', input, 'warning', true);
+            }
+          }
+          
+          // Check for error handling
+          if (input.getAttribute('aria-invalid') === 'true') {
+            const errorId = input.getAttribute('aria-describedby');
+            if (!errorId || !document.getElementById(errorId)) {
+              this.addResult('Forms', 'errors', 'Invalid field missing error description', input, 'error');
+            }
+          }
+          
+          // Check input types
+          if (input.type === 'text' && input.name && 
+              (input.name.includes('email') || input.placeholder?.includes('email'))) {
+            this.addResult('Forms', 'input-type', 'Email field should use type="email"', input, 'warning', true);
+          }
+        });
+        
+        // Check form submission
+        forms.forEach(form => {
+          if (!form.hasAttribute('novalidate') && !form.querySelector('[type="submit"], button[type="submit"]')) {
+            this.addResult('Forms', 'submission', 'Form missing submit button', form, 'warning');
+          }
+        });
+      }
+      
+      async auditLinks() {
+        const links = document.querySelectorAll('a');
+        
+        links.forEach(link => {
+          // Check for href
+          if (!link.hasAttribute('href') && !link.hasAttribute('role')) {
+            this.addResult('Links', 'href', 'Link missing href attribute', link, 'error', true);
+          }
+          
+          // Check for link text
+          const linkText = link.textContent.trim();
+          if (!linkText && !link.getAttribute('aria-label') && !link.getAttribute('aria-labelledby')) {
+            this.addResult('Links', 'text', 'Link missing accessible text', link, 'error');
+          }
+          
+          // Check for generic link text
+          const genericTexts = ['click here', 'read more', 'more', 'here', 'link'];
+          if (genericTexts.includes(linkText.toLowerCase())) {
+            this.addResult('Links', 'text', 'Link has generic text - should be more descriptive', link, 'warning');
+          }
+          
+          // Check external links
+          if (link.hostname && link.hostname !== window.location.hostname) {
+            if (!link.hasAttribute('rel') || !link.rel.includes('noopener')) {
+              this.addResult('Links', 'security', 'External link missing rel="noopener"', link, 'warning', true);
+            }
+            
+            if (!link.getAttribute('aria-label')?.includes('opens in new') && 
+                link.target === '_blank') {
+              this.addResult('Links', 'indication', 'External link should indicate it opens in new window', link, 'info', true);
+            }
+          }
+        });
+      }
+      
+      async auditColorContrast() {
+        // This is a simplified check - full color contrast requires more sophisticated analysis
+        const elements = document.querySelectorAll('*');
+        const lowContrastElements = [];
+        
+        elements.forEach(element => {
+          const style = window.getComputedStyle(element);
+          const color = style.color;
+          const backgroundColor = style.backgroundColor;
+          
+          // Skip elements without text or transparent backgrounds
+          if (!element.textContent.trim() || backgroundColor === 'rgba(0, 0, 0, 0)') {
+            return;
+          }
+          
+          // Simple heuristic check (not accurate, but gives an indication)
+          if (this.isPotentiallyLowContrast(color, backgroundColor)) {
+            lowContrastElements.push(element);
+          }
+        });
+        
+        if (lowContrastElements.length > 0) {
+          this.addResult('Color', 'contrast', `${lowContrastElements.length} elements may have low color contrast`, null, 'warning');
+        }
+      }
+      
+      isPotentiallyLowContrast(color, backgroundColor) {
+        // Very simplified check - in practice, you'd use a proper contrast ratio calculation
+        const colorLuminance = this.getApproximateLuminance(color);
+        const bgLuminance = this.getApproximateLuminance(backgroundColor);
+        
+        const ratio = Math.max(colorLuminance, bgLuminance) / Math.min(colorLuminance, bgLuminance);
+        return ratio < 3; // Very rough approximation
+      }
+      
+      getApproximateLuminance(color) {
+        // Very simplified luminance calculation
+        if (color.includes('rgb')) {
+          const matches = color.match(/\d+/g);
+          if (matches && matches.length >= 3) {
+            const [r, g, b] = matches.map(Number);
+            return (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+          }
+        }
+        return 0.5; // Default middle value
+      }
+      
+      async auditKeyboardNavigation() {
+        const focusableElements = this.getFocusableElements();
+        
+        focusableElements.forEach(element => {
+          // Check tabindex values
+          const tabindex = element.getAttribute('tabindex');
+          if (tabindex && parseInt(tabindex) > 0) {
+            this.addResult('Keyboard', 'tabindex', 'Positive tabindex found - can disrupt natural tab order', element, 'warning');
+          }
+          
+          // Check for focus indicators
+          if (!this.hasFocusStyles(element)) {
+            this.addResult('Keyboard', 'focus', 'Element may be missing focus indicator', element, 'warning');
+          }
+          
+          // Check for skip links
+          if (element.textContent?.toLowerCase().includes('skip') && !element.classList.contains('sr-only')) {
+            this.addResult('Keyboard', 'skip-links', 'Skip link should be visually hidden until focused', element, 'info');
+          }
+        });
+        
+        // Check for skip links
+        const skipLinks = document.querySelectorAll('a[href^="#"]');
+        const hasSkipToMain = Array.from(skipLinks).some(link => 
+          link.textContent.toLowerCase().includes('skip') && 
+          link.textContent.toLowerCase().includes('main')
+        );
+        
+        if (!hasSkipToMain) {
+          this.addResult('Keyboard', 'skip-links', 'Page missing "skip to main content" link', null, 'warning');
+        }
+      }
+      
+      getFocusableElements() {
+        const selector = [
+          'a[href]',
+          'button:not([disabled])',
+          'input:not([disabled])',
+          'select:not([disabled])',
+          'textarea:not([disabled])',
+          '[tabindex]:not([tabindex="-1"])',
+          '[contenteditable="true"]'
+        ].join(', ');
+        
+        return Array.from(document.querySelectorAll(selector));
+      }
+      
+      hasFocusStyles(element) {
+        // Check if element has focus styles defined
+        const computedStyle = window.getComputedStyle(element, ':focus');
+        return computedStyle.outline !== 'none' || 
+               computedStyle.boxShadow !== 'none' ||
+               element.classList.contains('focus-visible') ||
+               element.classList.contains('focus-ring');
+      }
+      
+      async auditARIA() {
+        const elementsWithAria = document.querySelectorAll('[aria-label], [aria-labelledby], [aria-describedby], [role]');
+        
+        elementsWithAria.forEach(element => {
+          // Check aria-labelledby references
+          const labelledby = element.getAttribute('aria-labelledby');
+          if (labelledby) {
+            const referencedElements = labelledby.split(' ').map(id => document.getElementById(id));
+            if (referencedElements.some(el => !el)) {
+              this.addResult('ARIA', 'references', 'aria-labelledby references non-existent element', element, 'error');
+            }
+          }
+          
+          // Check aria-describedby references
+          const describedby = element.getAttribute('aria-describedby');
+          if (describedby) {
+            const referencedElements = describedby.split(' ').map(id => document.getElementById(id));
+            if (referencedElements.some(el => !el)) {
+              this.addResult('ARIA', 'references', 'aria-describedby references non-existent element', element, 'error');
+            }
+          }
+          
+          // Check role validity (simplified)
+          const role = element.getAttribute('role');
+          if (role) {
+            const validRoles = ['button', 'link', 'heading', 'banner', 'navigation', 'main', 'contentinfo', 'complementary', 'search', 'form', 'region', 'article', 'section', 'aside', 'header', 'footer', 'presentation', 'none'];
+            if (!validRoles.includes(role)) {
+              this.addResult('ARIA', 'role', `Unknown or invalid role: ${role}`, element, 'warning');
+            }
+          }
+        });
+      }
+      
+      async auditLandmarks() {
+        const landmarks = {
+          main: document.querySelectorAll('main, [role="main"]'),
+          banner: document.querySelectorAll('header[role="banner"], [role="banner"]'),
+          contentinfo: document.querySelectorAll('footer[role="contentinfo"], [role="contentinfo"]'),
+          navigation: document.querySelectorAll('nav, [role="navigation"]')
+        };
+        
+        // Check for main landmark
+        if (landmarks.main.length === 0) {
+          this.addResult('Landmarks', 'main', 'Page missing main landmark', null, 'error');
+        } else if (landmarks.main.length > 1) {
+          this.addResult('Landmarks', 'main', 'Multiple main landmarks found', null, 'warning');
+        }
+        
+        // Check for banner
+        if (landmarks.banner.length === 0) {
+          this.addResult('Landmarks', 'banner', 'Page missing banner landmark', null, 'warning');
+        }
+        
+        // Check for contentinfo
+        if (landmarks.contentinfo.length === 0) {
+          this.addResult('Landmarks', 'contentinfo', 'Page missing contentinfo landmark', null, 'warning');
+        }
+        
+        // Check navigation labels
+        landmarks.navigation.forEach((nav, index) => {
+          if (landmarks.navigation.length > 1 && !nav.getAttribute('aria-label') && !nav.getAttribute('aria-labelledby')) {
+            this.addResult('Landmarks', 'navigation', 'Multiple navigation landmarks should have labels', nav, 'warning');
+          }
+        });
+      }
+      
+      async auditFocusManagement() {
+        // Check for focus traps in modals
+        const modals = document.querySelectorAll('[role="dialog"], .modal, [aria-modal="true"]');
+        
+        modals.forEach(modal => {
+          const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          
+          if (focusableElements.length === 0) {
+            this.addResult('Focus', 'trap', 'Modal has no focusable elements', modal, 'error');
+          }
+          
+          // Check for close button
+          const closeButton = modal.querySelector('[aria-label*="close"], .close, [data-dismiss]');
+          if (!closeButton) {
+            this.addResult('Focus', 'modal', 'Modal missing accessible close button', modal, 'warning');
+          }
+        });
+      }
+      
+      async auditSemanticHTML() {
+        // Check for semantic elements usage
+        const semanticElements = ['header', 'nav', 'main', 'article', 'section', 'aside', 'footer'];
+        const hasSemanticElements = semanticElements.some(tag => document.querySelector(tag));
+        
+        if (!hasSemanticElements) {
+          this.addResult('Semantic', 'structure', 'Page uses no semantic HTML5 elements', null, 'warning');
+        }
+        
+        // Check for div/span overuse
+        const divs = document.querySelectorAll('div');
+        const spans = document.querySelectorAll('span');
+        const totalElements = document.querySelectorAll('*').length;
+        
+        if ((divs.length + spans.length) / totalElements > 0.4) {
+          this.addResult('Semantic', 'overuse', 'High ratio of div/span elements - consider semantic alternatives', null, 'info');
+        }
+      }
+      
+      async auditTableAccessibility() {
+        const tables = document.querySelectorAll('table');
+        
+        tables.forEach(table => {
+          // Check for caption
+          if (!table.querySelector('caption') && !table.getAttribute('aria-label') && !table.getAttribute('aria-labelledby')) {
+            this.addResult('Tables', 'caption', 'Table missing caption or label', table, 'warning', true);
+          }
+          
+          // Check for headers
+          const headers = table.querySelectorAll('th');
+          if (headers.length === 0) {
+            this.addResult('Tables', 'headers', 'Table missing header cells (th)', table, 'error');
+          }
+          
+          // Check header scope
+          headers.forEach(header => {
+            if (!header.hasAttribute('scope')) {
+              this.addResult('Tables', 'scope', 'Table header missing scope attribute', header, 'warning', true);
+            }
+          });
+        });
+      }
+      
+      async auditMediaAccessibility() {
+        const videos = document.querySelectorAll('video');
+        const audios = document.querySelectorAll('audio');
+        
+        videos.forEach(video => {
+          // Check for captions
+          const tracks = video.querySelectorAll('track[kind="captions"], track[kind="subtitles"]');
+          if (tracks.length === 0) {
+            this.addResult('Media', 'captions', 'Video missing captions/subtitles', video, 'warning');
+          }
+          
+          // Check for controls
+          if (!video.hasAttribute('controls')) {
+            this.addResult('Media', 'controls', 'Video missing controls attribute', video, 'error', true);
+          }
+        });
+        
+        audios.forEach(audio => {
+          if (!audio.hasAttribute('controls')) {
+            this.addResult('Media', 'controls', 'Audio missing controls attribute', audio, 'error', true);
+          }
+        });
+      }
+      
+      processAuditResults(duration) {
+        const errors = this.auditResults.filter(r => r.severity === 'error');
+        const warnings = this.auditResults.filter(r => r.severity === 'warning');
+        const info = this.auditResults.filter(r => r.severity === 'info');
+        
+        console.group(`🔍 Accessibility Audit Complete (${duration.toFixed(2)}ms)`);
+        console.log(`❌ Errors: ${errors.length}`);
+        console.log(`⚠️ Warnings: ${warnings.length}`);
+        console.log(`ℹ️ Info: ${info.length}`);
+        
+        // Group results by category
+        const categories = [...new Set(this.auditResults.map(r => r.category))];
+        
+        categories.forEach(category => {
+          const categoryResults = this.auditResults.filter(r => r.category === category);
+          if (categoryResults.length > 0) {
+            console.group(`📋 ${category} (${categoryResults.length} issues)`);
+            categoryResults.forEach(result => {
+              const icon = result.severity === 'error' ? '❌' : result.severity === 'warning' ? '⚠️' : 'ℹ️';
+              console.log(`${icon} ${result.message}`, result.element || '');
+            });
+            console.groupEnd();
+          }
+        });
+        
+        console.groupEnd();
+        
+        // Show visual summary
+        if (this.showResults) {
+          this.showAuditSummary(errors.length, warnings.length, info.length);
+        }
+        
+        // Auto-fix if enabled
+        if (this.autoFix) {
+          this.applyAutoFixes();
+        }
+        
+        // Trigger custom event
+        window.dispatchEvent(new CustomEvent('accessibility-audit-complete', {
+          detail: { 
+            results: this.auditResults, 
+            summary: { errors: errors.length, warnings: warnings.length, info: info.length },
+            duration 
+          }
+        }));
+      }
+      
+      showAuditSummary(errors, warnings, info) {
+        // Remove existing summary
+        const existing = document.getElementById('a11y-audit-summary');
+        if (existing) existing.remove();
+        
+        // Create summary element
+        const summary = document.createElement('div');
+        summary.id = 'a11y-audit-summary';
+        summary.style.cssText = `
+          position: fixed;
+          top: 50px;
+          left: 10px;
+          background: white;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 16px;
+          font-family: monospace;
+          font-size: 12px;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          max-width: 300px;
+        `;
+        
+        summary.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 8px; color: #1f2937;">
+            🔍 Accessibility Audit
+          </div>
+          <div style="color: #dc2626;">❌ Errors: ${errors}</div>
+          <div style="color: #d97706;">⚠️ Warnings: ${warnings}</div>
+          <div style="color: #059669;">ℹ️ Info: ${info}</div>
+          <div style="margin-top: 8px; font-size: 10px; color: #6b7280;">
+            Press Ctrl+Shift+U to run again
+          </div>
+        `;
+        
+        document.body.appendChild(summary);
+        
+        // Auto-hide after 15 seconds
+        setTimeout(() => {
+          if (summary.parentNode) {
+            summary.style.opacity = '0.3';
+          }
+        }, 15000);
+      }
+      
+      applyAutoFixes() {
+        const fixableResults = this.auditResults.filter(r => r.autoFixable);
+        let fixesApplied = 0;
+        
+        fixableResults.forEach(result => {
+          try {
+            if (this.applyFix(result)) {
+              fixesApplied++;
+            }
+          } catch (error) {
+            console.warn('Failed to apply auto-fix:', error);
+          }
+        });
+        
+        if (fixesApplied > 0) {
+          console.log(`🔧 Applied ${fixesApplied} automatic fixes`);
+        }
+      }
+      
+      applyFix(result) {
+        const { element, type } = result;
+        if (!element) return false;
+        
+        switch (type) {
+          case 'alt-text':
+            if (!element.hasAttribute('alt')) {
+              element.setAttribute('alt', '');
+              return true;
+            }
+            break;
+            
+          case 'labels':
+            if (element.tagName === 'INPUT' && !element.id) {
+              element.id = `input-${Date.now()}`;
+              const label = document.createElement('label');
+              label.setAttribute('for', element.id);
+              label.textContent = element.name || element.type || 'Input';
+              element.parentNode.insertBefore(label, element);
+              return true;
+            }
+            break;
+            
+          case 'href':
+            if (element.tagName === 'A' && !element.hasAttribute('href')) {
+              element.setAttribute('href', '#');
+              return true;
+            }
+            break;
+            
+          // Add more auto-fixes as needed
+        }
+        
+        return false;
+      }
+      
+      getElementSelector(element) {
+        if (element.id) return `#${element.id}`;
+        if (element.className) return `.${element.className.split(' ')[0]}`;
+        return element.tagName.toLowerCase();
+      }
+      
+      // Public API
+      getResults() {
+        return this.auditResults;
+      }
+      
+      getResultsByCategory(category) {
+        return this.auditResults.filter(r => r.category === category);
+      }
+      
+      getResultsBySeverity(severity) {
+        return this.auditResults.filter(r => r.severity === severity);
+      }
+    }
+    
+    // Initialize accessibility audit
+    window.accessibilityAudit = new AccessibilityAudit({
+      showResults,
+      autoFix
+    });
+    
+    // Expose audit functions
+    window.runAccessibilityAudit = () => window.accessibilityAudit.runFullAudit();
+    window.getAuditResults = () => window.accessibilityAudit.getResults();
+    
+    console.log('🔍 Accessibility audit initialized');
+    console.log('📋 Use runAccessibilityAudit() or Ctrl+Shift+U to run manual audit');
+  </script>
+)}
+
+<style>
+  /* Audit-specific styles */
+  #a11y-audit-summary {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Development mode indicators */
+  .a11y-issue {
+    position: relative;
+  }
+  
+  .a11y-issue::before {
+    content: "⚠️";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    z-index: 1000;
+  }
+</style>

@@ -2,49 +2,360 @@
 import "../styles/global.css";
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import PerformanceMonitor from './PerformanceMonitor.astro';
+import AccessibilityTester from './AccessibilityTester.astro';
+import AccessibilityAudit from './AccessibilityAudit.astro';
+import KeyboardNavigationTester from './KeyboardNavigationTester.astro';
+import SecurityEnhancer from './SecurityEnhancer.astro';
+import CrossBrowserTester from './CrossBrowserTester.astro';
+import SecurityEnhancements from './SecurityEnhancements.astro';
 
 export interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  canonical?: string;
+  noindex?: boolean;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  tags?: string[];
 }
 
-const { title = "Hackerspace Mumbai", description = "Mumbai's largest open source community" } = Astro.props;
+const { 
+  title = "Hackerspace Mumbai", 
+  description = "Mumbai's largest open source community",
+  image = "/social-preview.jpg",
+  canonical,
+  noindex = false,
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  author,
+  tags = []
+} = Astro.props;
+
+// Get the current URL for canonical and social sharing
+const currentUrl = canonical || Astro.url.href;
+const siteUrl = "https://hackmum.in";
+const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
+
+// Generate structured data for the organization
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Hackerspace Mumbai",
+  "alternateName": "HackMum",
+  "url": siteUrl,
+  "logo": `${siteUrl}/logo.png`,
+  "description": "Mumbai's largest open source community and longest-running tech meetup",
+  "foundingDate": "2018",
+  "location": {
+    "@type": "Place",
+    "name": "Mumbai, India",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Mumbai",
+      "addressCountry": "IN"
+    }
+  },
+  "sameAs": [
+    "https://twitter.com/hackmum",
+    "https://github.com/HackerspaceMumbai",
+    "https://linkedin.com/company/hackerspace-mumbai",
+    "https://discord.gg/hackmum",
+    "https://t.me/hackmum"
+  ]
+};
+
+// Generate page-specific structured data
+const pageSchema = type === 'article' ? {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "image": fullImageUrl,
+  "url": currentUrl,
+  "datePublished": publishedTime,
+  "dateModified": modifiedTime || publishedTime,
+  "author": {
+    "@type": "Person",
+    "name": author || "Hackerspace Mumbai"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hackerspace Mumbai",
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/logo.png`
+    }
+  }
+} : null;
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     
-    <!-- SEO and social sharing metadata -->
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Critical Resource Hints -->
+    <link rel="preload" href="/hero-background.jpg" as="image" type="image/jpeg" />
+    <link rel="preload" href="/social-preview.jpg" as="image" type="image/jpeg" />
+    
+    <!-- Font Optimization -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" /></noscript>
+    
+    <!-- SEO Meta Tags -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <meta name="robots" content="index, follow" />}
+    <meta name="author" content={author || "Hackerspace Mumbai"} />
+    {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
     
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://hackmum.in/" />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={currentUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/social-preview.jpg" />
+    <meta property="og:image" content={fullImageUrl} />
+    <meta property="og:image:alt" content={`${title} - Social Preview`} />
+    <meta property="og:site_name" content="Hackerspace Mumbai" />
+    <meta property="og:locale" content="en_US" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+    {author && <meta property="article:author" content={author} />}
+    {tags.map(tag => <meta property="article:tag" content={tag} />)}
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="http://hackmum.in/" />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content="/social-preview.jpg" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@hackmum" />
+    <meta name="twitter:creator" content="@hackmum" />
+    <meta name="twitter:url" content={currentUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageUrl} />
+    <meta name="twitter:image:alt" content={`${title} - Social Preview`} />
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#FFC107" />
+    <meta name="msapplication-TileColor" content="#FFC107" />
+    <meta name="application-name" content="Hackerspace Mumbai" />
+    <meta name="apple-mobile-web-app-title" content="HackMum" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), interest-cohort=()" />
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content={`
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      media-src 'self' https:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
+    `.replace(/\s+/g, ' ').trim()} />
+    
+    <!-- Security Headers (fallback for client-side) -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    {pageSchema && <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />}
+    
+    <!-- Core Web Vitals Monitoring -->
+    <script is:inline>
+      // Core Web Vitals monitoring
+      function sendToAnalytics(metric) {
+        // Replace with your analytics endpoint
+        if (typeof gtag !== 'undefined') {
+          gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            event_label: metric.id,
+            non_interaction: true,
+          });
+        }
+        
+        // Console logging for development
+        if (typeof console !== 'undefined' && console.log) {
+          console.log('Web Vital:', metric.name, Math.round(metric.value), metric.id);
+        }
+      }
+
+      // Load web-vitals library
+      (function() {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js';
+        script.onload = function() {
+          if (typeof webVitals !== 'undefined') {
+            webVitals.getCLS(sendToAnalytics);
+            webVitals.getFID(sendToAnalytics);
+            webVitals.getFCP(sendToAnalytics);
+            webVitals.getLCP(sendToAnalytics);
+            webVitals.getTTFB(sendToAnalytics);
+          }
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
+    
+    <!-- Performance Observer for additional metrics -->
+    <script is:inline>
+      // Additional performance monitoring
+      if ('PerformanceObserver' in window) {
+        // Monitor long tasks
+        try {
+          const longTaskObserver = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              if (entry.duration > 50) {
+                console.warn('Long task detected:', entry.duration + 'ms');
+                if (typeof gtag !== 'undefined') {
+                  gtag('event', 'long_task', {
+                    event_category: 'Performance',
+                    value: Math.round(entry.duration),
+                    non_interaction: true,
+                  });
+                }
+              }
+            }
+          });
+          longTaskObserver.observe({ entryTypes: ['longtask'] });
+        } catch (e) {
+          // Long task API not supported
+        }
+
+        // Monitor layout shifts
+        try {
+          const clsObserver = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              if (!entry.hadRecentInput && entry.value > 0.1) {
+                console.warn('Layout shift detected:', entry.value);
+              }
+            }
+          });
+          clsObserver.observe({ entryTypes: ['layout-shift'] });
+        } catch (e) {
+          // Layout shift API not supported
+        }
+      }
+    </script>
 
     <script is:inline>
+      // Optimized theme initialization to prevent FOUC
+      (function() {
+        const getThemePreference = () => {
+          if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme');
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        
+        const setTheme = (theme) => {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          document.documentElement.setAttribute('data-theme', theme);
+          
+          // Update meta theme-color for mobile browsers
+          const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+          if (themeColorMeta) {
+            themeColorMeta.setAttribute('content', theme === 'dark' ? '#1f2937' : '#FFC107');
+          }
+        };
+        
+        // Initialize theme immediately to prevent FOUC
+        const initialTheme = getThemePreference();
+        setTheme(initialTheme);
+        
+        // Defer non-critical theme management
+        if (typeof requestIdleCallback !== 'undefined') {
+          requestIdleCallback(() => {
+            if (typeof localStorage !== 'undefined') {
+              const observer = new MutationObserver(() => {
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+              });
+              observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+            }
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#navigation" class="skip-link">Skip to navigation</a>
+    
+    <div class="min-h-screen flex flex-col bg-base-100 text-base-content">
+      <!-- Header with proper semantic structure -->
+      <header class="sticky top-0 z-50" role="banner">
+        <div id="navigation">
+          <Header />
+        </div>
+      </header>
+      
+      <!-- Main content area with proper landmarks -->
+      <main id="main-content" class="flex-1" role="main" tabindex="-1">
+        <slot/>
+      </main>
+      
+      <!-- Footer with proper semantic structure -->
+      <footer role="contentinfo">
+        <Footer />
+      </footer>
+    </div>
+    
+    <!-- Enhanced theme script with better accessibility -->
+    <script is:inline>
+      // Theme management with accessibility considerations
       const getThemePreference = () => {
         if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
           return localStorage.getItem('theme');
         }
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       };
-      const isDark = getThemePreference() === 'dark';
-      document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-   
+      
+      const setTheme = (theme) => {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        // Update meta theme-color based on theme
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute('content', theme === 'dark' ? '#1f2937' : '#FFC107');
+        }
+      };
+      
+      // Initialize theme
+      const initialTheme = getThemePreference();
+      setTheme(initialTheme);
+      
+      // Save theme changes to localStorage
       if (typeof localStorage !== 'undefined') {
         const observer = new MutationObserver(() => {
           const isDark = document.documentElement.classList.contains('dark');
@@ -52,17 +363,101 @@ const { title = "Hackerspace Mumbai", description = "Mumbai's largest open sourc
         });
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
       }
+      
+      // Listen for system theme changes
+      if (typeof window !== 'undefined') {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+          }
+        });
+      }
     </script>
-  </head>
-  <body>
-    <div class="min-h-screen flex flex-col bg-base-100 text-base-content">
-      <div class="sticky top-0 z-50">
-        <Header />
-      </div>
-      <main class="flex-1">
-        <slot/>
-      </main>
-      <Footer />
-    </div>
+    
+    <!-- Browser Polyfills and Cross-Browser Fixes -->
+    <script src="/src/utils/browser-polyfills.js" is:inline></script>
+    
+    <!-- Service Worker Registration -->
+    <script is:inline>
+      // Register service worker for caching and offline functionality
+      if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('Service Worker registered:', registration.scope);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New content available, show update notification
+                    if (confirm('New content available! Reload to update?')) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+    
+    <!-- Performance Monitoring -->
+    <PerformanceMonitor 
+      enableConsoleLogging={import.meta.env.DEV}
+      enableAnalytics={!import.meta.env.DEV}
+    />
+    
+    <!-- Accessibility Testing Suite -->
+    <AccessibilityTester 
+      enableInDevelopment={import.meta.env.DEV}
+      enableInProduction={false}
+      logToConsole={import.meta.env.DEV}
+      runOnLoad={true}
+      runOnNavigation={true}
+    />
+    
+    <AccessibilityAudit 
+      enableInDevelopment={import.meta.env.DEV}
+      showResults={true}
+      autoFix={false}
+    />
+    
+    <KeyboardNavigationTester 
+      enableInDevelopment={import.meta.env.DEV}
+      highlightFocusPath={true}
+      showFocusOrder={true}
+    />
+    
+    <!-- Security Enhancements -->
+    <SecurityEnhancer 
+      enableCSRFProtection={true}
+      enableXSSProtection={true}
+      enableInputValidation={true}
+      enableSecureHeaders={true}
+      enableContentValidation={true}
+    />
+    
+    <CrossBrowserTester 
+      enableInDevelopment={import.meta.env.DEV}
+      enableInProduction={false}
+      logToConsole={import.meta.env.DEV}
+      testOnLoad={true}
+      testInteractions={true}
+    />
+    
+    <!-- Security Enhancements -->
+    <SecurityEnhancements 
+      enableCSP={true}
+      enableXSSProtection={true}
+      enableInputSanitization={true}
+      enableFormValidation={true}
+      enableSecureLinks={true}
+      logSecurityEvents={import.meta.env.DEV}
+    />
   </body>
 </html>

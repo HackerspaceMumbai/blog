@@ -1,0 +1,647 @@
+---
+// Keyboard navigation testing component
+export interface Props {
+  enableInDevelopment?: boolean;
+  highlightFocusPath?: boolean;
+  showFocusOrder?: boolean;
+}
+
+const {
+  enableInDevelopment = true,
+  highlightFocusPath = true,
+  showFocusOrder = true
+} = Astro.props;
+
+const isDevelopment = import.meta.env.DEV;
+const shouldRun = isDevelopment && enableInDevelopment;
+---
+
+{shouldRun && (
+  <script define:vars={{ highlightFocusPath, showFocusOrder }}>
+    // Keyboard Navigation Tester
+    class KeyboardNavigationTester {
+      constructor(options = {}) {
+        this.highlightFocusPath = options.highlightFocusPath ?? true;
+        this.showFocusOrder = options.showFocusOrder ?? true;
+        this.focusPath = [];
+        this.focusableElements = [];
+        this.currentFocusIndex = -1;
+        this.isTestingMode = false;
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupKeyboardListeners();
+        this.setupFocusTracking();
+        this.analyzeFocusableElements();
+        
+        // Expose testing functions
+        window.startKeyboardTest = () => this.startTest();
+        window.stopKeyboardTest = () => this.stopTest();
+        window.showFocusOrder = () => this.showFocusOrderVisually();
+        window.hideFocusOrder = () => this.hideFocusOrderVisually();
+        window.testTabOrder = () => this.testTabOrder();
+        
+        console.log('⌨️ Keyboard navigation tester initialized');
+        console.log('📋 Available commands:');
+        console.log('  - startKeyboardTest() - Start keyboard testing mode');
+        console.log('  - stopKeyboardTest() - Stop keyboard testing mode');
+        console.log('  - showFocusOrder() - Show focus order numbers');
+        console.log('  - testTabOrder() - Test tab order automatically');
+        console.log('  - Press F2 to toggle testing mode');
+      }
+      
+      setupKeyboardListeners() {
+        // F2 to toggle testing mode
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'F2') {
+            event.preventDefault();
+            this.toggleTestingMode();
+          }
+          
+          // Escape to stop testing
+          if (event.key === 'Escape' && this.isTestingMode) {
+            this.stopTest();
+          }
+          
+          // Track tab navigation during testing
+          if (this.isTestingMode && event.key === 'Tab') {
+            this.trackTabNavigation(event);
+          }
+        });
+      }
+      
+      setupFocusTracking() {
+        // Track focus changes
+        document.addEventListener('focusin', (event) => {
+          if (this.isTestingMode) {
+            this.onFocusChange(event.target);
+          }
+        });
+        
+        // Track focus loss
+        document.addEventListener('focusout', (event) => {
+          if (this.isTestingMode) {
+            this.onFocusLoss(event.target);
+          }
+        });
+      }
+      
+      analyzeFocusableElements() {
+        this.focusableElements = this.getFocusableElements();
+        
+        // Analyze each element
+        this.focusableElements.forEach((element, index) => {
+          this.analyzeElement(element, index);
+        });
+        
+        console.log(`🔍 Found ${this.focusableElements.length} focusable elements`);
+      }
+      
+      getFocusableElements() {
+        const selector = [
+          'a[href]',
+          'button:not([disabled])',
+          'input:not([disabled])',
+          'select:not([disabled])',
+          'textarea:not([disabled])',
+          '[tabindex]:not([tabindex="-1"])',
+          '[contenteditable="true"]',
+          'details summary',
+          'audio[controls]',
+          'video[controls]'
+        ].join(', ');
+        
+        return Array.from(document.querySelectorAll(selector))
+          .filter(element => this.isVisible(element) && !this.isInert(element))
+          .sort((a, b) => this.getTabIndex(a) - this.getTabIndex(b));
+      }
+      
+      isVisible(element) {
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        
+        return rect.width > 0 && 
+               rect.height > 0 && 
+               style.visibility !== 'hidden' && 
+               style.display !== 'none' &&
+               style.opacity !== '0';
+      }
+      
+      isInert(element) {
+        // Check if element is in an inert container
+        let parent = element.parentElement;
+        while (parent) {
+          if (parent.hasAttribute('inert') || 
+              parent.getAttribute('aria-hidden') === 'true') {
+            return true;
+          }
+          parent = parent.parentElement;
+        }
+        return false;
+      }
+      
+      getTabIndex(element) {
+        const tabindex = element.getAttribute('tabindex');
+        if (tabindex === null) return 0;
+        return parseInt(tabindex);
+      }
+      
+      analyzeElement(element, index) {
+        const issues = [];
+        
+        // Check tabindex
+        const tabindex = this.getTabIndex(element);
+        if (tabindex > 0) {
+          issues.push('Positive tabindex can disrupt natural tab order');
+        }
+        
+        // Check focus indicators
+        if (!this.hasFocusIndicator(element)) {
+          issues.push('Missing focus indicator');
+        }
+        
+        // Check accessible name
+        if (!this.hasAccessibleName(element)) {
+          issues.push('Missing accessible name');
+        }
+        
+        // Check touch target size
+        if (!this.hasAdequateTouchTarget(element)) {
+          issues.push('Touch target may be too small');
+        }
+        
+        // Store analysis results
+        element._keyboardTestData = {
+          index,
+          tabindex,
+          issues,
+          focusOrder: this.calculateFocusOrder(element, index)
+        };
+      }
+      
+      hasFocusIndicator(element) {
+        // Create a temporary clone to test focus styles
+        const clone = element.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '-9999px';
+        document.body.appendChild(clone);
+        
+        // Apply focus styles
+        clone.focus();
+        const focusStyle = window.getComputedStyle(clone);
+        
+        const hasFocus = focusStyle.outline !== 'none' ||
+                        focusStyle.boxShadow !== 'none' ||
+                        focusStyle.backgroundColor !== window.getComputedStyle(element).backgroundColor ||
+                        focusStyle.borderColor !== window.getComputedStyle(element).borderColor;
+        
+        document.body.removeChild(clone);
+        return hasFocus;
+      }
+      
+      hasAccessibleName(element) {
+        return element.getAttribute('aria-label') ||
+               element.getAttribute('aria-labelledby') ||
+               element.textContent.trim() ||
+               element.getAttribute('title') ||
+               (element.tagName === 'INPUT' && element.getAttribute('placeholder'));
+      }
+      
+      hasAdequateTouchTarget(element) {
+        const rect = element.getBoundingClientRect();
+        return rect.width >= 44 && rect.height >= 44;
+      }
+      
+      calculateFocusOrder(element, index) {
+        const tabindex = this.getTabIndex(element);
+        
+        if (tabindex > 0) {
+          return tabindex;
+        } else if (tabindex === 0) {
+          return 1000 + index; // Natural order after positive tabindex elements
+        } else {
+          return -1; // Not in tab order
+        }
+      }
+      
+      startTest() {
+        this.isTestingMode = true;
+        this.focusPath = [];
+        this.currentFocusIndex = -1;
+        
+        // Show testing indicator
+        this.showTestingIndicator();
+        
+        // Highlight focusable elements
+        if (this.highlightFocusPath) {
+          this.highlightFocusableElements();
+        }
+        
+        // Show focus order numbers
+        if (this.showFocusOrder) {
+          this.showFocusOrderVisually();
+        }
+        
+        console.log('⌨️ Keyboard testing mode started');
+        console.log('📋 Use Tab/Shift+Tab to navigate, Escape to stop');
+        
+        // Focus first element
+        if (this.focusableElements.length > 0) {
+          this.focusableElements[0].focus();
+        }
+      }
+      
+      stopTest() {
+        this.isTestingMode = false;
+        
+        // Remove visual indicators
+        this.hideTestingIndicator();
+        this.removeHighlights();
+        this.hideFocusOrderVisually();
+        
+        // Generate report
+        this.generateTestReport();
+        
+        console.log('⌨️ Keyboard testing mode stopped');
+      }
+      
+      toggleTestingMode() {
+        if (this.isTestingMode) {
+          this.stopTest();
+        } else {
+          this.startTest();
+        }
+      }
+      
+      trackTabNavigation(event) {
+        const activeElement = document.activeElement;
+        const currentIndex = this.focusableElements.indexOf(activeElement);
+        
+        if (currentIndex !== -1) {
+          this.focusPath.push({
+            element: activeElement,
+            index: currentIndex,
+            timestamp: Date.now(),
+            direction: event.shiftKey ? 'backward' : 'forward'
+          });
+          
+          this.currentFocusIndex = currentIndex;
+          this.updateFocusPathVisual();
+        }
+      }
+      
+      onFocusChange(element) {
+        // Highlight currently focused element
+        this.highlightCurrentFocus(element);
+        
+        // Check for focus traps
+        this.checkFocusTrap(element);
+        
+        // Announce focus change for screen readers
+        this.announceFocusChange(element);
+      }
+      
+      onFocusLoss(element) {
+        // Remove current focus highlight
+        this.removeCurrentFocusHighlight(element);
+      }
+      
+      highlightFocusableElements() {
+        this.focusableElements.forEach((element, index) => {
+          const highlight = document.createElement('div');
+          highlight.className = 'keyboard-test-highlight';
+          highlight.style.cssText = `
+            position: absolute;
+            border: 2px dashed #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            pointer-events: none;
+            z-index: 9998;
+            border-radius: 4px;
+          `;
+          
+          const rect = element.getBoundingClientRect();
+          highlight.style.left = (rect.left + window.scrollX - 2) + 'px';
+          highlight.style.top = (rect.top + window.scrollY - 2) + 'px';
+          highlight.style.width = (rect.width + 4) + 'px';
+          highlight.style.height = (rect.height + 4) + 'px';
+          
+          document.body.appendChild(highlight);
+        });
+      }
+      
+      showFocusOrderVisually() {
+        this.focusableElements.forEach((element, index) => {
+          const orderIndicator = document.createElement('div');
+          orderIndicator.className = 'focus-order-indicator';
+          orderIndicator.textContent = (index + 1).toString();
+          orderIndicator.style.cssText = `
+            position: absolute;
+            background: #ef4444;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 9999;
+            pointer-events: none;
+            font-family: monospace;
+          `;
+          
+          const rect = element.getBoundingClientRect();
+          orderIndicator.style.left = (rect.left + window.scrollX - 12) + 'px';
+          orderIndicator.style.top = (rect.top + window.scrollY - 12) + 'px';
+          
+          document.body.appendChild(orderIndicator);
+        });
+      }
+      
+      hideFocusOrderVisually() {
+        document.querySelectorAll('.focus-order-indicator').forEach(el => el.remove());
+      }
+      
+      highlightCurrentFocus(element) {
+        // Remove previous current focus highlight
+        document.querySelectorAll('.current-focus-highlight').forEach(el => el.remove());
+        
+        const highlight = document.createElement('div');
+        highlight.className = 'current-focus-highlight';
+        highlight.style.cssText = `
+          position: absolute;
+          border: 3px solid #10b981;
+          background: rgba(16, 185, 129, 0.2);
+          pointer-events: none;
+          z-index: 9999;
+          border-radius: 4px;
+          animation: pulse 1s infinite;
+        `;
+        
+        const rect = element.getBoundingClientRect();
+        highlight.style.left = (rect.left + window.scrollX - 3) + 'px';
+        highlight.style.top = (rect.top + window.scrollY - 3) + 'px';
+        highlight.style.width = (rect.width + 6) + 'px';
+        highlight.style.height = (rect.height + 6) + 'px';
+        
+        document.body.appendChild(highlight);
+      }
+      
+      removeCurrentFocusHighlight(element) {
+        document.querySelectorAll('.current-focus-highlight').forEach(el => el.remove());
+      }
+      
+      checkFocusTrap(element) {
+        // Check if focus is trapped in a modal or dialog
+        const modal = element.closest('[role="dialog"], [aria-modal="true"], .modal');
+        if (modal) {
+          const focusableInModal = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          if (focusableInModal.length === 0) {
+            console.warn('⚠️ Focus trap detected: Modal has no focusable elements');
+          }
+        }
+      }
+      
+      announceFocusChange(element) {
+        // Create announcement for screen readers
+        const announcement = this.getElementDescription(element);
+        this.announceToScreenReader(`Focused: ${announcement}`);
+      }
+      
+      getElementDescription(element) {
+        const tagName = element.tagName.toLowerCase();
+        const role = element.getAttribute('role');
+        const label = element.getAttribute('aria-label') || 
+                     element.textContent.trim() || 
+                     element.getAttribute('title') ||
+                     element.getAttribute('placeholder') ||
+                     'unlabeled element';
+        
+        return `${role || tagName} ${label}`;
+      }
+      
+      announceToScreenReader(message) {
+        // Create or update live region for announcements
+        let announcer = document.getElementById('keyboard-test-announcer');
+        if (!announcer) {
+          announcer = document.createElement('div');
+          announcer.id = 'keyboard-test-announcer';
+          announcer.setAttribute('aria-live', 'polite');
+          announcer.setAttribute('aria-atomic', 'true');
+          announcer.style.cssText = `
+            position: absolute;
+            left: -10000px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+          `;
+          document.body.appendChild(announcer);
+        }
+        
+        announcer.textContent = message;
+      }
+      
+      showTestingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.id = 'keyboard-testing-indicator';
+        indicator.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 4px;">⌨️ Keyboard Testing Mode</div>
+          <div style="font-size: 10px;">Tab/Shift+Tab to navigate • Escape to stop</div>
+        `;
+        indicator.style.cssText = `
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          background: #1f2937;
+          color: white;
+          padding: 12px;
+          border-radius: 8px;
+          font-family: monospace;
+          font-size: 12px;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          border: 2px solid #3b82f6;
+        `;
+        
+        document.body.appendChild(indicator);
+      }
+      
+      hideTestingIndicator() {
+        const indicator = document.getElementById('keyboard-testing-indicator');
+        if (indicator) indicator.remove();
+      }
+      
+      removeHighlights() {
+        document.querySelectorAll('.keyboard-test-highlight, .current-focus-highlight').forEach(el => el.remove());
+      }
+      
+      updateFocusPathVisual() {
+        // Update focus path visualization
+        const pathContainer = document.getElementById('focus-path-container');
+        if (pathContainer) {
+          pathContainer.innerHTML = this.focusPath.map((step, index) => 
+            `<div>${index + 1}. ${this.getElementDescription(step.element)} (${step.direction})</div>`
+          ).join('');
+        }
+      }
+      
+      async testTabOrder() {
+        console.log('🔍 Testing tab order automatically...');
+        
+        const issues = [];
+        let previousTabIndex = -1;
+        
+        for (let i = 0; i < this.focusableElements.length; i++) {
+          const element = this.focusableElements[i];
+          const tabIndex = this.getTabIndex(element);
+          
+          // Check for tab order issues
+          if (tabIndex > 0 && tabIndex <= previousTabIndex) {
+            issues.push({
+              element,
+              issue: 'Tab order disrupted by positive tabindex',
+              severity: 'warning'
+            });
+          }
+          
+          // Test actual focus
+          element.focus();
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          if (document.activeElement !== element) {
+            issues.push({
+              element,
+              issue: 'Element cannot receive focus',
+              severity: 'error'
+            });
+          }
+          
+          previousTabIndex = tabIndex;
+        }
+        
+        console.log(`✅ Tab order test complete. Found ${issues.length} issues.`);
+        issues.forEach(issue => {
+          console.warn(`⚠️ ${issue.issue}`, issue.element);
+        });
+        
+        return issues;
+      }
+      
+      generateTestReport() {
+        const report = {
+          totalElements: this.focusableElements.length,
+          focusPath: this.focusPath,
+          issues: [],
+          recommendations: []
+        };
+        
+        // Analyze focus path for issues
+        this.focusPath.forEach((step, index) => {
+          const element = step.element;
+          const testData = element._keyboardTestData;
+          
+          if (testData && testData.issues.length > 0) {
+            report.issues.push({
+              element: this.getElementDescription(element),
+              issues: testData.issues,
+              step: index + 1
+            });
+          }
+        });
+        
+        // Generate recommendations
+        if (report.issues.length > 0) {
+          report.recommendations.push('Fix focus indicator issues for better visibility');
+        }
+        
+        if (this.focusPath.some(step => this.getTabIndex(step.element) > 0)) {
+          report.recommendations.push('Avoid positive tabindex values to maintain natural tab order');
+        }
+        
+        console.group('📊 Keyboard Navigation Test Report');
+        console.log('Total focusable elements:', report.totalElements);
+        console.log('Focus path length:', report.focusPath.length);
+        console.log('Issues found:', report.issues.length);
+        
+        if (report.issues.length > 0) {
+          console.group('Issues:');
+          report.issues.forEach(issue => {
+            console.log(`Step ${issue.step}: ${issue.element}`, issue.issues);
+          });
+          console.groupEnd();
+        }
+        
+        if (report.recommendations.length > 0) {
+          console.group('Recommendations:');
+          report.recommendations.forEach(rec => console.log('•', rec));
+          console.groupEnd();
+        }
+        
+        console.groupEnd();
+        
+        return report;
+      }
+    }
+    
+    // Initialize keyboard navigation tester
+    window.keyboardTester = new KeyboardNavigationTester({
+      highlightFocusPath,
+      showFocusOrder
+    });
+    
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      .keyboard-test-highlight {
+        transition: all 0.2s ease;
+      }
+      
+      .current-focus-highlight {
+        animation: pulse 1s infinite;
+      }
+      
+      .focus-order-indicator {
+        transition: all 0.2s ease;
+      }
+      
+      .focus-order-indicator:hover {
+        transform: scale(1.2);
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+)}
+
+<style>
+  /* Keyboard testing specific styles */
+  .keyboard-test-highlight {
+    transition: all 0.2s ease;
+  }
+  
+  .current-focus-highlight {
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  /* Screen reader only announcements */
+  #keyboard-test-announcer {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+  }
+</style>

@@ -1,0 +1,730 @@
+---
+// Security enhancement component for input validation, XSS prevention, and CSRF protection
+export interface Props {
+  enableCSRFProtection?: boolean;
+  enableXSSProtection?: boolean;
+  enableInputValidation?: boolean;
+  enableSecureHeaders?: boolean;
+  enableContentValidation?: boolean;
+}
+
+const {
+  enableCSRFProtection = true,
+  enableXSSProtection = true,
+  enableInputValidation = true,
+  enableSecureHeaders = true,
+  enableContentValidation = true
+} = Astro.props;
+---
+
+<script define:vars={{ enableCSRFProtection, enableXSSProtection, enableInputValidation, enableSecureHeaders, enableContentValidation }}>
+  // Security Enhancement Suite
+  class SecurityEnhancer {
+    constructor(options = {}) {
+      this.enableCSRFProtection = options.enableCSRFProtection ?? true;
+      this.enableXSSProtection = options.enableXSSProtection ?? true;
+      this.enableInputValidation = options.enableInputValidation ?? true;
+      this.enableSecureHeaders = options.enableSecureHeaders ?? true;
+      this.enableContentValidation = options.enableContentValidation ?? true;
+      
+      this.csrfToken = null;
+      this.securityViolations = [];
+      
+      this.init();
+    }
+    
+    init() {
+      console.log('🔒 Security enhancements initialized');
+      
+      if (this.enableCSRFProtection) {
+        this.initCSRFProtection();
+      }
+      
+      if (this.enableXSSProtection) {
+        this.initXSSProtection();
+      }
+      
+      if (this.enableInputValidation) {
+        this.initInputValidation();
+      }
+      
+      if (this.enableSecureHeaders) {
+        this.validateSecureHeaders();
+      }
+      
+      if (this.enableContentValidation) {
+        this.initContentValidation();
+      }
+      
+      // Set up security monitoring
+      this.initSecurityMonitoring();
+      
+      // Expose security utilities
+      this.exposeSecurityAPI();
+    }
+    
+    // CSRF Protection
+    initCSRFProtection() {
+      this.generateCSRFToken();
+      this.protectForms();
+      this.validateCSRFOnSubmit();
+    }
+    
+    generateCSRFToken() {
+      // Generate a cryptographically secure random token
+      const array = new Uint8Array(32);
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        crypto.getRandomValues(array);
+        this.csrfToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+      } else {
+        // Fallback for older browsers
+        this.csrfToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      }
+      
+      // Store token in session storage
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('csrf_token', this.csrfToken);
+      }
+      
+      console.log('🛡️ CSRF token generated');
+    }
+    
+    protectForms() {
+      const forms = document.querySelectorAll('form');
+      
+      forms.forEach(form => {
+        // Skip forms that already have CSRF protection
+        if (form.querySelector('input[name="csrf_token"]')) {
+          return;
+        }
+        
+        // Add CSRF token to forms
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = this.csrfToken;
+        form.appendChild(csrfInput);
+        
+        console.log('🛡️ CSRF protection added to form:', form.id || form.className);
+      });
+    }
+    
+    validateCSRFOnSubmit() {
+      document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (form.tagName !== 'FORM') return;
+        
+        const csrfInput = form.querySelector('input[name="csrf_token"]');
+        if (!csrfInput) {
+          console.warn('🚨 Form submitted without CSRF token');
+          this.logSecurityViolation('csrf_missing', 'Form submitted without CSRF token', form);
+          return;
+        }
+        
+        const submittedToken = csrfInput.value;
+        const storedToken = sessionStorage.getItem('csrf_token');
+        
+        if (submittedToken !== storedToken) {
+          console.error('🚨 CSRF token mismatch detected');
+          this.logSecurityViolation('csrf_mismatch', 'CSRF token mismatch', form);
+          event.preventDefault();
+          this.showSecurityAlert('Security validation failed. Please refresh the page and try again.');
+          return false;
+        }
+        
+        console.log('✅ CSRF validation passed');
+      });
+    }
+    
+    // XSS Protection
+    initXSSProtection() {
+      this.sanitizeUserContent();
+      this.protectDynamicContent();
+      this.validateURLParameters();
+    }
+    
+    sanitizeUserContent() {
+      // Sanitize any user-generated content
+      const userContentElements = document.querySelectorAll('[data-user-content]');
+      
+      userContentElements.forEach(element => {
+        const originalContent = element.innerHTML;
+        const sanitizedContent = this.sanitizeHTML(originalContent);
+        
+        if (originalContent !== sanitizedContent) {
+          element.innerHTML = sanitizedContent;
+          console.log('🧹 User content sanitized:', element);
+          this.logSecurityViolation('xss_attempt', 'Potentially malicious content sanitized', element);
+        }
+      });
+    }
+    
+    sanitizeHTML(html) {
+      // Create a temporary element to parse HTML
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      // Remove script tags
+      const scripts = temp.querySelectorAll('script');
+      scripts.forEach(script => script.remove());
+      
+      // Remove event handlers
+      const allElements = temp.querySelectorAll('*');
+      allElements.forEach(element => {
+        // Remove all event handler attributes
+        Array.from(element.attributes).forEach(attr => {
+          if (attr.name.startsWith('on')) {
+            element.removeAttribute(attr.name);
+          }
+        });
+        
+        // Remove javascript: URLs
+        ['href', 'src', 'action'].forEach(attrName => {
+          const attrValue = element.getAttribute(attrName);
+          if (attrValue && attrValue.toLowerCase().startsWith('javascript:')) {
+            element.removeAttribute(attrName);
+          }
+        });
+      });
+      
+      return temp.innerHTML;
+    }
+    
+    protectDynamicContent() {
+      // Override innerHTML to sanitize content
+      const originalInnerHTML = Element.prototype.__lookupSetter__('innerHTML') || 
+                               Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').set;
+      
+      Object.defineProperty(Element.prototype, 'innerHTML', {
+        set: function(value) {
+          if (typeof value === 'string' && this.hasAttribute('data-sanitize')) {
+            value = window.securityEnhancer.sanitizeHTML(value);
+          }
+          originalInnerHTML.call(this, value);
+        },
+        get: function() {
+          return this.innerHTML;
+        }
+      });
+    }
+    
+    validateURLParameters() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      urlParams.forEach((value, key) => {
+        // Check for potential XSS in URL parameters
+        if (this.containsPotentialXSS(value)) {
+          console.warn('🚨 Potential XSS detected in URL parameter:', key, value);
+          this.logSecurityViolation('xss_url', `Potential XSS in URL parameter: ${key}`, null);
+          
+          // Remove the parameter from URL
+          urlParams.delete(key);
+          const newURL = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+          window.history.replaceState({}, '', newURL);
+        }
+      });
+    }
+    
+    containsPotentialXSS(input) {
+      const xssPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+        /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi,
+        /<embed\b[^>]*>/gi,
+        /expression\s*\(/gi,
+        /vbscript:/gi,
+        /data:text\/html/gi
+      ];
+      
+      return xssPatterns.some(pattern => pattern.test(input));
+    }
+    
+    // Input Validation
+    initInputValidation() {
+      this.validateFormInputs();
+      this.sanitizeFormData();
+      this.preventSQLInjection();
+    }
+    
+    validateFormInputs() {
+      document.addEventListener('input', (event) => {
+        const input = event.target;
+        if (input.tagName !== 'INPUT' && input.tagName !== 'TEXTAREA') return;
+        
+        this.validateInput(input);
+      });
+      
+      document.addEventListener('paste', (event) => {
+        const input = event.target;
+        if (input.tagName !== 'INPUT' && input.tagName !== 'TEXTAREA') return;
+        
+        // Validate pasted content
+        setTimeout(() => this.validateInput(input), 0);
+      });
+    }
+    
+    validateInput(input) {
+      const value = input.value;
+      const type = input.type || 'text';
+      
+      // Check for potential security issues
+      if (this.containsPotentialXSS(value)) {
+        console.warn('🚨 Potential XSS detected in input:', input.name || input.id);
+        this.logSecurityViolation('xss_input', 'Potential XSS in form input', input);
+        this.highlightSecurityIssue(input);
+      }
+      
+      // Type-specific validation
+      switch (type) {
+        case 'email':
+          this.validateEmail(input, value);
+          break;
+        case 'url':
+          this.validateURL(input, value);
+          break;
+        case 'tel':
+          this.validatePhone(input, value);
+          break;
+      }
+    }
+    
+    validateEmail(input, value) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailRegex.test(value)) {
+        this.showInputError(input, 'Please enter a valid email address');
+      } else {
+        this.clearInputError(input);
+      }
+    }
+    
+    validateURL(input, value) {
+      try {
+        if (value) {
+          const url = new URL(value);
+          // Check for suspicious protocols
+          if (!['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol)) {
+            this.showInputError(input, 'Invalid URL protocol');
+            this.logSecurityViolation('suspicious_url', `Suspicious URL protocol: ${url.protocol}`, input);
+          } else {
+            this.clearInputError(input);
+          }
+        }
+      } catch (error) {
+        if (value) {
+          this.showInputError(input, 'Please enter a valid URL');
+        }
+      }
+    }
+    
+    validatePhone(input, value) {
+      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+      if (value && !phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+        this.showInputError(input, 'Please enter a valid phone number');
+      } else {
+        this.clearInputError(input);
+      }
+    }
+    
+    sanitizeFormData() {
+      document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (form.tagName !== 'FORM') return;
+        
+        const formData = new FormData(form);
+        let hasSecurityIssues = false;
+        
+        for (const [key, value] of formData.entries()) {
+          if (typeof value === 'string') {
+            if (this.containsPotentialXSS(value)) {
+              console.warn('🚨 Potential XSS in form data:', key);
+              this.logSecurityViolation('xss_form', `Potential XSS in form field: ${key}`, form);
+              hasSecurityIssues = true;
+            }
+            
+            if (this.containsSQLInjection(value)) {
+              console.warn('🚨 Potential SQL injection in form data:', key);
+              this.logSecurityViolation('sql_injection', `Potential SQL injection in form field: ${key}`, form);
+              hasSecurityIssues = true;
+            }
+          }
+        }
+        
+        if (hasSecurityIssues) {
+          event.preventDefault();
+          this.showSecurityAlert('Security validation failed. Please check your input and try again.');
+          return false;
+        }
+      });
+    }
+    
+    preventSQLInjection() {
+      // This is client-side detection only - server-side validation is still required
+      const sqlPatterns = [
+        /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/gi,
+        /(\b(OR|AND)\s+\d+\s*=\s*\d+)/gi,
+        /(;|\-\-|\/\*|\*\/)/g,
+        /(\b(EXEC|EXECUTE)\s*\()/gi,
+        /(\b(SP_|XP_)\w+)/gi
+      ];
+      
+      this.sqlPatterns = sqlPatterns;
+    }
+    
+    containsSQLInjection(input) {
+      return this.sqlPatterns.some(pattern => pattern.test(input));
+    }
+    
+    // Security Headers Validation
+    validateSecureHeaders() {
+      // Check if security headers are properly set
+      const requiredHeaders = [
+        'X-Content-Type-Options',
+        'X-Frame-Options',
+        'X-XSS-Protection',
+        'Content-Security-Policy'
+      ];
+      
+      // This would typically be done server-side, but we can check meta tags
+      requiredHeaders.forEach(header => {
+        const metaTag = document.querySelector(`meta[http-equiv="${header}"]`);
+        if (!metaTag) {
+          console.warn(`🚨 Missing security header: ${header}`);
+          this.logSecurityViolation('missing_header', `Missing security header: ${header}`, null);
+        }
+      });
+    }
+    
+    // Content Validation
+    initContentValidation() {
+      this.validateExternalLinks();
+      this.validateImageSources();
+      this.validateScriptSources();
+    }
+    
+    validateExternalLinks() {
+      const externalLinks = document.querySelectorAll('a[href^="http"]:not([href*="' + window.location.hostname + '"])');
+      
+      externalLinks.forEach(link => {
+        // Ensure external links have proper security attributes
+        if (!link.hasAttribute('rel') || !link.rel.includes('noopener')) {
+          link.rel = (link.rel + ' noopener noreferrer').trim();
+          console.log('🔒 Added security attributes to external link:', link.href);
+        }
+        
+        // Check for suspicious domains
+        if (this.isSuspiciousDomain(link.hostname)) {
+          console.warn('🚨 Suspicious external link detected:', link.href);
+          this.logSecurityViolation('suspicious_link', `Suspicious external link: ${link.href}`, link);
+          this.highlightSecurityIssue(link);
+        }
+      });
+    }
+    
+    validateImageSources() {
+      const images = document.querySelectorAll('img');
+      
+      images.forEach(img => {
+        const src = img.src;
+        
+        // Check for data URLs that might contain malicious content
+        if (src.startsWith('data:') && !src.startsWith('data:image/')) {
+          console.warn('🚨 Suspicious data URL in image:', src.substring(0, 50) + '...');
+          this.logSecurityViolation('suspicious_data_url', 'Suspicious data URL in image', img);
+        }
+        
+        // Check for external image sources
+        if (src.startsWith('http') && !src.includes(window.location.hostname)) {
+          if (this.isSuspiciousDomain(new URL(src).hostname)) {
+            console.warn('🚨 Suspicious external image source:', src);
+            this.logSecurityViolation('suspicious_image', `Suspicious external image: ${src}`, img);
+          }
+        }
+      });
+    }
+    
+    validateScriptSources() {
+      const scripts = document.querySelectorAll('script[src]');
+      
+      scripts.forEach(script => {
+        const src = script.src;
+        
+        if (src.startsWith('http') && !src.includes(window.location.hostname)) {
+          if (this.isSuspiciousDomain(new URL(src).hostname)) {
+            console.warn('🚨 Suspicious external script source:', src);
+            this.logSecurityViolation('suspicious_script', `Suspicious external script: ${src}`, script);
+          }
+          
+          // Check for integrity attribute on external scripts
+          if (!script.hasAttribute('integrity')) {
+            console.warn('🚨 External script missing integrity check:', src);
+            this.logSecurityViolation('missing_integrity', `External script missing integrity: ${src}`, script);
+          }
+        }
+      });
+    }
+    
+    isSuspiciousDomain(hostname) {
+      // List of known suspicious patterns (this would be more comprehensive in production)
+      const suspiciousPatterns = [
+        /\d+\.\d+\.\d+\.\d+/, // IP addresses
+        /[a-z0-9]{20,}\./, // Very long random subdomains
+        /\.(tk|ml|ga|cf)$/, // Suspicious TLDs
+        /bit\.ly|tinyurl|t\.co/, // URL shorteners (could be legitimate but worth flagging)
+      ];
+      
+      return suspiciousPatterns.some(pattern => pattern.test(hostname));
+    }
+    
+    // Security Monitoring
+    initSecurityMonitoring() {
+      // Monitor for security violations
+      this.setupViolationReporting();
+      
+      // Monitor for suspicious activity
+      this.monitorSuspiciousActivity();
+      
+      // Set up periodic security checks
+      setInterval(() => this.performSecurityCheck(), 60000); // Every minute
+    }
+    
+    setupViolationReporting() {
+      // Listen for CSP violations
+      document.addEventListener('securitypolicyviolation', (event) => {
+        console.error('🚨 CSP Violation:', event);
+        this.logSecurityViolation('csp_violation', `CSP violation: ${event.violatedDirective}`, null, {
+          blockedURI: event.blockedURI,
+          violatedDirective: event.violatedDirective,
+          originalPolicy: event.originalPolicy
+        });
+      });
+    }
+    
+    monitorSuspiciousActivity() {
+      let rapidClickCount = 0;
+      let lastClickTime = 0;
+      
+      document.addEventListener('click', (event) => {
+        const now = Date.now();
+        
+        // Detect rapid clicking (potential bot activity)
+        if (now - lastClickTime < 100) {
+          rapidClickCount++;
+          if (rapidClickCount > 10) {
+            console.warn('🚨 Suspicious rapid clicking detected');
+            this.logSecurityViolation('suspicious_activity', 'Rapid clicking detected', event.target);
+            rapidClickCount = 0;
+          }
+        } else {
+          rapidClickCount = 0;
+        }
+        
+        lastClickTime = now;
+      });
+      
+      // Monitor for console access (potential developer tools usage)
+      let devtools = {open: false, orientation: null};
+      const threshold = 160;
+      
+      setInterval(() => {
+        if (window.outerHeight - window.innerHeight > threshold || 
+            window.outerWidth - window.innerWidth > threshold) {
+          if (!devtools.open) {
+            devtools.open = true;
+            console.warn('🚨 Developer tools opened');
+            this.logSecurityViolation('devtools_open', 'Developer tools opened', null);
+          }
+        } else {
+          devtools.open = false;
+        }
+      }, 500);
+    }
+    
+    performSecurityCheck() {
+      // Check for new forms that need CSRF protection
+      if (this.enableCSRFProtection) {
+        this.protectForms();
+      }
+      
+      // Check for new external links
+      if (this.enableContentValidation) {
+        this.validateExternalLinks();
+      }
+      
+      // Validate current page content
+      this.validateCurrentPageSecurity();
+    }
+    
+    validateCurrentPageSecurity() {
+      // Check for inline scripts
+      const inlineScripts = document.querySelectorAll('script:not([src])');
+      if (inlineScripts.length > 0) {
+        console.warn('🚨 Inline scripts detected (potential CSP violation)');
+      }
+      
+      // Check for eval usage
+      if (typeof window.eval !== 'undefined') {
+        console.warn('🚨 eval() function available (potential security risk)');
+      }
+    }
+    
+    // Utility Methods
+    logSecurityViolation(type, message, element, details = {}) {
+      const violation = {
+        type,
+        message,
+        element: element ? this.getElementSelector(element) : null,
+        timestamp: new Date().toISOString(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        details
+      };
+      
+      this.securityViolations.push(violation);
+      
+      // Send to security monitoring service (if configured)
+      this.reportSecurityViolation(violation);
+    }
+    
+    reportSecurityViolation(violation) {
+      // This would typically send to a security monitoring service
+      console.warn('🚨 Security Violation Logged:', violation);
+      
+      // Trigger custom event for external monitoring
+      window.dispatchEvent(new CustomEvent('security-violation', {
+        detail: violation
+      }));
+    }
+    
+    getElementSelector(element) {
+      if (element.id) return `#${element.id}`;
+      if (element.className) return `.${element.className.split(' ')[0]}`;
+      return element.tagName.toLowerCase();
+    }
+    
+    highlightSecurityIssue(element) {
+      element.style.outline = '2px solid #ef4444';
+      element.style.outlineOffset = '2px';
+      element.setAttribute('data-security-issue', 'true');
+      
+      setTimeout(() => {
+        element.style.outline = '';
+        element.style.outlineOffset = '';
+        element.removeAttribute('data-security-issue');
+      }, 5000);
+    }
+    
+    showInputError(input, message) {
+      // Remove existing error
+      this.clearInputError(input);
+      
+      // Create error element
+      const error = document.createElement('div');
+      error.className = 'security-input-error';
+      error.textContent = message;
+      error.style.cssText = `
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+      `;
+      
+      input.parentNode.insertBefore(error, input.nextSibling);
+      input.style.borderColor = '#ef4444';
+    }
+    
+    clearInputError(input) {
+      const error = input.parentNode.querySelector('.security-input-error');
+      if (error) {
+        error.remove();
+      }
+      input.style.borderColor = '';
+    }
+    
+    showSecurityAlert(message) {
+      // Create security alert modal
+      const alert = document.createElement('div');
+      alert.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      `;
+      
+      alert.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
+          <h3 style="color: #ef4444; margin-bottom: 1rem;">🚨 Security Alert</h3>
+          <p style="margin-bottom: 1.5rem;">${message}</p>
+          <button onclick="this.closest('div').parentNode.remove()" 
+                  style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+            OK
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(alert);
+    }
+    
+    // Public API
+    exposeSecurityAPI() {
+      window.securityEnhancer = this;
+      window.getSecurityViolations = () => this.securityViolations;
+      window.validateSecurity = () => this.performSecurityCheck();
+      window.sanitizeHTML = (html) => this.sanitizeHTML(html);
+      window.generateCSRFToken = () => this.generateCSRFToken();
+      
+      console.log('🔒 Security API exposed:');
+      console.log('  - getSecurityViolations() - Get logged security violations');
+      console.log('  - validateSecurity() - Run security check');
+      console.log('  - sanitizeHTML(html) - Sanitize HTML content');
+      console.log('  - generateCSRFToken() - Generate new CSRF token');
+    }
+  }
+  
+  // Initialize security enhancer
+  const securityEnhancer = new SecurityEnhancer({
+    enableCSRFProtection,
+    enableXSSProtection,
+    enableInputValidation,
+    enableSecureHeaders,
+    enableContentValidation
+  });
+</script>
+
+<style>
+  /* Security-related styles */
+  [data-security-issue="true"] {
+    animation: security-pulse 2s infinite;
+  }
+  
+  @keyframes security-pulse {
+    0%, 100% { outline-color: #ef4444; }
+    50% { outline-color: #f87171; }
+  }
+  
+  .security-input-error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+  
+  /* Hide security violations from screen readers unless focused */
+  [data-security-issue="true"]:not(:focus) {
+    speak: none;
+  }
+  
+  /* High contrast mode support for security indicators */
+  @media (prefers-contrast: high) {
+    [data-security-issue="true"] {
+      outline-width: 3px !important;
+    }
+  }
+</style>

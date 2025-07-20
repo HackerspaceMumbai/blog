@@ -1,0 +1,183 @@
+---
+export interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  sizes?: string;
+  srcset?: string;
+  placeholder?: string;
+  aspectRatio?: '16-9' | '4-3' | '1-1' | 'auto';
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className = '',
+  loading = 'lazy',
+  decoding = 'async',
+  sizes,
+  srcset,
+  placeholder = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOWNhM2FmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+TG9hZGluZy4uLjwvdGV4dD48L3N2Zz4=',
+  aspectRatio = 'auto'
+} = Astro.props;
+
+// Generate responsive image attributes
+const imgAttributes = {
+  src,
+  alt,
+  loading,
+  decoding,
+  ...(width && { width }),
+  ...(height && { height }),
+  ...(sizes && { sizes }),
+  ...(srcset && { srcset })
+};
+
+// Generate container classes
+const containerClasses = [
+  'img-container',
+  aspectRatio !== 'auto' && `aspect-${aspectRatio}`,
+  className
+].filter(Boolean).join(' ');
+---
+
+<div class={containerClasses}>
+  <img
+    {...imgAttributes}
+    class="img-optimized img-lazy"
+    data-placeholder={placeholder}
+    onload="this.classList.add('loaded')"
+    onerror="this.src=this.dataset.placeholder; this.classList.add('loaded')"
+  />
+</div>
+
+<script>
+  // Enhanced lazy loading with Intersection Observer
+  document.addEventListener('DOMContentLoaded', function() {
+    const lazyImages = document.querySelectorAll('.img-lazy');
+    
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            
+            // Create a new image to preload
+            const newImg = new Image();
+            newImg.onload = () => {
+              img.src = newImg.src;
+              img.classList.add('loaded');
+            };
+            newImg.onerror = () => {
+              img.src = img.dataset.placeholder;
+              img.classList.add('loaded');
+            };
+            
+            // Start loading the actual image
+            newImg.src = img.dataset.src || img.src;
+            
+            observer.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '50px 0px',
+        threshold: 0.01
+      });
+
+      lazyImages.forEach(img => {
+        // Set placeholder initially
+        if (img.dataset.placeholder && !img.src.startsWith('data:')) {
+          img.dataset.src = img.src;
+          img.src = img.dataset.placeholder;
+        }
+        imageObserver.observe(img);
+      });
+    } else {
+      // Fallback for browsers without Intersection Observer
+      lazyImages.forEach(img => {
+        img.classList.add('loaded');
+      });
+    }
+  });
+</script>
+
+<style>
+  .img-container {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-base-200);
+  }
+  
+  .img-container.aspect-16-9::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+  }
+  
+  .img-container.aspect-4-3::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%;
+  }
+  
+  .img-container.aspect-1-1::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+  }
+  
+  .img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .img-lazy {
+    opacity: 0;
+  }
+  
+  .img-lazy.loaded {
+    opacity: 1;
+  }
+  
+  /* Loading animation */
+  .img-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--color-base-300);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .img-container:has(.loaded)::after {
+    opacity: 0;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>

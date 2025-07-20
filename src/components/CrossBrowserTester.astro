@@ -1,0 +1,982 @@
+---
+// Cross-browser mobile testing component
+export interface Props {
+  enableInDevelopment?: boolean;
+  enableInProduction?: boolean;
+  logToConsole?: boolean;
+  reportToEndpoint?: string;
+  testOnLoad?: boolean;
+  testInteractions?: boolean;
+}
+
+const {
+  enableInDevelopment = true,
+  enableInProduction = false,
+  logToConsole = true,
+  reportToEndpoint,
+  testOnLoad = true,
+  testInteractions = true
+} = Astro.props;
+
+const isDevelopment = import.meta.env.DEV;
+const shouldRun = (isDevelopment && enableInDevelopment) || (!isDevelopment && enableInProduction);
+---
+
+{shouldRun && (
+  <script define:vars={{ logToConsole, reportToEndpoint, testOnLoad, testInteractions, isDevelopment }}>
+    // Cross-Browser Mobile Testing Suite
+    class CrossBrowserTester {
+      constructor(options = {}) {
+        this.logToConsole = options.logToConsole ?? true;
+        this.reportToEndpoint = options.reportToEndpoint;
+        this.testOnLoad = options.testOnLoad ?? true;
+        this.testInteractions = options.testInteractions ?? true;
+        this.isDevelopment = options.isDevelopment ?? false;
+        
+        this.browserInfo = this.detectBrowser();
+        this.deviceInfo = this.detectDevice();
+        this.testResults = [];
+        this.issues = [];
+        
+        this.init();
+      }
+      
+      init() {
+        if (this.logToConsole) {
+          console.log('🌐 Cross-browser mobile testing initialized');
+          console.log('📱 Device:', this.deviceInfo);
+          console.log('🔍 Browser:', this.browserInfo);
+        }
+        
+        // Run tests when DOM is ready
+        if (this.testOnLoad) {
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.runAllTests());
+          } else {
+            this.runAllTests();
+          }
+        }
+        
+        // Set up interaction testing
+        if (this.testInteractions) {
+          this.setupInteractionTesting();
+        }
+        
+        // Expose testing functions
+        window.runCrossBrowserTests = () => this.runAllTests();
+        window.getBrowserInfo = () => ({ browser: this.browserInfo, device: this.deviceInfo });
+        window.getCrossBrowserIssues = () => this.issues;
+      }
+      
+      detectBrowser() {
+        const ua = navigator.userAgent;
+        const vendor = navigator.vendor || '';
+        
+        // Detect browser engine and version
+        let browser = {
+          name: 'unknown',
+          version: 'unknown',
+          engine: 'unknown',
+          mobile: /Mobi|Android/i.test(ua),
+          ios: /iPad|iPhone|iPod/.test(ua),
+          android: /Android/.test(ua),
+          webkit: /WebKit/.test(ua),
+          blink: /Chrome/.test(ua) && /WebKit/.test(ua),
+          gecko: /Gecko/.test(ua) && !/WebKit/.test(ua)
+        };
+        
+        // Chrome/Chromium
+        if (/Chrome/.test(ua) && /Google Inc/.test(vendor)) {
+          browser.name = 'chrome';
+          browser.version = ua.match(/Chrome\/(\d+)/)?.[1] || 'unknown';
+          browser.engine = 'blink';
+        }
+        // Safari
+        else if (/Safari/.test(ua) && /Apple Computer/.test(vendor)) {
+          browser.name = 'safari';
+          browser.version = ua.match(/Version\/(\d+)/)?.[1] || 'unknown';
+          browser.engine = 'webkit';
+        }
+        // Firefox
+        else if (/Firefox/.test(ua)) {
+          browser.name = 'firefox';
+          browser.version = ua.match(/Firefox\/(\d+)/)?.[1] || 'unknown';
+          browser.engine = 'gecko';
+        }
+        // Edge
+        else if (/Edg/.test(ua)) {
+          browser.name = 'edge';
+          browser.version = ua.match(/Edg\/(\d+)/)?.[1] || 'unknown';
+          browser.engine = 'blink';
+        }
+        // Samsung Internet
+        else if (/SamsungBrowser/.test(ua)) {
+          browser.name = 'samsung';
+          browser.version = ua.match(/SamsungBrowser\/(\d+)/)?.[1] || 'unknown';
+          browser.engine = 'blink';
+        }
+        
+        return browser;
+      }
+      
+      detectDevice() {
+        const ua = navigator.userAgent;
+        
+        return {
+          mobile: /Mobi|Android/i.test(ua),
+          tablet: /iPad|Android(?!.*Mobile)/i.test(ua),
+          ios: /iPad|iPhone|iPod/.test(ua),
+          android: /Android/.test(ua),
+          iphone: /iPhone/.test(ua),
+          ipad: /iPad/.test(ua),
+          touchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+          pixelRatio: window.devicePixelRatio || 1,
+          orientation: window.screen.orientation?.type || 'unknown'
+        };
+      }
+      
+      async runAllTests() {
+        console.log('🧪 Running cross-browser mobile tests...');
+        const startTime = performance.now();
+        
+        this.testResults = [];
+        this.issues = [];
+        
+        // Run all test categories
+        await Promise.all([
+          this.testViewportHandling(),
+          this.testTouchInteractions(),
+          this.testCSSSupport(),
+          this.testJavaScriptAPIs(),
+          this.testLayoutRendering(),
+          this.testPerformanceAPIs(),
+          this.testMediaQueries(),
+          this.testFormElements(),
+          this.testScrollBehavior(),
+          this.testOrientationHandling()
+        ]);
+        
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        // Process results
+        this.processTestResults(duration);
+        
+        return {
+          browser: this.browserInfo,
+          device: this.deviceInfo,
+          results: this.testResults,
+          issues: this.issues,
+          duration
+        };
+      }
+      
+      async testViewportHandling() {
+        const tests = [];
+        
+        // Test viewport meta tag effectiveness
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        if (!viewportMeta) {
+          this.addIssue('viewport', 'Missing viewport meta tag', 'critical');
+        } else {
+          const content = viewportMeta.getAttribute('content');
+          if (!content.includes('width=device-width')) {
+            this.addIssue('viewport', 'Viewport meta tag missing width=device-width', 'high');
+          }
+          if (!content.includes('initial-scale=1')) {
+            this.addIssue('viewport', 'Viewport meta tag missing initial-scale=1', 'medium');
+          }
+        }
+        
+        // Test zoom behavior
+        const isZoomDisabled = viewportMeta?.getAttribute('content')?.includes('user-scalable=no');
+        if (isZoomDisabled) {
+          this.addIssue('viewport', 'Zoom is disabled - accessibility concern', 'medium');
+        }
+        
+        // Test viewport units support
+        const testElement = document.createElement('div');
+        testElement.style.height = '1vh';
+        document.body.appendChild(testElement);
+        const vhSupported = testElement.offsetHeight > 0;
+        document.body.removeChild(testElement);
+        
+        if (!vhSupported) {
+          this.addIssue('viewport', 'Viewport units (vh/vw) not supported', 'medium');
+        }
+        
+        this.addTestResult('viewport', 'Viewport handling tests', tests);
+      }
+      
+      async testTouchInteractions() {
+        const tests = [];
+        
+        // Test touch event support
+        const touchSupported = 'ontouchstart' in window;
+        tests.push({ name: 'Touch events supported', passed: touchSupported });
+        
+        if (!touchSupported && this.deviceInfo.mobile) {
+          this.addIssue('touch', 'Touch events not supported on mobile device', 'high');
+        }
+        
+        // Test touch target sizes
+        const interactiveElements = document.querySelectorAll('button, a, input, select, textarea, [onclick], [role="button"]');
+        let smallTargets = 0;
+        
+        interactiveElements.forEach(element => {
+          const rect = element.getBoundingClientRect();
+          const minSize = 44; // WCAG recommendation
+          
+          if (rect.width < minSize || rect.height < minSize) {
+            smallTargets++;
+          }
+        });
+        
+        if (smallTargets > 0) {
+          this.addIssue('touch', `${smallTargets} touch targets smaller than 44px`, 'medium');
+        }
+        
+        tests.push({ name: 'Touch target sizes adequate', passed: smallTargets === 0 });
+        
+        // Test pointer events support
+        const pointerSupported = 'onpointerdown' in window;
+        tests.push({ name: 'Pointer events supported', passed: pointerSupported });
+        
+        this.addTestResult('touch', 'Touch interaction tests', tests);
+      }
+      
+      async testCSSSupport() {
+        const tests = [];
+        
+        // Test CSS features
+        const cssFeatures = {
+          'CSS Grid': CSS.supports('display', 'grid'),
+          'CSS Flexbox': CSS.supports('display', 'flex'),
+          'CSS Custom Properties': CSS.supports('color', 'var(--test)'),
+          'CSS Transforms': CSS.supports('transform', 'translateX(1px)'),
+          'CSS Transitions': CSS.supports('transition', 'all 1s'),
+          'CSS Animations': CSS.supports('animation', 'test 1s'),
+          'CSS Calc': CSS.supports('width', 'calc(100% - 10px)'),
+          'CSS Object Fit': CSS.supports('object-fit', 'cover'),
+          'CSS Backdrop Filter': CSS.supports('backdrop-filter', 'blur(10px)'),
+          'CSS Container Queries': CSS.supports('container-type', 'inline-size')
+        };
+        
+        Object.entries(cssFeatures).forEach(([feature, supported]) => {
+          tests.push({ name: feature, passed: supported });
+          
+          if (!supported) {
+            const severity = this.getCSSFeatureSeverity(feature);
+            this.addIssue('css', `${feature} not supported`, severity);
+          }
+        });
+        
+        // Test vendor prefix requirements
+        const prefixTests = this.testVendorPrefixes();
+        tests.push(...prefixTests);
+        
+        this.addTestResult('css', 'CSS support tests', tests);
+      }
+      
+      getCSSFeatureSeverity(feature) {
+        const critical = ['CSS Grid', 'CSS Flexbox'];
+        const high = ['CSS Custom Properties', 'CSS Transforms'];
+        const medium = ['CSS Transitions', 'CSS Animations', 'CSS Calc'];
+        
+        if (critical.includes(feature)) return 'critical';
+        if (high.includes(feature)) return 'high';
+        if (medium.includes(feature)) return 'medium';
+        return 'low';
+      }
+      
+      testVendorPrefixes() {
+        const tests = [];
+        const testElement = document.createElement('div');
+        document.body.appendChild(testElement);
+        
+        // Test transform prefixes
+        const transformPrefixes = ['transform', '-webkit-transform', '-moz-transform', '-ms-transform'];
+        let transformSupported = false;
+        
+        transformPrefixes.forEach(prefix => {
+          testElement.style[prefix] = 'translateX(1px)';
+          if (testElement.style[prefix]) {
+            transformSupported = true;
+          }
+        });
+        
+        tests.push({ name: 'CSS Transform (with prefixes)', passed: transformSupported });
+        
+        document.body.removeChild(testElement);
+        return tests;
+      }
+      
+      async testJavaScriptAPIs() {
+        const tests = [];
+        
+        // Test essential APIs
+        const apis = {
+          'Fetch API': typeof fetch !== 'undefined',
+          'Promise': typeof Promise !== 'undefined',
+          'Array.from': typeof Array.from !== 'undefined',
+          'Object.assign': typeof Object.assign !== 'undefined',
+          'addEventListener': typeof document.addEventListener !== 'undefined',
+          'querySelector': typeof document.querySelector !== 'undefined',
+          'localStorage': typeof localStorage !== 'undefined',
+          'sessionStorage': typeof sessionStorage !== 'undefined',
+          'JSON': typeof JSON !== 'undefined',
+          'console': typeof console !== 'undefined'
+        };
+        
+        Object.entries(apis).forEach(([api, supported]) => {
+          tests.push({ name: api, passed: supported });
+          
+          if (!supported) {
+            const severity = this.getAPISeverity(api);
+            this.addIssue('javascript', `${api} not supported`, severity);
+          }
+        });
+        
+        // Test modern JavaScript features
+        const modernFeatures = this.testModernJavaScript();
+        tests.push(...modernFeatures);
+        
+        this.addTestResult('javascript', 'JavaScript API tests', tests);
+      }
+      
+      getAPISeverity(api) {
+        const critical = ['addEventListener', 'querySelector', 'JSON'];
+        const high = ['Fetch API', 'Promise', 'localStorage'];
+        const medium = ['Array.from', 'Object.assign'];
+        
+        if (critical.includes(api)) return 'critical';
+        if (high.includes(api)) return 'high';
+        if (medium.includes(api)) return 'medium';
+        return 'low';
+      }
+      
+      testModernJavaScript() {
+        const tests = [];
+        
+        try {
+          // Test arrow functions
+          const arrowTest = () => true;
+          tests.push({ name: 'Arrow functions', passed: true });
+        } catch (e) {
+          tests.push({ name: 'Arrow functions', passed: false });
+          this.addIssue('javascript', 'Arrow functions not supported', 'medium');
+        }
+        
+        try {
+          // Test const/let
+          const constTest = 'test';
+          let letTest = 'test';
+          tests.push({ name: 'const/let declarations', passed: true });
+        } catch (e) {
+          tests.push({ name: 'const/let declarations', passed: false });
+          this.addIssue('javascript', 'const/let not supported', 'high');
+        }
+        
+        try {
+          // Test template literals
+          const templateTest = `template ${1 + 1}`;
+          tests.push({ name: 'Template literals', passed: true });
+        } catch (e) {
+          tests.push({ name: 'Template literals', passed: false });
+          this.addIssue('javascript', 'Template literals not supported', 'medium');
+        }
+        
+        return tests;
+      }
+      
+      async testLayoutRendering() {
+        const tests = [];
+        
+        // Test flexbox rendering
+        const flexTest = this.createLayoutTest('flex');
+        tests.push({ name: 'Flexbox rendering', passed: flexTest });
+        
+        // Test grid rendering
+        const gridTest = this.createLayoutTest('grid');
+        tests.push({ name: 'CSS Grid rendering', passed: gridTest });
+        
+        // Test position sticky
+        const stickyTest = this.testStickyPositioning();
+        tests.push({ name: 'Position sticky', passed: stickyTest });
+        
+        // Test z-index stacking
+        const stackingTest = this.testZIndexStacking();
+        tests.push({ name: 'Z-index stacking', passed: stackingTest });
+        
+        this.addTestResult('layout', 'Layout rendering tests', tests);
+      }
+      
+      createLayoutTest(displayType) {
+        const container = document.createElement('div');
+        container.style.display = displayType;
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        
+        const child = document.createElement('div');
+        container.appendChild(child);
+        document.body.appendChild(container);
+        
+        const computedStyle = window.getComputedStyle(container);
+        const works = computedStyle.display === displayType;
+        
+        document.body.removeChild(container);
+        return works;
+      }
+      
+      testStickyPositioning() {
+        const element = document.createElement('div');
+        element.style.position = 'sticky';
+        element.style.position = '-webkit-sticky';
+        element.style.left = '-9999px';
+        document.body.appendChild(element);
+        
+        const computedStyle = window.getComputedStyle(element);
+        const works = computedStyle.position === 'sticky' || computedStyle.position === '-webkit-sticky';
+        
+        document.body.removeChild(element);
+        return works;
+      }
+      
+      testZIndexStacking() {
+        // Simple test for z-index support
+        const element = document.createElement('div');
+        element.style.zIndex = '999';
+        element.style.position = 'relative';
+        element.style.left = '-9999px';
+        document.body.appendChild(element);
+        
+        const computedStyle = window.getComputedStyle(element);
+        const works = computedStyle.zIndex === '999';
+        
+        document.body.removeChild(element);
+        return works;
+      }
+      
+      async testPerformanceAPIs() {
+        const tests = [];
+        
+        // Test Performance API
+        const perfSupported = typeof performance !== 'undefined';
+        tests.push({ name: 'Performance API', passed: perfSupported });
+        
+        if (!perfSupported) {
+          this.addIssue('performance', 'Performance API not supported', 'medium');
+        }
+        
+        // Test Intersection Observer
+        const ioSupported = 'IntersectionObserver' in window;
+        tests.push({ name: 'Intersection Observer', passed: ioSupported });
+        
+        if (!ioSupported) {
+          this.addIssue('performance', 'Intersection Observer not supported', 'medium');
+        }
+        
+        // Test requestAnimationFrame
+        const rafSupported = typeof requestAnimationFrame !== 'undefined';
+        tests.push({ name: 'requestAnimationFrame', passed: rafSupported });
+        
+        if (!rafSupported) {
+          this.addIssue('performance', 'requestAnimationFrame not supported', 'high');
+        }
+        
+        this.addTestResult('performance', 'Performance API tests', tests);
+      }
+      
+      async testMediaQueries() {
+        const tests = [];
+        
+        // Test media query support
+        const mqSupported = typeof window.matchMedia !== 'undefined';
+        tests.push({ name: 'Media queries supported', passed: mqSupported });
+        
+        if (!mqSupported) {
+          this.addIssue('responsive', 'Media queries not supported', 'critical');
+          return;
+        }
+        
+        // Test specific media queries
+        const queries = {
+          'prefers-reduced-motion': '(prefers-reduced-motion: reduce)',
+          'prefers-color-scheme': '(prefers-color-scheme: dark)',
+          'hover capability': '(hover: hover)',
+          'pointer precision': '(pointer: fine)',
+          'orientation': '(orientation: portrait)'
+        };
+        
+        Object.entries(queries).forEach(([name, query]) => {
+          try {
+            const mq = window.matchMedia(query);
+            tests.push({ name: `Media query: ${name}`, passed: true });
+          } catch (e) {
+            tests.push({ name: `Media query: ${name}`, passed: false });
+            this.addIssue('responsive', `Media query ${name} not supported`, 'low');
+          }
+        });
+        
+        this.addTestResult('responsive', 'Media query tests', tests);
+      }
+      
+      async testFormElements() {
+        const tests = [];
+        
+        // Test HTML5 input types
+        const inputTypes = ['email', 'tel', 'url', 'number', 'date', 'color', 'range'];
+        
+        inputTypes.forEach(type => {
+          const input = document.createElement('input');
+          input.type = type;
+          const supported = input.type === type;
+          
+          tests.push({ name: `Input type: ${type}`, passed: supported });
+          
+          if (!supported) {
+            this.addIssue('forms', `Input type ${type} not supported`, 'low');
+          }
+        });
+        
+        // Test form validation
+        const validationSupported = typeof document.createElement('input').checkValidity === 'function';
+        tests.push({ name: 'Form validation API', passed: validationSupported });
+        
+        if (!validationSupported) {
+          this.addIssue('forms', 'Form validation API not supported', 'medium');
+        }
+        
+        this.addTestResult('forms', 'Form element tests', tests);
+      }
+      
+      async testScrollBehavior() {
+        const tests = [];
+        
+        // Test smooth scrolling
+        const smoothScrollSupported = CSS.supports('scroll-behavior', 'smooth');
+        tests.push({ name: 'Smooth scrolling', passed: smoothScrollSupported });
+        
+        if (!smoothScrollSupported) {
+          this.addIssue('scroll', 'Smooth scrolling not supported', 'low');
+        }
+        
+        // Test scroll snap
+        const scrollSnapSupported = CSS.supports('scroll-snap-type', 'x mandatory');
+        tests.push({ name: 'Scroll snap', passed: scrollSnapSupported });
+        
+        // Test overscroll behavior
+        const overscrollSupported = CSS.supports('overscroll-behavior', 'contain');
+        tests.push({ name: 'Overscroll behavior', passed: overscrollSupported });
+        
+        this.addTestResult('scroll', 'Scroll behavior tests', tests);
+      }
+      
+      async testOrientationHandling() {
+        const tests = [];
+        
+        // Test orientation API
+        const orientationSupported = 'orientation' in screen;
+        tests.push({ name: 'Screen orientation API', passed: orientationSupported });
+        
+        // Test orientation change events
+        const orientationEventSupported = 'onorientationchange' in window;
+        tests.push({ name: 'Orientation change events', passed: orientationEventSupported });
+        
+        // Test resize events
+        const resizeSupported = 'onresize' in window;
+        tests.push({ name: 'Window resize events', passed: resizeSupported });
+        
+        this.addTestResult('orientation', 'Orientation handling tests', tests);
+      }
+      
+      setupInteractionTesting() {
+        // Test touch interactions when they occur
+        if ('ontouchstart' in window) {
+          document.addEventListener('touchstart', this.testTouchStart.bind(this), { passive: true });
+          document.addEventListener('touchend', this.testTouchEnd.bind(this), { passive: true });
+        }
+        
+        // Test click interactions
+        document.addEventListener('click', this.testClickInteraction.bind(this));
+        
+        // Test scroll performance
+        let scrollTimeout;
+        document.addEventListener('scroll', () => {
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => this.testScrollPerformance(), 100);
+        }, { passive: true });
+      }
+      
+      testTouchStart(event) {
+        // Test touch responsiveness
+        this.touchStartTime = performance.now();
+      }
+      
+      testTouchEnd(event) {
+        if (this.touchStartTime) {
+          const touchDuration = performance.now() - this.touchStartTime;
+          
+          if (touchDuration > 100) {
+            this.addIssue('interaction', 'Slow touch response detected', 'medium');
+          }
+        }
+      }
+      
+      testClickInteraction(event) {
+        // Test click delay (300ms delay on some mobile browsers)
+        const target = event.target;
+        
+        if (this.deviceInfo.mobile && !target.closest('input, button, select, textarea, a')) {
+          // Check if there's a click delay
+          const clickTime = performance.now();
+          
+          if (this.lastTouchTime && (clickTime - this.lastTouchTime) > 350) {
+            this.addIssue('interaction', '300ms click delay detected', 'medium');
+          }
+        }
+      }
+      
+      testScrollPerformance() {
+        // Test scroll smoothness
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        
+        if (!this.lastScrollPosition) {
+          this.lastScrollPosition = scrollTop;
+          this.lastScrollTime = performance.now();
+          return;
+        }
+        
+        const currentTime = performance.now();
+        const timeDiff = currentTime - this.lastScrollTime;
+        const scrollDiff = Math.abs(scrollTop - this.lastScrollPosition);
+        
+        if (timeDiff > 0) {
+          const scrollSpeed = scrollDiff / timeDiff;
+          
+          // If scroll is very jerky (high speed changes)
+          if (scrollSpeed > 5) {
+            this.addIssue('performance', 'Jerky scroll performance detected', 'low');
+          }
+        }
+        
+        this.lastScrollPosition = scrollTop;
+        this.lastScrollTime = currentTime;
+      }
+      
+      addTestResult(category, name, tests) {
+        this.testResults.push({
+          category,
+          name,
+          tests,
+          passed: tests.filter(t => t.passed).length,
+          failed: tests.filter(t => !t.passed).length,
+          total: tests.length
+        });
+      }
+      
+      addIssue(category, message, severity) {
+        this.issues.push({
+          category,
+          message,
+          severity,
+          browser: this.browserInfo.name,
+          version: this.browserInfo.version,
+          mobile: this.deviceInfo.mobile,
+          timestamp: Date.now()
+        });
+      }
+      
+      processTestResults(duration) {
+        const totalTests = this.testResults.reduce((sum, result) => sum + result.total, 0);
+        const totalPassed = this.testResults.reduce((sum, result) => sum + result.passed, 0);
+        const totalFailed = this.testResults.reduce((sum, result) => sum + result.failed, 0);
+        
+        if (this.logToConsole) {
+          console.group(`🌐 Cross-Browser Mobile Test Results (${duration.toFixed(2)}ms)`);
+          console.log(`📱 Device: ${this.deviceInfo.mobile ? 'Mobile' : 'Desktop'}`);
+          console.log(`🔍 Browser: ${this.browserInfo.name} ${this.browserInfo.version}`);
+          console.log(`✅ Passed: ${totalPassed}/${totalTests}`);
+          console.log(`❌ Failed: ${totalFailed}/${totalTests}`);
+          console.log(`🚨 Issues: ${this.issues.length}`);
+          
+          // Log test results by category
+          this.testResults.forEach(result => {
+            console.group(`📋 ${result.name} (${result.passed}/${result.total})`);
+            result.tests.forEach(test => {
+              const icon = test.passed ? '✅' : '❌';
+              console.log(`${icon} ${test.name}`);
+            });
+            console.groupEnd();
+          });
+          
+          // Log issues by severity
+          if (this.issues.length > 0) {
+            const issuesBySeverity = this.groupIssuesBySeverity();
+            
+            Object.entries(issuesBySeverity).forEach(([severity, issues]) => {
+              const icon = severity === 'critical' ? '🚨' : severity === 'high' ? '⚠️' : severity === 'medium' ? '⚡' : 'ℹ️';
+              console.group(`${icon} ${severity.toUpperCase()} Issues (${issues.length})`);
+              issues.forEach(issue => {
+                console.log(`• ${issue.message} [${issue.category}]`);
+              });
+              console.groupEnd();
+            });
+          }
+          
+          console.groupEnd();
+        }
+        
+        // Send to analytics if configured
+        if (this.reportToEndpoint) {
+          this.reportResults();
+        }
+        
+        // Show visual indicator in development
+        if (this.isDevelopment) {
+          this.showTestIndicator(totalPassed, totalFailed, this.issues.length);
+        }
+        
+        // Trigger custom event
+        window.dispatchEvent(new CustomEvent('cross-browser-test-complete', {
+          detail: {
+            browser: this.browserInfo,
+            device: this.deviceInfo,
+            results: this.testResults,
+            issues: this.issues,
+            summary: { totalTests, totalPassed, totalFailed },
+            duration
+          }
+        }));
+      }
+      
+      groupIssuesBySeverity() {
+        const groups = {};
+        
+        this.issues.forEach(issue => {
+          if (!groups[issue.severity]) {
+            groups[issue.severity] = [];
+          }
+          groups[issue.severity].push(issue);
+        });
+        
+        return groups;
+      }
+      
+      showTestIndicator(passed, failed, issues) {
+        // Remove existing indicator
+        const existing = document.getElementById('cross-browser-indicator');
+        if (existing) existing.remove();
+        
+        // Create indicator
+        const indicator = document.createElement('div');
+        indicator.id = 'cross-browser-indicator';
+        indicator.style.cssText = `
+          position: fixed;
+          bottom: 10px;
+          right: 10px;
+          background: ${issues === 0 ? '#10b981' : issues < 3 ? '#f59e0b' : '#ef4444'};
+          color: white;
+          padding: 12px;
+          border-radius: 8px;
+          font-family: monospace;
+          font-size: 12px;
+          font-weight: bold;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          cursor: pointer;
+          max-width: 200px;
+        `;
+        
+        indicator.innerHTML = `
+          <div style="margin-bottom: 4px;">🌐 ${this.browserInfo.name.toUpperCase()}</div>
+          <div style="font-size: 10px;">
+            ✅ ${passed} | ❌ ${failed} | 🚨 ${issues}
+          </div>
+        `;
+        
+        indicator.title = 'Click to run cross-browser tests again';
+        indicator.addEventListener('click', () => this.runAllTests());
+        
+        document.body.appendChild(indicator);
+        
+        // Auto-hide after 15 seconds
+        setTimeout(() => {
+          if (indicator.parentNode) {
+            indicator.style.opacity = '0.3';
+          }
+        }, 15000);
+      }
+      
+      async reportResults() {
+        try {
+          const payload = {
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            browser: this.browserInfo,
+            device: this.deviceInfo,
+            results: this.testResults,
+            issues: this.issues,
+            userAgent: navigator.userAgent
+          };
+          
+          await fetch(this.reportToEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        } catch (error) {
+          console.warn('Failed to report cross-browser test results:', error);
+        }
+      }
+      
+      // Public API methods
+      getBrowserSupport() {
+        return {
+          browser: this.browserInfo,
+          device: this.deviceInfo,
+          issues: this.issues,
+          results: this.testResults
+        };
+      }
+      
+      getCompatibilityReport() {
+        const criticalIssues = this.issues.filter(i => i.severity === 'critical');
+        const highIssues = this.issues.filter(i => i.severity === 'high');
+        
+        return {
+          compatible: criticalIssues.length === 0,
+          score: this.calculateCompatibilityScore(),
+          issues: {
+            critical: criticalIssues.length,
+            high: highIssues.length,
+            total: this.issues.length
+          },
+          recommendations: this.generateRecommendations()
+        };
+      }
+      
+      calculateCompatibilityScore() {
+        const totalTests = this.testResults.reduce((sum, result) => sum + result.total, 0);
+        const totalPassed = this.testResults.reduce((sum, result) => sum + result.passed, 0);
+        
+        if (totalTests === 0) return 100;
+        
+        const baseScore = (totalPassed / totalTests) * 100;
+        
+        // Deduct points for issues
+        const criticalPenalty = this.issues.filter(i => i.severity === 'critical').length * 20;
+        const highPenalty = this.issues.filter(i => i.severity === 'high').length * 10;
+        const mediumPenalty = this.issues.filter(i => i.severity === 'medium').length * 5;
+        
+        return Math.max(0, baseScore - criticalPenalty - highPenalty - mediumPenalty);
+      }
+      
+      generateRecommendations() {
+        const recommendations = [];
+        
+        if (this.issues.some(i => i.category === 'viewport')) {
+          recommendations.push('Fix viewport configuration for better mobile experience');
+        }
+        
+        if (this.issues.some(i => i.category === 'touch')) {
+          recommendations.push('Improve touch target sizes and touch event handling');
+        }
+        
+        if (this.issues.some(i => i.category === 'css')) {
+          recommendations.push('Add vendor prefixes or polyfills for CSS features');
+        }
+        
+        if (this.issues.some(i => i.category === 'javascript')) {
+          recommendations.push('Add polyfills for missing JavaScript APIs');
+        }
+        
+        if (this.issues.some(i => i.category === 'performance')) {
+          recommendations.push('Optimize performance for better mobile experience');
+        }
+        
+        return recommendations;
+      }
+    }
+    
+    // Initialize cross-browser tester
+    window.crossBrowserTester = new CrossBrowserTester({
+      logToConsole,
+      reportToEndpoint,
+      testOnLoad,
+      testInteractions,
+      isDevelopment
+    });
+    
+    // Expose testing functions globally
+    window.runCrossBrowserTests = () => window.crossBrowserTester.runAllTests();
+    window.getBrowserInfo = () => window.crossBrowserTester.getBrowserSupport();
+    window.getCompatibilityReport = () => window.crossBrowserTester.getCompatibilityReport();
+    
+    if (isDevelopment) {
+      console.log('🌐 Cross-browser mobile testing enabled');
+      console.log('📋 Available commands:');
+      console.log('  - runCrossBrowserTests() - Run all compatibility tests');
+      console.log('  - getBrowserInfo() - Get browser and device information');
+      console.log('  - getCompatibilityReport() - Get compatibility score and recommendations');
+    }
+  </script>
+)}
+
+<style>
+  /* Cross-browser testing styles */
+  #cross-browser-indicator {
+    transition: opacity 0.3s ease;
+  }
+  
+  #cross-browser-indicator:hover {
+    opacity: 1 !important;
+    transform: scale(1.05);
+  }
+  
+  /* Browser-specific fixes */
+  @supports (-webkit-appearance: none) {
+    /* Safari-specific styles */
+    .safari-fix {
+      -webkit-appearance: none;
+    }
+  }
+  
+  @supports (-moz-appearance: none) {
+    /* Firefox-specific styles */
+    .firefox-fix {
+      -moz-appearance: none;
+    }
+  }
+  
+  @supports (-ms-ime-align: auto) {
+    /* Edge-specific styles */
+    .edge-fix {
+      -ms-ime-align: auto;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    #cross-browser-indicator {
+      border: 2px solid currentColor;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    #cross-browser-indicator {
+      transition: none;
+    }
+    
+    #cross-browser-indicator:hover {
+      transform: none;
+    }
+  }
+</style>

@@ -1,36 +1,235 @@
 ---
 import CTAButton from './CTAButton.astro';
 ---
-<section id="join" class="py-16 px-4 bg-base-100 text-base-content">
+<section id="join" class="py-12 sm:py-16 lg:py-20 px-4 bg-base-100 text-base-content" aria-labelledby="join-heading" role="region">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Get Involved</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      <!-- Join Community -->
-      <div class="card bg-base-200 border border-primary p-6 rounded-lg flex flex-col h-full">
-        <h3 class="text-xl font-bold mb-4 text-primary">Join Our Community</h3>
-        <p class="mb-6 line-clamp-3 min-h-[72px]">Connect with like-minded developers and stay updated on events, projects, and opportunities.</p>
-        <div class="mt-2 space-y-4 w-full">
-          <CTAButton href="https://discord.gg/hackmum" variant="primary" target="_blank" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.608 1.2495-1.8447-.2762-3.6677-.2762-5.4878 0-.1634-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path></svg>Join Discord</CTAButton>
-          <CTAButton href="https://t.me/hackmum" variant="primary" target="_blank" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"></path></svg>Join Telegram</CTAButton>
-          <CTAButton href="#newsletter" variant="primary" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z"></path><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z"></path></svg>Join Mailing List</CTAButton>
+    <!-- Enhanced section header -->
+    <div class="text-center mb-10 sm:mb-14 lg:mb-16">
+      <h2 id="join-heading" class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-primary">
+        Get Involved
+      </h2>
+      <p class="text-sm sm:text-base lg:text-lg text-base-content/70 max-w-2xl mx-auto leading-relaxed">
+        Choose how you'd like to contribute to Mumbai's largest open source community
+      </p>
+    </div>
+    
+    <!-- Mobile-optimized grid layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+      <!-- Join Community Card -->
+      <div class="group card bg-base-200 border border-primary p-5 sm:p-6 lg:p-7 rounded-xl flex flex-col hover:shadow-lg hover:border-primary/80 hover:-translate-y-1 transition-all duration-300">
+        <!-- Card header with icon -->
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-primary/20 transition-colors">
+            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">Join Our Community</h3>
+        </div>
+        
+        <p class="mb-6 sm:mb-7 text-sm sm:text-base leading-relaxed text-base-content/80 flex-grow">
+          Connect with like-minded developers and stay updated on events, projects, and opportunities.
+        </p>
+        
+        <div class="space-y-3 sm:space-y-4 w-full">
+          <CTAButton 
+            href="https://discord.gg/hackmum" 
+            variant="primary" 
+            target="_blank"
+            fullWidth={true}
+            icon="left"
+            aria-label="Join our Discord community (opens in new tab)"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.608 1.2495-1.8447-.2762-3.6677-.2762-5.4878 0-.1634-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path>
+            </svg>
+            Join Discord
+          </CTAButton>
+          <CTAButton 
+            href="https://t.me/hackmum" 
+            variant="primary" 
+            target="_blank"
+            fullWidth={true}
+            icon="left"
+            aria-label="Join our Telegram community (opens in new tab)"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"></path>
+            </svg>
+            Join Telegram
+          </CTAButton>
+          <CTAButton 
+            href="#newsletter" 
+            variant="primary"
+            fullWidth={true}
+            icon="left"
+            aria-label="Navigate to newsletter signup section"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z"></path>
+              <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z"></path>
+            </svg>
+            Join Mailing List
+          </CTAButton>
         </div>
       </div>
-      <!-- Contribute -->
-      <div class="card bg-base-200 border border-primary p-6 rounded-lg flex flex-col h-full">
-        <h3 class="text-xl font-bold mb-4 text-primary">Contribute</h3>
-        <p class="mb-6 line-clamp-3 min-h-[72px]">Make a difference by contributing to our open source projects and community initiatives.</p>
-        <div class="mt-2 space-y-4 w-full">
-          <CTAButton href="https://github.com/HackerspaceMumbai" variant="primary" target="_blank" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>GitHub Projects</CTAButton>
-          <CTAButton href="/code-of-conduct" variant="primary" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z"></path><path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z"></path><path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z"></path></svg>Code of Conduct</CTAButton>
+      
+      <!-- Contribute Card -->
+      <div class="group card bg-base-200 border border-primary p-5 sm:p-6 lg:p-7 rounded-xl flex flex-col hover:shadow-lg hover:border-primary/80 hover:-translate-y-1 transition-all duration-300">
+        <!-- Card header with icon -->
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-primary/20 transition-colors">
+            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">Contribute</h3>
+        </div>
+        
+        <p class="mb-6 sm:mb-7 text-sm sm:text-base leading-relaxed text-base-content/80 flex-grow">
+          Make a difference by contributing to our open source projects and community initiatives.
+        </p>
+        
+        <div class="space-y-3 sm:space-y-4 w-full">
+          <CTAButton 
+            href="https://github.com/HackerspaceMumbai" 
+            variant="primary" 
+            target="_blank"
+            fullWidth={true}
+            icon="left"
+            aria-label="View our GitHub projects (opens in new tab)"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+            </svg>
+            GitHub Projects
+          </CTAButton>
+          <CTAButton 
+            href="/code-of-conduct" 
+            variant="primary"
+            fullWidth={true}
+            icon="left"
+            aria-label="Read our code of conduct"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z"></path>
+              <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z"></path>
+              <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z"></path>
+            </svg>
+            Code of Conduct
+          </CTAButton>
         </div>
       </div>
-      <!-- Speak & Volunteer -->
-      <div class="card bg-base-200 border border-primary p-6 rounded-lg flex flex-col h-full">
-        <h3 class="text-xl font-bold mb-4 text-primary">Speak & Volunteer</h3>
-        <p class="mb-6 line-clamp-3 min-h-[72px]">Share your knowledge as a speaker or help organize our events as a volunteer.</p>
-        <div class="mt-2 space-y-4 w-full">
-          <CTAButton href="/speak" variant="primary" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd"></path></svg>Become a Speaker</CTAButton>
-          <CTAButton href="/volunteer" variant="primary" extraClass="w-full flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z"></path></svg>Volunteer with Us</CTAButton>
+      
+      <!-- Speak & Volunteer Card -->
+      <div class="group card bg-base-200 border border-primary p-5 sm:p-6 lg:p-7 rounded-xl flex flex-col hover:shadow-lg hover:border-primary/80 hover:-translate-y-1 transition-all duration-300 md:col-span-2 lg:col-span-1">
+        <!-- Card header with icon -->
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-primary/20 transition-colors">
+            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z"/>
+              <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">Speak & Volunteer</h3>
+        </div>
+        
+        <p class="mb-6 sm:mb-7 text-sm sm:text-base leading-relaxed text-base-content/80 flex-grow">
+          Share your knowledge as a speaker or help organize our events as a volunteer.
+        </p>
+        
+        <div class="space-y-3 sm:space-y-4 w-full">
+          <CTAButton 
+            href="/speak" 
+            variant="primary"
+            fullWidth={true}
+            icon="left"
+            aria-label="Apply to become a speaker"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z"/>
+              <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z"/>
+            </svg>
+            Become a Speaker
+          </CTAButton>
+          <CTAButton 
+            href="/volunteer" 
+            variant="primary"
+            fullWidth={true}
+            icon="left"
+            aria-label="Apply to volunteer with us"
+          >
+            <svg slot="icon-left" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z"/>
+            </svg>
+            Volunteer with Us
+          </CTAButton>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile-friendly bottom engagement section -->
+    <div class="mt-12 sm:mt-16 lg:mt-20 text-center">
+      <div class="bg-base-300/50 rounded-2xl p-6 sm:p-8 lg:p-10 border border-primary/20">
+        <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-primary mb-3 sm:mb-4">
+          Not Sure Where to Start?
+        </h3>
+        <p class="text-sm sm:text-base text-base-content/70 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
+          Reach out to us directly and we'll help you find the perfect way to get involved with Mumbai's tech community.
+        </p>
+        
+        <!-- Contact options with mobile-optimized layout -->
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center max-w-lg mx-auto">
+          <CTAButton 
+            href="mailto:hello@hackmum.in" 
+            variant="outline"
+            size="lg"
+            aria-label="Contact us via email"
+            extraClass="shadow-sm hover:shadow-md flex-1 sm:flex-none"
+          >
+            <span class="flex items-center justify-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Email Us
+            </span>
+          </CTAButton>
+          
+          <CTAButton 
+            href="https://twitter.com/hackmum" 
+            variant="outline"
+            size="lg"
+            target="_blank"
+            aria-label="Follow us on Twitter (opens in new tab)"
+            extraClass="shadow-sm hover:shadow-md flex-1 sm:flex-none"
+          >
+            <span class="flex items-center justify-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              Follow Us
+            </span>
+          </CTAButton>
+        </div>
+        
+        <!-- Quick stats for mobile engagement -->
+        <div class="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-2xl mx-auto">
+          <div class="text-center">
+            <div class="text-xl sm:text-2xl font-bold text-primary">500+</div>
+            <div class="text-xs sm:text-sm text-base-content/60">Members</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xl sm:text-2xl font-bold text-primary">50+</div>
+            <div class="text-xs sm:text-sm text-base-content/60">Events</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xl sm:text-2xl font-bold text-primary">20+</div>
+            <div class="text-xs sm:text-sm text-base-content/60">Projects</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xl sm:text-2xl font-bold text-primary">5+</div>
+            <div class="text-xs sm:text-sm text-base-content/60">Years</div>
+          </div>
         </div>
       </div>
     </div>

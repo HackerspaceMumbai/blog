@@ -10,7 +10,16 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:a11y": "node scripts/accessibility-test.js",
+    "test:a11y:ci": "node scripts/accessibility-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --outputDir ./accessibility-reports",
+    "a11y:audit": "npm run build && npm run preview & sleep 5 && npm run test:a11y:ci && kill %1",
+    "test:cross-browser": "node scripts/cross-browser-test.js",
+    "test:cross-browser:ci": "node scripts/cross-browser-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --browsers chrome,firefox --devices 'iPhone 12','Pixel 5','iPad Air' --outputDir ./cross-browser-reports",
+    "cross-browser:audit": "npm run build && npm run preview & sleep 5 && npm run test:cross-browser:ci && kill %1",
+    "test:security": "node scripts/security-test.js",
+    "test:security:ci": "node scripts/security-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --testSuites headers,xss,csrf,input-validation,content-security --outputDir ./security-reports",
+    "security:audit": "npm run build && npm run preview & sleep 5 && npm run test:security:ci && kill %1"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
@@ -25,10 +34,12 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@vitest/ui": "^3.2.4",
+    "axe-core": "^4.8.2",
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "puppeteer": "^21.6.1",
     "vitest": "^3.2.4"
   }
 }
