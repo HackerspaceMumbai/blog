@@ -216,7 +216,12 @@ const activeSponsors = sortSponsors(mockSponsors.filter(s => s.status === 'activ
   
   /* Visual separator for sections */
   section:not(:last-child) {
-    border-bottom: 1px solid theme('colors.base-300');
+    border-bottom: 1px solid #e5e7eb;
     padding-bottom: 3rem;
+  }
+  
+  /* Dark theme support */
+  [data-theme="dark"] section:not(:last-child) {
+    border-bottom-color: #374151;
   }
 </style>

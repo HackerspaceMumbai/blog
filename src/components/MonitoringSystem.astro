@@ -1,0 +1,466 @@
+---
+// Comprehensive monitoring system that integrates analytics, error monitoring, and performance tracking
+// Provides centralized monitoring configuration and reporting
+
+import Analytics from './Analytics.astro';
+import ErrorMonitoring from './ErrorMonitoring.astro';
+import PerformanceDashboard from './PerformanceDashboard.astro';
+
+export interface Props {
+  // Analytics configuration
+  enableAnalytics?: boolean;
+  analyticsDomain?: string;
+  trackOutboundLinks?: boolean;
+  trackFileDownloads?: boolean;
+  
+  // Error monitoring configuration
+  enableErrorMonitoring?: boolean;
+  enableUserFeedback?: boolean;
+  maxErrorsPerSession?: number;
+  
+  // Performance monitoring configuration
+  enablePerformanceMonitoring?: boolean;
+  showPerformanceDashboard?: boolean;
+  enablePerformanceAlerts?: boolean;
+  
+  // Environment configuration
+  enableInDevelopment?: boolean;
+  enableInProduction?: boolean;
+  
+  // Reporting configuration
+  enableReporting?: boolean;
+  reportingInterval?: number; // minutes
+}
+
+const {
+  // Analytics
+  enableAnalytics = true,
+  analyticsDomain = "hackmum.in",
+  trackOutboundLinks = true,
+  trackFileDownloads = true,
+  
+  // Error monitoring
+  enableErrorMonitoring = true,
+  enableUserFeedback = false,
+  maxErrorsPerSession = 10,
+  
+  // Performance monitoring
+  enablePerformanceMonitoring = true,
+  showPerformanceDashboard = import.meta.env.DEV,
+  enablePerformanceAlerts = true,
+  
+  // Environment
+  enableInDevelopment = import.meta.env.DEV,
+  enableInProduction = import.meta.env.PROD,
+  
+  // Reporting
+  enableReporting = true,
+  reportingInterval = 5 // 5 minutes
+} = Astro.props;
+
+const shouldEnable = enableInDevelopment || enableInProduction;
+---
+
+{shouldEnable && (
+  <Fragment>
+    <!-- Analytics Component -->
+    {enableAnalytics && (
+      <Analytics 
+        domain={analyticsDomain}
+        enableInDevelopment={enableInDevelopment}
+        trackOutboundLinks={trackOutboundLinks}
+        trackFileDownloads={trackFileDownloads}
+        customEvents={true}
+      />
+    )}
+    
+    <!-- Error Monitoring Component -->
+    {enableErrorMonitoring && (
+      <ErrorMonitoring 
+        enableInDevelopment={enableInDevelopment}
+        enableInProduction={enableInProduction}
+        logToConsole={import.meta.env.DEV}
+        logToAnalytics={enableAnalytics}
+        enableUserFeedback={enableUserFeedback}
+        maxErrorsPerSession={maxErrorsPerSession}
+      />
+    )}
+    
+    <!-- Performance Dashboard Component -->
+    {enablePerformanceMonitoring && (
+      <PerformanceDashboard 
+        enableInDevelopment={enableInDevelopment}
+        enableInProduction={enableInProduction}
+        showVisualIndicator={showPerformanceDashboard}
+        enableAlerts={enablePerformanceAlerts}
+      />
+    )}
+    
+    <!-- Monitoring System Integration -->
+    <script is:inline define:vars={{ 
+      enableReporting, 
+      reportingInterval,
+      enableAnalytics,
+      enableErrorMonitoring,
+      enablePerformanceMonitoring
+    }}>
+      // Monitoring System Integration
+      window.monitoringSystem = {
+        config: {
+          analytics: enableAnalytics,
+          errorMonitoring: enableErrorMonitoring,
+          performance: enablePerformanceMonitoring,
+          reporting: enableReporting,
+          reportingInterval: reportingInterval
+        },
+        
+        reportingTimer: null,
+        
+        // Initialize monitoring system
+        init: function() {
+          console.log('🔧 Monitoring System initialized with config:', this.config);
+          
+          if (enableReporting) {
+            this.startReporting();
+          }
+          
+          // Setup page visibility change handling
+          this.setupVisibilityHandling();
+          
+          // Setup beforeunload reporting
+          this.setupUnloadReporting();
+          
+          // Setup periodic health checks
+          this.setupHealthChecks();
+        },
+        
+        // Start periodic reporting
+        startReporting: function() {
+          if (this.reportingTimer) {
+            clearInterval(this.reportingTimer);
+          }
+          
+          this.reportingTimer = setInterval(() => {
+            this.generateReport();
+          }, reportingInterval * 60 * 1000); // Convert minutes to milliseconds
+          
+          console.log(`📊 Periodic reporting started (every ${reportingInterval} minutes)`);
+        },
+        
+        // Stop periodic reporting
+        stopReporting: function() {
+          if (this.reportingTimer) {
+            clearInterval(this.reportingTimer);
+            this.reportingTimer = null;
+          }
+        },
+        
+        // Generate comprehensive monitoring report
+        generateReport: function() {
+          const report = {
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            viewport: {
+              width: window.innerWidth,
+              height: window.innerHeight
+            },
+            connection: this.getConnectionInfo(),
+            performance: this.getPerformanceData(),
+            errors: this.getErrorData(),
+            analytics: this.getAnalyticsData(),
+            health: this.getHealthStatus()
+          };
+          
+          // Log report in development
+          if (typeof console !== 'undefined' && console.log) {
+            console.log('📊 Monitoring Report:', report);
+          }
+          
+          // Send to analytics if available
+          if (enableAnalytics && typeof window.analytics !== 'undefined') {
+            window.analytics.track('Monitoring Report', {
+              errorCount: report.errors.count,
+              performanceScore: report.performance.score,
+              healthStatus: report.health.status
+            });
+          }
+          
+          // Store report locally for debugging
+          this.storeReport(report);
+          
+          return report;
+        },
+        
+        // Get connection information
+        getConnectionInfo: function() {
+          if ('connection' in navigator) {
+            const conn = navigator.connection;
+            return {
+              effectiveType: conn.effectiveType,
+              downlink: conn.downlink,
+              rtt: conn.rtt,
+              saveData: conn.saveData
+            };
+          }
+          return null;
+        },
+        
+        // Get performance data
+        getPerformanceData: function() {
+          const data = {
+            metrics: {},
+            score: 100,
+            issues: []
+          };
+          
+          if (enablePerformanceMonitoring && typeof window.performanceDashboard !== 'undefined') {
+            const summary = window.performanceDashboard.getSummary();
+            data.metrics = summary.metrics;
+            data.alerts = summary.alerts;
+            
+            // Calculate performance score
+            let score = 100;
+            Object.entries(summary.metrics).forEach(([metric, value]) => {
+              switch(metric) {
+                case 'LCP':
+                  if (value > 4000) score -= 20;
+                  else if (value > 2500) score -= 10;
+                  break;
+                case 'FID':
+                  if (value > 300) score -= 20;
+                  else if (value > 100) score -= 10;
+                  break;
+                case 'CLS':
+                  if (value > 0.25) score -= 20;
+                  else if (value > 0.1) score -= 10;
+                  break;
+                case 'TTFB':
+                  if (value > 1800) score -= 15;
+                  else if (value > 800) score -= 5;
+                  break;
+              }
+            });
+            
+            data.score = Math.max(0, score);
+          }
+          
+          return data;
+        },
+        
+        // Get error data
+        getErrorData: function() {
+          const data = {
+            count: 0,
+            recent: [],
+            types: {}
+          };
+          
+          if (enableErrorMonitoring && typeof window.errorMonitoring !== 'undefined') {
+            const summary = window.errorMonitoring.getErrorSummary();
+            data.count = summary.totalErrors;
+            data.recent = summary.recentErrors;
+            data.types = summary.errorsByType;
+          }
+          
+          return data;
+        },
+        
+        // Get analytics data
+        getAnalyticsData: function() {
+          return {
+            enabled: enableAnalytics,
+            pageViews: this.getPageViewCount(),
+            interactions: this.getInteractionCount()
+          };
+        },
+        
+        // Get health status
+        getHealthStatus: function() {
+          const performance = this.getPerformanceData();
+          const errors = this.getErrorData();
+          
+          let status = 'healthy';
+          const issues = [];
+          
+          // Check performance
+          if (performance.score < 50) {
+            status = 'critical';
+            issues.push('Poor performance score');
+          } else if (performance.score < 80) {
+            status = 'warning';
+            issues.push('Performance needs improvement');
+          }
+          
+          // Check errors
+          if (errors.count > 5) {
+            status = status === 'critical' ? 'critical' : 'warning';
+            issues.push('High error count');
+          }
+          
+          // Check memory usage
+          if ('memory' in performance) {
+            const memoryUsage = performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit;
+            if (memoryUsage > 0.9) {
+              status = 'critical';
+              issues.push('High memory usage');
+            } else if (memoryUsage > 0.7) {
+              status = status === 'critical' ? 'critical' : 'warning';
+              issues.push('Elevated memory usage');
+            }
+          }
+          
+          return {
+            status: status,
+            issues: issues,
+            timestamp: new Date().toISOString()
+          };
+        },
+        
+        // Store report locally
+        storeReport: function(report) {
+          try {
+            const reports = JSON.parse(localStorage.getItem('monitoringReports') || '[]');
+            reports.push(report);
+            
+            // Keep only last 10 reports
+            const recentReports = reports.slice(-10);
+            localStorage.setItem('monitoringReports', JSON.stringify(recentReports));
+          } catch (e) {
+            // localStorage might be full or unavailable
+          }
+        },
+        
+        // Setup page visibility handling
+        setupVisibilityHandling: function() {
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+              // Page is hidden, generate report
+              this.generateReport();
+            } else {
+              // Page is visible again, track return
+              if (enableAnalytics && typeof window.analytics !== 'undefined') {
+                window.analytics.track('Page Return', {
+                  url: window.location.href
+                });
+              }
+            }
+          });
+        },
+        
+        // Setup unload reporting
+        setupUnloadReporting: function() {
+          window.addEventListener('beforeunload', () => {
+            // Generate final report before page unload
+            const report = this.generateReport();
+            
+            // Try to send beacon if available
+            if ('sendBeacon' in navigator && enableAnalytics) {
+              try {
+                navigator.sendBeacon('/api/monitoring', JSON.stringify(report));
+              } catch (e) {
+                // Beacon failed, ignore
+              }
+            }
+          });
+        },
+        
+        // Setup health checks
+        setupHealthChecks: function() {
+          // Check every minute
+          setInterval(() => {
+            const health = this.getHealthStatus();
+            
+            if (health.status === 'critical') {
+              console.error('🚨 Critical health status:', health.issues);
+              
+              if (enableAnalytics && typeof window.analytics !== 'undefined') {
+                window.analytics.track('Health Critical', {
+                  issues: health.issues.join(', ')
+                });
+              }
+            } else if (health.status === 'warning') {
+              console.warn('⚠️ Health warning:', health.issues);
+            }
+          }, 60000); // 1 minute
+        },
+        
+        // Get page view count (estimated)
+        getPageViewCount: function() {
+          return parseInt(sessionStorage.getItem('pageViewCount') || '1');
+        },
+        
+        // Get interaction count (estimated)
+        getInteractionCount: function() {
+          return parseInt(sessionStorage.getItem('interactionCount') || '0');
+        },
+        
+        // Get all stored reports
+        getStoredReports: function() {
+          try {
+            return JSON.parse(localStorage.getItem('monitoringReports') || '[]');
+          } catch (e) {
+            return [];
+          }
+        },
+        
+        // Clear all stored data
+        clearStoredData: function() {
+          try {
+            localStorage.removeItem('monitoringReports');
+            localStorage.removeItem('errorLog');
+            sessionStorage.removeItem('pageViewCount');
+            sessionStorage.removeItem('interactionCount');
+            
+            if (typeof window.errorMonitoring !== 'undefined') {
+              window.errorMonitoring.clearErrors();
+            }
+            
+            if (typeof window.performanceDashboard !== 'undefined') {
+              window.performanceDashboard.clearAlerts();
+            }
+            
+            console.log('🧹 Monitoring data cleared');
+          } catch (e) {
+            console.error('Failed to clear monitoring data:', e);
+          }
+        }
+      };
+      
+      // Initialize monitoring system
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          window.monitoringSystem.init();
+        });
+      } else {
+        window.monitoringSystem.init();
+      }
+      
+      // Track page views
+      const currentPageViews = parseInt(sessionStorage.getItem('pageViewCount') || '0') + 1;
+      sessionStorage.setItem('pageViewCount', currentPageViews.toString());
+      
+      // Track interactions
+      let interactionCount = parseInt(sessionStorage.getItem('interactionCount') || '0');
+      ['click', 'keydown', 'scroll', 'touchstart'].forEach(eventType => {
+        document.addEventListener(eventType, () => {
+          interactionCount++;
+          sessionStorage.setItem('interactionCount', interactionCount.toString());
+        }, { once: true, passive: true });
+      });
+      
+      // Expose monitoring functions to console for debugging
+      window.getMonitoringReport = () => {
+        return window.monitoringSystem.generateReport();
+      };
+      
+      window.getStoredReports = () => {
+        return window.monitoringSystem.getStoredReports();
+      };
+      
+      window.clearMonitoringData = () => {
+        window.monitoringSystem.clearStoredData();
+      };
+    </script>
+  </Fragment>
+)}

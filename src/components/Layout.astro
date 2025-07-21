@@ -9,6 +9,7 @@ import KeyboardNavigationTester from './KeyboardNavigationTester.astro';
 import SecurityEnhancer from './SecurityEnhancer.astro';
 import CrossBrowserTester from './CrossBrowserTester.astro';
 import SecurityEnhancements from './SecurityEnhancements.astro';
+import MonitoringSystem from './MonitoringSystem.astro';
 
 export interface Props {
   title?: string;
@@ -458,6 +459,24 @@ const pageSchema = type === 'article' ? {
       enableFormValidation={true}
       enableSecureLinks={true}
       logSecurityEvents={import.meta.env.DEV}
+    />
+    
+    <!-- Comprehensive Monitoring System -->
+    <MonitoringSystem 
+      enableAnalytics={true}
+      analyticsDomain="hackmum.in"
+      trackOutboundLinks={true}
+      trackFileDownloads={true}
+      enableErrorMonitoring={true}
+      enableUserFeedback={false}
+      maxErrorsPerSession={10}
+      enablePerformanceMonitoring={true}
+      showPerformanceDashboard={import.meta.env.DEV}
+      enablePerformanceAlerts={true}
+      enableInDevelopment={import.meta.env.DEV}
+      enableInProduction={import.meta.env.PROD}
+      enableReporting={true}
+      reportingInterval={5}
     />
   </body>
 </html>

@@ -6,13 +6,35 @@ export interface Props {
   post: CollectionEntry<'posts'>;
   featured?: boolean;
   className?: string;
+  // Optional body content for enhanced reading time calculation
+  body?: string;
+  // Accessibility props
+  'aria-labelledby'?: string;
+  'data-post-index'?: number;
 }
 
-const { post, featured = false, className = '' } = Astro.props;
+const { 
+  post, 
+  featured = false, 
+  className = '', 
+  body,
+  'aria-labelledby': ariaLabelledBy,
+  'data-post-index': postIndex
+} = Astro.props;
 
-// Calculate reading time estimate (rough estimate based on description length)
-// In a real implementation, this would be calculated from the full content
-const readingTime = Math.max(1, Math.ceil((post.data.description || '').split(/\s+/).length / 50)) || 3;
+// Enhanced reading time calculation function
+function calculateReadingTime(content: string): number {
+  // Average reading speed: 200 words per minute
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return Math.max(1, minutes); // Minimum 1 minute
+}
+
+// Calculate reading time with enhanced algorithm
+// Priority: 1. Use provided body content, 2. Fall back to description
+const contentForReadingTime = body || post.data.description || '';
+const readingTime = calculateReadingTime(contentForReadingTime);
 
 // Format the date
 const formattedDate = formatDate(post.data.date.toString());
@@ -25,14 +47,16 @@ const coverImageSrc = post.data.cover ? `/src/assets/images/${post.data.cover}` 
 ---
 
 <article 
-  class={`bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary group cursor-pointer transition-all duration-300 overflow-hidden h-full flex flex-col ${featured ? 'featured-post' : ''} ${className}`}
+  class={`bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary group cursor-pointer transition-all duration-300 overflow-hidden flex flex-col ${featured ? 'featured-post' : ''} ${className}`}
+  style="height: 100%; min-height: 400px;"
   role="article"
-  aria-labelledby={`post-title-${post.slug}`}
+  aria-labelledby={ariaLabelledBy || `post-title-${post.slug}`}
+  data-post-index={postIndex}
 >
   <a 
     href={href}
-    class="block h-full text-decoration-none flex flex-col"
-    aria-describedby={`post-excerpt-${post.slug}`}
+    class="block text-decoration-none flex flex-col h-full"
+    aria-describedby={postIndex !== undefined ? `post-summary-${postIndex}` : `post-excerpt-${post.slug}`}
   >
     {coverImageSrc ? (
       <div class="aspect-video overflow-hidden rounded-t-xl">
@@ -94,14 +118,14 @@ const coverImageSrc = post.data.cover ? `/src/assets/images/${post.data.cover}` 
       </div>
       
       <h3 
-        id={`post-title-${post.slug}`}
+        id={postIndex !== undefined ? `post-title-${postIndex}` : `post-title-${post.slug}`}
         class="text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors line-clamp-2"
       >
         {post.data.title}
       </h3>
       
       <p 
-        id={`post-excerpt-${post.slug}`}
+        id={postIndex !== undefined ? `post-summary-${postIndex}` : `post-excerpt-${post.slug}`}
         class="text-base-content/80 line-clamp-3 mb-4"
       >
         {post.data.description}

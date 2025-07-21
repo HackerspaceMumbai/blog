@@ -1,5 +1,79 @@
 # Implementation Plan
 
+## How to Contribute to Site Development
+
+### Getting Started
+1. **Clone the repository** and navigate to the project directory
+2. **Install dependencies** using your preferred package manager (npm, yarn, or pnpm)
+3. **Start the development server** to see the site locally
+4. **Review the tasks below** to understand what's been completed and what needs work
+
+### Development Workflow
+- Each task below can be executed independently
+- Click "Start task" next to any uncompleted task to begin implementation
+- Tasks are ordered by priority and dependencies
+- Review the requirements.md and design.md files in this spec folder for context
+
+### Project Structure
+- **Components**: Astro components in `/src/components/`
+- **Pages**: Site pages in `/src/pages/`
+- **Styles**: CSS files in `/src/styles/`
+- **Assets**: Images and static files in `/public/`
+
+### Before Contributing
+- Read the requirements and design documents in this spec folder
+- Ensure your development environment is set up
+- Test your changes on multiple screen sizes
+- Follow accessibility best practices
+- Write clean, maintainable code
+
+### Testing Your Changes
+- Test mobile responsiveness on different devices
+- Verify accessibility with screen readers
+- Check cross-browser compatibility
+- Validate HTML and CSS
+- Test performance impact
+
+### Debugging with Built-in Tools
+
+When you run `pnpm run dev`, you'll see integrated testing tools in your browser:
+
+#### Accessibility Tester
+- **Location**: Left sidebar panel in development mode
+- **Features**: 
+  - Real-time accessibility audit results
+  - WCAG compliance checking
+  - Color contrast validation
+  - Keyboard navigation testing
+- **How to use**:
+  - Click on accessibility issues to see detailed explanations
+  - Fix issues and see results update in real-time
+  - Use the audit results to guide your accessibility improvements
+
+#### Compatibility Tester
+- **Location**: Available in development toolbar
+- **Features**:
+  - Cross-browser compatibility checks
+  - Mobile device simulation
+  - Performance metrics
+- **How to use**:
+  - Test different viewport sizes
+  - Check browser-specific CSS issues
+  - Validate responsive design breakpoints
+
+#### Debugging Workflow
+1. **Start development server**: `pnpm run dev`
+2. **Open browser tools**: Check the left sidebar for accessibility audit
+3. **Make changes**: Edit components and see real-time feedback
+4. **Fix issues**: Address accessibility and compatibility problems as they appear
+5. **Validate**: Ensure all tests pass before committing changes
+
+#### Common Issues to Watch For
+- **Accessibility**: Missing alt text, poor color contrast, keyboard navigation
+- **Mobile**: Layout breaks, touch targets too small, text overflow
+- **Performance**: Large images, unused CSS, slow loading times
+- **Compatibility**: CSS not supported in older browsers, JavaScript errors
+
 - [x] 1. Fix Critical Mobile Viewport and Layout Issues
 
 
@@ -137,7 +211,12 @@
   - Ensure secure handling of form submissions
   - _Requirements: 9.1, 9.2, 9.3, 9.6_
 
-- [-] 14. Add Basic Analytics and Monitoring
+- [x] 14. Add Basic Analytics and Monitoring
+
+
+
+
+
 
 
 
@@ -148,7 +227,11 @@
   - Create basic performance dashboards
   - _Requirements: 10.1, 10.2, 10.3, 10.6_
 
-- [ ] 15. Create Component Documentation
+- [x] 15. Create Component Documentation
+
+
+
+
   - Document all enhanced components with usage examples
   - Create accessibility implementation guidelines
   - Write mobile-first design guidelines
