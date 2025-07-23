@@ -177,9 +177,7 @@ function getCachingStrategy(request) {
   }
   
   // API endpoints - network first
-  if (pathname.startsWith('/api/')) {
-    return CACHE_STRATEGIES.NETWORK_FIRST;
-  }
+  // Removed /api/ check for static site
   
   // HTML pages - stale while revalidate
   if (request.headers.get('accept')?.includes('text/html')) {

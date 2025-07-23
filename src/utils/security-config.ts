@@ -65,7 +65,8 @@ export const defaultSecurityConfig: SecurityConfig = {
     ],
     fontSrc: [
       "'self'",
-      "https://fonts.gstatic.com"
+      "https://fonts.gstatic.com",
+      "https://fonts.googleapis.com"
     ],
     connectSrc: [
       "'self'",

@@ -83,7 +83,6 @@ const gridClasses = getGridClasses(validatedPosts.length);
     {validatedPosts.length > 0 && (
       <div 
         class={`grid ${gridClasses} gap-8 items-start`}
-        role="feed"
         aria-label={`${validatedPosts.length} blog post${validatedPosts.length === 1 ? '' : 's'} from Hackerspace Mumbai`}
         aria-live="polite"
         aria-busy="false"

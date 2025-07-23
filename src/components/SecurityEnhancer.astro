@@ -563,10 +563,8 @@ const {
         console.warn('🚨 Inline scripts detected (potential CSP violation)');
       }
       
-      // Check for eval usage
-      if (typeof window.eval !== 'undefined') {
-        console.warn('🚨 eval() function available (potential security risk)');
-      }
+      // Check for unsafe dynamic code execution patterns
+      this.checkForUnsafeDynamicCode();
     }
     
     // Utility Methods

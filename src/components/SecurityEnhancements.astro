@@ -81,29 +81,8 @@ const {
     }
     
     setupXSSProtection() {
-      // Monitor for potential XSS attempts
-      const originalInnerHTML = Element.prototype.innerHTML;
-      const originalOuterHTML = Element.prototype.outerHTML;
-      
-      // Override innerHTML setter to sanitize content
-      Object.defineProperty(Element.prototype, 'innerHTML', {
-        get: function() {
-          return this.getAttribute('data-original-html') || '';
-        },
-        set: function(value) {
-          const sanitized = this.sanitizeHTML(value);
-          this.setAttribute('data-original-html', value);
-          originalInnerHTML.call(this, sanitized);
-          
-          if (value !== sanitized) {
-            this.logSecurityEvent('xss_attempt', 'Potentially malicious HTML sanitized', {
-              original: value,
-              sanitized: sanitized,
-              element: this.tagName
-            });
-          }
-        }.bind(this)
-      });
+      // Monitor for potential XSS attempts without overriding innerHTML
+      // (innerHTML override was causing infinite recursion)
       
       // Monitor script injections
       const observer = new MutationObserver((mutations) => {
@@ -415,6 +394,23 @@ const {
             // Add target="_blank" if not present
             if (!link.hasAttribute('target')) {
               link.setAttribute('target', '_blank');
+            }
+            
+            // Add screen reader indicator for external links that open in new window
+            if (link.getAttribute('target') === '_blank') {
+              const currentAriaLabel = link.getAttribute('aria-label') || '';
+              if (!currentAriaLabel.includes('opens in new window') && !currentAriaLabel.includes('opens in new tab')) {
+                const linkText = link.textContent || link.getAttribute('title') || 'Link';
+                link.setAttribute('aria-label', currentAriaLabel ? `${currentAriaLabel} (opens in new window)` : `${linkText} (opens in new window)`);
+              }
+              
+              // Also add screen reader text if no aria-label exists
+              if (!link.querySelector('.sr-only')) {
+                const srText = document.createElement('span');
+                srText.className = 'sr-only';
+                srText.textContent = ' (opens in new window)';
+                link.appendChild(srText);
+              }
             }
             
             // Add security warning for suspicious links

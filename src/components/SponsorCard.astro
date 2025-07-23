@@ -77,7 +77,7 @@ const isClickable = sponsor.url && sponsor.status === 'active';
 <div 
   class={cardClasses}
   role={isClickable ? 'button' : 'img'}
-  aria-label={`${sponsor.name} sponsor${sponsor.tier ? ` - ${tierLabels[sponsor.tier]}` : ''}`}
+  aria-label={`${sponsor.name} sponsor${sponsor.tier ? ` - ${tierLabels[sponsor.tier]}` : ''}${isClickable ? ' (opens in new window)' : ''}`}
   tabindex={isClickable ? 0 : -1}
   data-sponsor-tier={sponsor.tier}
   data-sponsor-status={sponsor.status}
@@ -111,21 +111,14 @@ const isClickable = sponsor.url && sponsor.status === 'active';
         
         <!-- Logo -->
         {sponsor.logo ? (
-          <div class="flex-shrink-0">
+          <div class="flex items-center justify-center w-full" style="min-height:64px;">
             <img 
               src={sponsor.logo} 
               alt={`${sponsor.name} logo`}
-              class={`${logoSizes[size]} w-auto object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md`}
+              class={`w-20 h-16 object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md bg-yellow-300 border-4 border-red-500`}
               loading="lazy"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+              style="display:block;"
             />
-            <div class="hidden">
-              <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>
-                <span class="text-base-content/60 dark:text-base-content/80 font-medium text-sm">
-                  {sponsor.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            </div>
           </div>
         ) : (
           <div class={`${logoSizes[size]} w-auto bg-base-200 dark:bg-base-300 rounded-lg flex items-center justify-center`}>

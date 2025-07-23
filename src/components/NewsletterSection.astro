@@ -6,13 +6,19 @@ import CTAButton from './CTAButton.astro';
     <h2 class="text-3xl font-bold mb-6 text-primary">Stay Updated</h2>
     <p class="mb-8 text-base-content">Subscribe to our newsletter for the latest events, blog posts, and community news.</p>
     <form class="flex flex-col md:flex-row gap-4 justify-center">
+      <label for="newsletter-email" class="sr-only">Email address (required)</label>
       <input 
         type="email" 
-        placeholder="Your email address" 
+        id="newsletter-email"
+        name="email"
+        placeholder="Your email address *" 
         class="input input-primary md:min-w-[300px]" 
         required
+        aria-describedby="email-required"
+        aria-required="true"
       />
-  <CTAButton type="submit" variant="soft">Subscribe</CTAButton>
+      <span id="email-required" class="sr-only">This field is required</span>
+      <CTAButton type="submit" variant="primary">Subscribe</CTAButton>
     </form>
   </div>
 </section>

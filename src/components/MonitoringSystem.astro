@@ -357,7 +357,6 @@ const shouldEnable = enableInDevelopment || enableInProduction;
             // Try to send beacon if available
             if ('sendBeacon' in navigator && enableAnalytics) {
               try {
-                navigator.sendBeacon('/api/monitoring', JSON.stringify(report));
               } catch (e) {
                 // Beacon failed, ignore
               }

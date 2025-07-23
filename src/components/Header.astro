@@ -3,9 +3,9 @@ import ThemeToggle from './ThemeToggle.astro';
 ---
 <header class="bg-primary text-primary-content font-bold shadow-md">
   <div class="flex justify-between items-center px-4 py-3">
-    <h1 class="text-lg md:text-xl hover:text-accent transition-colors">
+    <div class="text-lg md:text-xl hover:text-accent transition-colors font-bold">
       <a href="/" class="hover:text-accent transition-colors">Hackerspace Mumbai</a>
-    </h1>
+    </div>
     
     <!-- Mobile menu button -->
     <button 
@@ -23,7 +23,6 @@ import ThemeToggle from './ThemeToggle.astro';
     <nav class="hidden md:flex space-x-8">
       <a href="/" class="hover:text-accent transition-colors">Home</a>
       <a href="/blog/" class="hover:text-accent transition-colors">Blog</a>
-      <a href="https://hackerspacemumbai.org/" class="hover:text-accent transition-colors" target="_blank" rel="noopener noreferrer">Main Site</a>
     </nav>
   </div>
   
@@ -36,7 +35,6 @@ import ThemeToggle from './ThemeToggle.astro';
     <div class="px-4 py-2 space-y-2">
       <a href="/" class="block py-2 hover:text-accent transition-colors">Home</a>
       <a href="/blog/" class="block py-2 hover:text-accent transition-colors">Blog</a>
-      <a href="https://hackerspacemumbai.org/" class="block py-2 hover:text-accent transition-colors" target="_blank" rel="noopener noreferrer">Main Site</a>
     </div>
   </nav>
 </header>

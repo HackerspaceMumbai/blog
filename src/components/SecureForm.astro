@@ -73,9 +73,11 @@ const formId = id || `secure-form-${Math.random().toString(36).substr(2, 9)}`;
   <input type="hidden" name="form_signature" id={`signature-${formId}`} value="" />
 </form>
 
+<!-- Load external secure form handler -->
+<script src="/src/scripts/secure-form-handler.js"></script>
+
 <script define:vars={{ formId, enableCSRF, enableRateLimit, enableHoneypot, maxSubmissions, submissionWindow }}>
-  // Secure Form Handler
-  class SecureFormHandler {
+  // Initialize secure form handler with external script
     constructor(formId, options = {}) {
       this.formId = formId;
       this.form = document.getElementById(formId);
@@ -738,14 +740,18 @@ const formId = id || `secure-form-${Math.random().toString(36).substr(2, 9)}`;
     }
   }
   
-  // Initialize secure form handler
-  new SecureFormHandler(formId, {
-    enableCSRF,
-    enableRateLimit,
-    enableHoneypot,
-    maxSubmissions,
-    submissionWindow
-  });
+  // Initialize secure form handler with external script
+  if (typeof SecureFormHandler !== 'undefined') {
+    new SecureFormHandler(formId, {
+      enableCSRF,
+      enableRateLimit,
+      enableHoneypot,
+      maxSubmissions,
+      submissionWindow
+    });
+  } else {
+    console.error('SecureFormHandler not loaded');
+  }
 </script>
 
 <style>

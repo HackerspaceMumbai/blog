@@ -9,7 +9,6 @@ import SponsorsSection from "../components/SponsorsSection.astro";
 import GallerySection from "../components/GallerySection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
 
 // Get the most recent blog posts
 const posts = (await getCollection("posts"))
@@ -50,7 +49,7 @@ const testimonials = [
 
 // Sample stats
 const stats = {
-  yearsRunning: 12,
+  yearsRunning: 14,
   meetupsHosted: 110,
   membersCount: "2,500+",
   projectsSupported: 35,
@@ -60,7 +59,7 @@ const stats = {
 const sponsors = [
   { 
     name: "Microsoft", 
-    logo: "microsoft.png",
+    logo: "/assets/images/microsoftlogo.svg",
     url: "https://microsoft.com",
     tier: "platinum" as const,
     description: "Leading technology company providing cloud services and developer tools",
@@ -68,34 +67,64 @@ const sponsors = [
   },
   { 
     name: "Google", 
-    logo: "google.png",
+    logo: "/assets/images/google_logo.svg",
     url: "https://google.com",
+    tier: "bronze" as const,
+    description: "Global technology leader in search, cloud computing, and AI",
+    featured: false
+  },
+  { 
+    name: "BookMyShow", 
+    logo: "/assets/images/bookmyshow_logo.svg",
+    url: "https://bookmyshow.com",
+    tier: "platinum" as const,
+    description: "India's largest ticketing platform for events, movies, and experiences",
+    featured: true
+  },
+  { 
+    name: "Directi", 
+    logo: "/assets/images/directi_logo.svg",
+    url: "https://directi.com",
     tier: "platinum" as const,
     description: "Global technology leader in search, cloud computing, and AI",
     featured: true
   },
+  //Add codebrabbit as silver sponsor
   { 
-    name: "DigitalOcean", 
-    logo: "digitalocean.png",
-    url: "https://digitalocean.com",
-    tier: "gold" as const,
-    description: "Cloud infrastructure provider for developers and businesses"
-  },
-  {
-    name: "GitHub",
-    url: "https://github.com",
+    name: "CodeRabbit",
+    logo: "/assets/images/coderabbit_logo.svg",
+    url: "https://coderabbit.com",
     tier: "silver" as const,
-    description: "World's leading software development platform"
+    description: "Innovative software development company specializing in web and mobile solutions",
+    featured: true
   },
-  {
-    name: "Very Long Company Name Technologies Private Limited",
-    tier: "bronze" as const,
-    description: "Testing sponsor with very long name to ensure proper text wrapping and layout"
-  },
-  {
-    name: "StartupXYZ",
+  { 
+    name: "wework", 
+    logo: "/assets/images/wework_logo.svg",
+    url: "https://wework.co.in",
     tier: "community" as const,
-    description: "Local startup supporting the developer community"
+    description: "Global technology leader in search, cloud computing, and AI",
+    featured: false
+  },
+
+  // Add neo4j as community sponsor
+  { 
+    name: "Neo4j",
+    logo: "/assets/images/neo4j_logo.svg",
+    url: "https://neo4j.com",
+    tier: "community" as const,
+    description: "Leading graph database platform for building intelligent applications",
+    featured: false
+  },
+
+  // Add langdb.ai as community sponsor
+  { 
+    name: "langdb.ai",
+    logo: "/assets/images/langdb_logo.svg",
+    url: "https://langdb.ai",
+    tier: "community" as const,
+    description: "The Fastest Enterprise AI Gateway",
+    featured: false
   }
 ];
 
@@ -113,7 +142,8 @@ export const canonical = "https://hackmum.in/";
   canonical={canonical}
   type="website"
 >
-
+  <!-- Main page heading for screen readers - removed duplicate H1 -->
+  <!-- H1 is now in HeroSection component -->
 
   <HeroSection />
 

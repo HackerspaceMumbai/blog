@@ -28,7 +28,7 @@ const { title, date, location, description, rsvpLink, coverImage } = Astro.props
     <p class="text-base-content/70 text-base mb-3">{date} | {location}</p>
     <p class="mb-6 text-base-content line-clamp-3 text-base md:text-lg">{description}</p>
     <div class="card-actions mt-auto">
-      <CTAButton href={rsvpLink} variant="primary" extraClass="w-full flex justify-center group-focus-within:ring-2 group-focus-within:ring-primary group-focus-within:ring-offset-2" target="_blank">RSVP Now</CTAButton>
+      <CTAButton href={rsvpLink} variant="primary" extraClass="w-full flex justify-center group-focus-within:ring-2 group-focus-within:ring-primary group-focus-within:ring-offset-2" target="_blank" aria-label="RSVP for this event (opens in new window)">RSVP Now</CTAButton>
     </div>
   </div>
 </div>

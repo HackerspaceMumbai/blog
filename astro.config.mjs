@@ -38,7 +38,7 @@ export default defineConfig({
   // Prefetch configuration
   prefetch: true,
 
-  // Output configuration
+  // Output configuration - static mode for better compatibility
   output: 'static',
   
   // Compression and optimization

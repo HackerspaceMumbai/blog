@@ -2,7 +2,7 @@
 import { getEntry, type CollectionEntry } from "astro:content";
 import { Image } from 'astro:assets'; 
 import Layout from "../../components/Layout.astro";
-import Prose from "../../components/Prose.astro";
+// Removed custom Prose.astro component
 
 // Import the Image component
 
@@ -284,10 +284,8 @@ if (post.data.cover) {
           )}
         </header>
         
-        <article class="blog-content text-foreground">
-          <Prose>
-            <Content />
-          </Prose>
+        <article class="prose prose-lg blog-content mx-auto text-foreground">
+          <Content />
         </article>
         
         <footer class="blog-footer">
@@ -295,7 +293,7 @@ if (post.data.cover) {
             <div>
               <h3 class="text-xl font-semibold mb-2">Tags</h3>
               <div class="tag-list">
-                {post.data.tags.map((tag) => (
+                {post.data.tags.map((tag: string) => (
                   <a href={`/tags/${tag}`}>#{tag}</a>
                 ))}
               </div>
@@ -306,7 +304,7 @@ if (post.data.cover) {
             <div class="mt-4">
               <h3 class="text-xl font-semibold mb-2">Categories</h3>
               <div class="tag-list">
-                {post.data.categories.map((category) => (
+                {post.data.categories.map((category: string) => (
                   <a href={`/categories/${category}`}>{category}</a>
                 ))}
               </div>

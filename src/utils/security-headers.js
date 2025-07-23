@@ -13,7 +13,6 @@ export const CSP_CONFIG = {
     'script-src': [
       "'self'",
       "'unsafe-inline'", // Required for Astro inline scripts
-      "'unsafe-eval'", // Required for some development tools
       'https://unpkg.com',
       'https://cdn.jsdelivr.net',
       'https://www.google-analytics.com',
@@ -321,10 +320,12 @@ export const SECURITY_TESTS = {
   testCSP() {
     // Try to execute inline script (should be blocked)
     try {
-      eval('console.log("CSP test - this should be blocked")');
-      return { passed: false, message: 'CSP not blocking eval()' };
+      // Use Function constructor instead of eval for safer testing
+      const testFunction = new Function('console.log("CSP test - this should be blocked")');
+      testFunction();
+      return { passed: false, message: 'CSP not blocking dynamic code execution' };
     } catch (e) {
-      return { passed: true, message: 'CSP successfully blocking eval()' };
+      return { passed: true, message: 'CSP successfully blocking dynamic code execution' };
     }
   },
   
