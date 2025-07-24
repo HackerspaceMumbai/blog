@@ -1,17 +1,53 @@
 ---
-
+import Layout from '../components/Layout.astro';
 ---
 
-<html lang="en" class="bg-primary text-primary-content">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
+<Layout>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- About Us Section -->
+    <section class="mb-12">
+      <h2 class="text-4xl font-bold text-highlight mb-8">About Us</h2>
+      <div class="text-accent text-lg leading-relaxed space-y-4">
+        <p>
+          Hackerspace Mumbai is the largest open source community in Mumbai and hosts the city's longest-running tech meetup series. Founded in 2018, we bring together developers, designers, and tech enthusiasts to learn, collaborate, and build together.
+        </p>
+        <p>
+          Our mission is to foster a vibrant, inclusive tech community that promotes knowledge sharing, collaboration, and innovation through open source principles.
+        </p>
+        <p>
+          We organize regular meetups, workshops, hackathons, and other events to help members grow their skills, connect with peers, and contribute to meaningful projects.
+        </p>
+      </div>
+    </section>
 
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>My Astro site</h1>
-	</body>
-</html>
+    <!-- Data Highlight Boxes -->
+    <section class="mb-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-background border-2 border-highlight rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-highlight mb-2">12+</div>
+          <div class="text-accent">Years Running</div>
+        </div>
+        <div class="bg-background border-2 border-highlight rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-highlight mb-2">110+</div>
+          <div class="text-accent">Meetups Hosted</div>
+        </div>
+        <div class="bg-background border-2 border-highlight rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-highlight mb-2">2,500+</div>
+          <div class="text-accent">Active Members</div>
+        </div>
+        <div class="bg-background border-2 border-highlight rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-highlight mb-2">35+</div>
+          <div class="text-accent">Projects Supported</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What Our Members Say Section -->
+    <section class="mb-12">
+      <h2 class="text-4xl font-bold text-highlight mb-8">What Our Members Say</h2>
+      <div class="text-accent text-lg">
+        <p>Hear from our community members about their experience with Hackerspace Mumbai!</p>
+      </div>
+    </section>
+  </div>
+</Layout>
