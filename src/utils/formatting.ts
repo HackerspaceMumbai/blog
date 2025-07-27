@@ -273,7 +273,7 @@ export function extractDomain(url: string): string {
 export function isExternalUrl(url: string, currentDomain?: string): boolean {
   try {
     const urlObj = new URL(url);
-    const domain = currentDomain || window.location.hostname;
+    const domain = currentDomain || (typeof window !== 'undefined' ? window.location.hostname : '');
     return urlObj.hostname !== domain;
   } catch (error) {
     return false;

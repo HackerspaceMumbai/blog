@@ -1,0 +1,47 @@
+---
+const { testimonials } = Astro.props;
+---
+<div class="mt-16 sm:mt-20 lg:mt-24">
+  <div class="text-center mb-8 sm:mb-12">
+    <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-primary">
+      What Our Members Say
+    </h3>
+    <p class="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
+      Hear from our community members about their experience with Hackerspace Mumbai
+    </p>
+  </div>
+  <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+    {testimonials.map((testimonial: { quote: string; author: string }, index: number) => (
+      <div class="group bg-base-100 border border-primary p-5 sm:p-6 lg:p-8 rounded-xl hover:shadow-lg hover:border-primary/80 transition-all duration-300 hover:-translate-y-1">
+        <!-- Quote icon -->
+        <div class="mb-4">
+          <svg class="w-8 h-8 text-primary/30 group-hover:text-primary/50 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+          </svg>
+        </div>
+        <!-- Quote text -->
+        <blockquote class="mb-4 sm:mb-6">
+          <p class="italic text-sm sm:text-base lg:text-lg leading-relaxed text-base-content/90">
+            "{testimonial.quote}"
+          </p>
+        </blockquote>
+        <!-- Author -->
+        <footer class="flex items-center">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+            <span class="text-primary font-semibold text-sm">
+              {testimonial.author.split(' ').map((name: string) => name[0]).join('')}
+            </span>
+          </div>
+          <div>
+            <p class="font-semibold text-accent text-sm sm:text-base">
+              {testimonial.author}
+            </p>
+            <p class="text-xs sm:text-sm text-base-content/60">
+              Community Member
+            </p>
+          </div>
+        </footer>
+      </div>
+    ))}
+  </div>
+</div>

@@ -12,10 +12,7 @@ export default defineConfig({
 
   // Performance optimizations
   build: {
-    // Enable CSS code splitting
-    cssCodeSplit: true,
-    // Inline small assets
-    assetsInlineLimit: 4096,
+    // Build configuration
   },
 
   // Image optimization
@@ -23,15 +20,6 @@ export default defineConfig({
     // Enable image optimization
     service: {
       entrypoint: 'astro/assets/services/sharp'
-    },
-    // Configure image formats
-    formats: ['avif', 'webp', 'svg'],
-    // Configure image quality
-    quality: {
-      avif: 70,
-      webp: 80,
-      jpeg: 85,
-      png: 90
     }
   },
 

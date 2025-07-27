@@ -1,13 +1,39 @@
 ---
 import CTAButton from './CTAButton.astro';
+import { Image } from 'astro:assets';
+import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
+import pinnedpic2 from '../assets/images/gallery/pinnedpic-2.jpg';
+import pinnedpic3 from '../assets/images/gallery/pinnedpic-3.jpg';
+import pinnedpic4 from '../assets/images/gallery/pinnedpic-4.jpg';
+import pinnedpic5 from '../assets/images/gallery/pinnedpic-5.jpg';
+import pinnedpic6 from '../assets/images/gallery/pinnedpic-6.jpg';
+import pinnedpic7 from '../assets/images/gallery/pinnedpic-7.jpg';
+import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
 ---
 <section class="py-16 px-4 bg-base-100 text-base-content">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-3xl font-bold mb-12 text-center text-primary">Media Gallery</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-        <div class="aspect-square bg-base-200 border border-primary rounded-md flex items-center justify-center">
-          <p class="text-primary">Event Photo {i}</p>
+      {[
+        { src: pinnedpic1, alt: 'Pinned Pic 1' },
+        { src: pinnedpic2, alt: 'Pinned Pic 2' },
+        { src: pinnedpic3, alt: 'Pinned Pic 3' },
+        { src: pinnedpic4, alt: 'Pinned Pic 4' },
+        { src: pinnedpic5, alt: 'Pinned Pic 5' },
+        { src: pinnedpic6, alt: 'Pinned Pic 6' },
+        { src: pinnedpic7, alt: 'Pinned Pic 7' },
+        { src: pinnedpic8, alt: 'Pinned Pic 8' }
+      ].map(img => (
+        <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+          <Image
+            src={img.src}
+            alt={img.alt}
+            width={400}
+            height={400}
+            class="w-full h-full object-cover"
+            format="webp"
+            loading="lazy"
+          />
         </div>
       ))}
     </div>

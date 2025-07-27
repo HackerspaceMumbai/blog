@@ -6,9 +6,7 @@ import Layout from "../../components/Layout.astro";
 
 // Import the Image component
 
-// Get all possible cover images from the assets directory
-// Adjust the glob pattern if your images have different extensions or locations
-const images = import.meta.glob('/src/assets/images/**/*.{jpeg,jpg,png,gif,webp,avif,svg}');
+// Cover images are now handled by Astro's content collection image() helper
 
 export async function getStaticPaths() {
   const { getCollection } = await import("astro:content");
@@ -43,33 +41,17 @@ function calculateReadingTime(text) {
 // Get plain text from the post content for reading time calculation
 let readingTime = 1;
 try {
-  // Try to get the raw markdown content if available
+  // Use the raw markdown content from post.body
   if (post.body) {
     readingTime = calculateReadingTime(post.body);
-  } else if (post.data && post.data.content) {
-    readingTime = calculateReadingTime(post.data.content);
   }
 } catch (e) {
   readingTime = 1;
 }
 
-// Find and load the cover image module based on frontmatter
-let coverImageImport = null;
-if (post.data.cover) {
-  const imagePath = `/src/assets/images/${post.data.cover}`;
-  if (images[imagePath]) {
-    try {
-      // Dynamically import the image module
-      coverImageImport = (await images[imagePath]()).default;
-    } catch (e) {
-       console.error(`Error importing cover image: ${imagePath}`, e);
-    }
-  } else {
-    console.warn(`Cover image specified in frontmatter not found in src/assets/images: ${post.data.cover}`);
-    console.warn(`Looked for path: ${imagePath}`);
-    console.warn(`Available images: ${Object.keys(images).join(', ')}`);
-  }
-}
+// The cover image is now handled by Astro's image() helper
+// post.data.cover is already an ImageMetadata object when present
+const coverImage = post.data.cover;
 ---
 
 <style>
@@ -274,9 +256,9 @@ if (post.data.cover) {
           </div>
           
           {/* Use Astro's Image component for optimized cover images */}
-          {coverImageImport && (
+          {coverImage && (
             <Image
-              src={coverImageImport}
+              src={coverImage}
               alt={post.data.title + " cover image"}
               class="cover-image"
               loading="eager"

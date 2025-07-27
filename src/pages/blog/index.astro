@@ -7,6 +7,8 @@ import { getCollection, type CollectionEntry } from "astro:content";
 const posts: CollectionEntry<'posts'>[] = (await getCollection("posts"))
   .filter(post => post.data.date) // Filter out posts without dates
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+console.log('DEBUG: Posts count:', posts.length);
 ---
 
 <style>
@@ -144,18 +146,11 @@ const posts: CollectionEntry<'posts'>[] = (await getCollection("posts"))
         </div>
       ) : (
         posts.map((post, index) => (
-          <article 
-            role="article"
-            aria-labelledby={`post-title-${index}`}
-            aria-describedby={`post-summary-${index}`}
-          >
-            <BlogCard 
-              post={post} 
-              body={post.body}
-              aria-labelledby={`post-title-${index}`}
-              data-post-index={index}
-            />
-          </article>
+          <BlogCard 
+            post={post} 
+            data-post-index={index}
+            aria-labelledby={`post-${index}-title`}
+          />
         ))
       )}
     </section>

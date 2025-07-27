@@ -4,6 +4,7 @@ This documentation provides comprehensive guidelines for developing, maintaining
 
 ## 📚 Documentation Structure
 
+- [Content Creation Guide](./content-creation.md) - Complete guide for creating blog posts with colocated images
 - [Component Documentation](./components/README.md) - Detailed documentation for all components
 - [Accessibility Guidelines](./accessibility/README.md) - Implementation guidelines for accessibility
 - [Mobile-First Design Guidelines](./design/README.md) - Mobile-first design principles and patterns

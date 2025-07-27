@@ -1,0 +1,37 @@
+---
+const { stats } = Astro.props;
+---
+<div class="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
+  <div class="group bg-base-100 border-2 border-primary text-primary p-4 sm:p-5 lg:p-6 rounded-xl text-center flex flex-col justify-center min-h-[110px] sm:min-h-[130px] lg:min-h-[140px] hover:shadow-lg hover:scale-105 transition-all duration-300 hover:bg-primary/5">
+    <div class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold group-hover:scale-110 transition-transform duration-300">
+      {stats.yearsRunning}+
+    </div>
+    <div class="text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 font-medium opacity-80">
+      Years Running
+    </div>
+  </div>
+  <div class="group bg-base-100 border-2 border-primary text-primary p-4 sm:p-5 lg:p-6 rounded-xl text-center flex flex-col justify-center min-h-[110px] sm:min-h-[130px] lg:min-h-[140px] hover:shadow-lg hover:scale-105 transition-all duration-300 hover:bg-primary/5">
+    <div class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold group-hover:scale-110 transition-transform duration-300">
+      {stats.meetupsHosted}+
+    </div>
+    <div class="text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 font-medium opacity-80">
+      Meetups Hosted
+    </div>
+  </div>
+  <div class="group bg-base-100 border-2 border-primary text-primary p-4 sm:p-5 lg:p-6 rounded-xl text-center flex flex-col justify-center min-h-[110px] sm:min-h-[130px] lg:min-h-[140px] hover:shadow-lg hover:scale-105 transition-all duration-300 hover:bg-primary/5">
+    <div class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold group-hover:scale-110 transition-transform duration-300">
+      {stats.membersCount}
+    </div>
+    <div class="text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 font-medium opacity-80">
+      Active Members
+    </div>
+  </div>
+  <div class="group bg-base-100 border-2 border-primary text-primary p-4 sm:p-5 lg:p-6 rounded-xl text-center flex flex-col justify-center min-h-[110px] sm:min-h-[130px] lg:min-h-[140px] hover:shadow-lg hover:scale-105 transition-all duration-300 hover:bg-primary/5">
+    <div class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold group-hover:scale-110 transition-transform duration-300">
+      {stats.projectsSupported}+
+    </div>
+    <div class="text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 font-medium opacity-80">
+      Projects Supported
+    </div>
+  </div>
+</div>

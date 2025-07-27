@@ -50,9 +50,27 @@ const validatePosts = (posts: CollectionEntry<'posts'>[]): CollectionEntry<'post
   }
 };
 
-const validatedPosts = validatePosts(posts || []);
+---
+import CTAButton from './CTAButton.astro';
+import BlogCard from './BlogCard.astro';
+
+const { posts } = Astro.props;
+
+// Validate posts array
+const validatedPosts = Array.isArray(posts) ? posts.filter(post => post && post.data && post.data.title) : [];
+
+// Dynamic grid classes based on number of posts
+const getGridClasses = (count) => {
+  if (count === 1) return 'grid-cols-1 max-w-2xl mx-auto';
+  if (count === 2) return 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto';
+  return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+};
+
+const gridClasses = getGridClasses(validatedPosts.length);
+---
 
 console.log('BlogSection - Validated posts:', validatedPosts.length);
+console.log('BlogSection - Grid classes:', getGridClasses(validatedPosts.length));
 
 // Determine grid layout based on number of posts
 const getGridClasses = (postCount: number): string => {
@@ -63,10 +81,7 @@ const getGridClasses = (postCount: number): string => {
 };
 
 const gridClasses = getGridClasses(validatedPosts.length);
-
-console.log('BlogSection - Grid classes:', gridClasses);
 ---
-
 <section 
   class="py-20 px-4 bg-base-200"
   aria-labelledby="blog-section-title"

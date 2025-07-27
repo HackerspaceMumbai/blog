@@ -1,0 +1,71 @@
+# Technology Stack & Build System
+
+## Core Framework
+- **Astro 5.12.2** - Static site generator with modern web standards
+- **TypeScript** - Type-safe JavaScript with strict configuration
+- **Node.js** with ES modules (`"type": "module"`)
+
+## Styling & UI
+- **Tailwind CSS 4.1.4** - Utility-first CSS framework
+- **DaisyUI 5.0.46** - Component library built on Tailwind
+- **@tailwindcss/typography** - Beautiful typographic defaults
+- **Prettier** with Tailwind plugin for consistent formatting
+
+## Content Management
+- **Astro Content Collections** - Type-safe content management
+- **MDX** - Markdown with JSX components
+- **Sharp** - High-performance image optimization
+
+## Testing & Quality
+- **Vitest** - Fast unit testing framework with jsdom environment
+- **@testing-library/dom** - Simple and complete testing utilities
+- **Axe-core** - Accessibility testing
+- **Puppeteer** - Cross-browser and security testing
+- **Custom test suites** for accessibility, cross-browser, and security
+
+## Package Management
+- **pnpm** - Fast, disk space efficient package manager
+
+## Common Commands
+
+### Development
+```bash
+pnpm install          # Install dependencies
+pnpm dev              # Start dev server at localhost:4321
+pnpm build            # Build production site to ./dist/
+pnpm preview          # Preview production build locally
+```
+
+### Testing
+```bash
+pnpm test             # Run unit tests
+pnpm test:watch       # Run tests in watch mode
+pnpm test:ui          # Run tests with UI
+pnpm test:coverage    # Run tests with coverage report
+```
+
+### Quality Assurance
+```bash
+pnpm test:a11y        # Run accessibility tests
+pnpm a11y:audit       # Full accessibility audit (build + test)
+pnpm test:cross-browser    # Cross-browser compatibility tests
+pnpm cross-browser:audit  # Full cross-browser audit
+pnpm test:security    # Security vulnerability tests
+pnpm security:audit   # Full security audit
+```
+
+## Build Configuration
+- **Static output** mode for optimal performance and compatibility
+- **CSS code splitting** enabled for better loading performance
+- **Image optimization** with AVIF/WebP formats and quality settings
+- **HTML compression** enabled
+- **Prefetching** enabled for faster navigation
+- **Asset inlining** for files under 4KB
+
+## Performance Optimizations
+- Modern image formats (AVIF, WebP) with fallbacks
+- Automatic image optimization via Sharp
+- CSS code splitting and minification
+- HTML compression
+- Asset inlining for small files
+- Prefetch configuration for faster navigation

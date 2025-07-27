@@ -1,0 +1,11 @@
+---
+console.log('TestCard - Starting render');
+const { post } = Astro.props;
+console.log('TestCard - Post title:', post?.data?.title);
+---
+
+<div style="border: 5px solid red; background: yellow; color: black; padding: 2rem; margin: 1rem;">
+  <h2>TEST CARD WORKS!</h2>
+  <p>Title: {post?.data?.title || 'No title'}</p>
+  <p>Description: {post?.data?.description || 'No description'}</p>
+</div>

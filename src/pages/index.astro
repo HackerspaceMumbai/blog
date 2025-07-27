@@ -18,20 +18,12 @@ const posts = (await getCollection("posts"))
 // Sample upcoming events data (to be replaced with real data/API integration)
 const upcomingEvents = [
   {
-    title: "Monthly Tech Meetup",
-    date: "August 15, 2025",
-    location: "WeWork, Bandra Kurla Complex",
-    description: "Join us for talks on Rust, WebAssembly, and modern web development practices.",
+    title: "Season of Agents + AI Camp: MCP Dev Day ",
+    date: "August 2nd, 2025",
+    location: "Microsoft Mumbai, Kalina",
+    description: "Join us for workshops on Agents and MCP development, featuring hands-on sessions with industry experts.",
     rsvpLink: "https://meetup.com/hackerspace-mumbai/events/123456789",
     coverImage: "/images/social-preview.jpg",
-  },
-  {
-    title: "Open Source Saturday",
-    date: "August 28, 2025",
-    location: "Microsoft Reactor, Powai",
-    description: "Contribute to open source projects with guidance from experienced maintainers.",
-    rsvpLink: "https://meetup.com/hackerspace-mumbai/events/987654321",
-    coverImage: "/images/hero-background.jpg",
   }
 ];
 
@@ -59,7 +51,7 @@ const stats = {
 const sponsors = [
   { 
     name: "Microsoft", 
-    logo: "/assets/images/microsoftlogo.svg",
+    logo: "/assets/images/microsoft_logo.svg",
     url: "https://microsoft.com",
     tier: "platinum" as const,
     description: "Leading technology company providing cloud services and developer tools",

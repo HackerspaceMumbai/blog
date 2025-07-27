@@ -48,11 +48,53 @@ All commands are run from the root of the project:
 | `pnpm build`    | Build your production site to `./dist/`   |
 | `pnpm preview`  | Preview your build locally                |
 
+## ✍️ Creating Blog Content
+
+### Quick Start for Content Creators
+
+Our blog uses Astro content collections with **colocated images** - each blog post has its own directory containing both content and images.
+
+**Basic Structure:**
+```
+src/content/posts/your-post-slug/
+├── index.mdx        # Your blog post
+├── cover.png        # Cover image (required)
+└── diagram.png      # Any inline images
+```
+
+**Creating a New Post:**
+
+1. **Create directory:** `mkdir src/content/posts/your-post-slug`
+2. **Add cover image:** Place `cover.png` (800x450px recommended) in the directory
+3. **Create content:** Add `index.mdx` with proper frontmatter:
+
+```yaml
+---
+title: "Your Post Title"
+date: 2024-01-15
+description: "SEO-friendly description"
+cover: ./cover.png
+author: "Your Name"
+tags: ["javascript", "tutorial"]
+categories: ["Web Development"]
+---
+```
+
+4. **Reference images in content:**
+```mdx
+import { Image } from 'astro:assets';
+import diagram from './diagram.png';
+
+<Image src={diagram} alt="Helpful description" width={600} height={400} />
+```
+
+**See [CONTRIBUTING.md](CONTRIBUTING.md) for complete documentation, examples, and troubleshooting.**
+
 ## 🤝 Community & Contribution
 
 - Join our [Discord](#) / [Telegram](#) / [Mailing List](#) (links TBD)
 - Contribute via [GitHub Issues](https://github.com/HackerspaceMumbai/blog/issues) or pull requests
-- See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines (coming soon)
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed content creation guidelines
 
 ## 📄 Product Requirements Document
 
