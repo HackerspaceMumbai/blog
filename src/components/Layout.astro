@@ -2,11 +2,49 @@
 import "../styles/global.css";
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "Hackerspace Mumbai Blog", description = "Mumbai's largest open source community blog" } = Astro.props;
 ---
-<div class="min-h-screen flex flex-col">
-  <Header />
-  <main class="flex-1 text-primary bg-background">
-    <slot/>
-  </main>
-  <Footer />
-</div>
+<!DOCTYPE html>
+<html lang="en" class="bg-primary text-primary-content">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="description" content={description} />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- SEO Meta Tags -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hackerspace Mumbai Blog" />
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <title>{title}</title>
+</head>
+<body>
+  <div class="min-h-screen flex flex-col">
+    <Header />
+    <main class="flex-1 text-primary bg-background" role="main">
+      <slot/>
+    </main>
+    <Footer />
+  </div>
+</body>
+</html>
