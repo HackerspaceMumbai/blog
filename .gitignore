@@ -12,6 +12,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# lock files (prefer pnpm-lock.yaml as per project setup)
+package-lock.json
+yarn.lock
 
 # environment variables
 .env
@@ -23,5 +26,15 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# vscode settings (optional - project specific ones can be committed)
+.vscode/settings.json
+
 # Remove Zone Identifier for WSL copied files
 *Zone.Identifier*
+
+# temporary files
+.tmp/
+temp/
+
+# local development
+.dev/
