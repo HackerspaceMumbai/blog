@@ -1,6 +1,23 @@
 ---
-// filepath: /home/indcoder/dev/hackmum_blog/blog/src/components/Footer.astro
+
 ---
-<footer class="py-4 px-8 bg-primary text-black mt-auto">
-  <p class="text-center">&copy; {new Date().getFullYear()} Hackerspace Mumbai's blog</p>
+<footer class="bg-primary text-black mt-auto" role="contentinfo">
+  <div class="container mx-auto px-4 py-6">
+    <div class="text-center">
+      <p class="mb-2">
+        &copy; {new Date().getFullYear()} 
+        <a 
+          href="https://hackerspacemumbai.org/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="hover:text-primary-focus transition-colors"
+        >
+          Hackerspace Mumbai
+        </a>
+      </p>
+      <p class="text-sm opacity-75">
+        Mumbai's largest open source community
+      </p>
+    </div>
+  </div>
 </footer>

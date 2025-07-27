@@ -1,11 +1,40 @@
 ---
 
 ---
- <header class="flex justify-between bg-primary text-black font-bold px-2 py-2">
-    <h1>Hackerspace Mumbai Blog</h1>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/blog/">Blog</a>
-        <a href="https://hackerspacemumbai.org/">Main Site</a>
-    </nav>
+<header class="bg-primary text-black shadow-sm" role="banner">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <h1 class="text-xl font-bold">
+        <a href="/" aria-label="Hackerspace Mumbai Blog Home">
+          Hackerspace Mumbai Blog
+        </a>
+      </h1>
+      
+      <nav role="navigation" aria-label="Main navigation">
+        <ul class="flex space-x-6">
+          <li>
+            <a href="/" class="hover:text-primary-focus transition-colors" aria-label="Home page">
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="/blog/" class="hover:text-primary-focus transition-colors" aria-label="Blog posts">
+              Blog
+            </a>
+          </li>
+          <li>
+            <a 
+              href="https://hackerspacemumbai.org/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="hover:text-primary-focus transition-colors"
+              aria-label="Main site (opens in new window)"
+            >
+              Main Site
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </header>

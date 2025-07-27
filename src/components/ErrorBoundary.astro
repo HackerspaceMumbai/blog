@@ -1,0 +1,38 @@
+---
+export interface Props {
+  error?: Error;
+  title?: string;
+  showRetry?: boolean;
+  className?: string;
+}
+
+const { 
+  error,
+  title = 'Something went wrong',
+  showRetry = true,
+  className = ''
+} = Astro.props;
+---
+
+<div class={`min-h-[200px] flex flex-col items-center justify-center p-8 text-center ${className}`} role="alert" aria-live="polite">
+  <div class="text-6xl mb-4" aria-hidden="true">⚠️</div>
+  
+  <h2 class="text-2xl font-semibold text-error mb-4">{title}</h2>
+  
+  {error && (
+    <p class="text-error-content mb-6 max-w-md">
+      {error.message || 'An unexpected error occurred. Please try again.'}
+    </p>
+  )}
+  
+  {showRetry && (
+    <button 
+      class="btn btn-outline btn-error"
+      onclick="window.location.reload()"
+      type="button"
+      aria-label="Retry loading content"
+    >
+      Try Again
+    </button>
+  )}
+</div>

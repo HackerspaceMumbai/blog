@@ -1,0 +1,20 @@
+{
+  "name": "Hackerspace Mumbai Blog",
+  "short_name": "HM Blog",
+  "description": "Mumbai's largest open source community blog",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["technology", "blog", "community"],
+  "lang": "en",
+  "dir": "ltr"
+}
