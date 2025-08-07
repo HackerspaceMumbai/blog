@@ -3,8 +3,11 @@ import ThemeToggle from './ThemeToggle.astro';
 ---
 <header class="bg-primary text-primary-content font-bold shadow-md">
   <div class="flex justify-between items-center px-4 py-3">
-    <div class="text-lg md:text-xl hover:text-accent transition-colors font-bold">
-      <a href="/" class="hover:text-accent transition-colors">Hackerspace Mumbai</a>
+    <div class="flex items-center space-x-3">
+      <a href="/" class="flex items-center space-x-3 hover:text-accent transition-colors">
+        <img src="/logo.svg" alt="Hackerspace Mumbai" width="40" height="40" class="flex-shrink-0" />
+        <span class="text-lg md:text-xl font-bold">Hackerspace Mumbai</span>
+      </a>
     </div>
     
     <!-- Mobile menu button -->

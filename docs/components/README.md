@@ -191,12 +191,55 @@ import EventsSection from '../components/EventsSection.astro';
 />
 ```
 
-### BlogSection.astro
+### BlogCard.astro
 
-Blog posts section with card-based layout.
+Individual blog post card component with robust image handling.
+
+**Props:**
+```typescript
+interface Props {
+  post: CollectionEntry<'posts'>;
+  featured?: boolean;
+}
+```
+
+**Usage:**
+```astro
+---
+import BlogCard from '../components/BlogCard.astro';
+---
+
+<BlogCard post={post} featured={true} />
+```
 
 **Features:**
-- ✅ Responsive blog cards
+- ✅ Robust image resolution with automatic fallback
+- ✅ Support for Astro content collection images
+- ✅ Responsive design with hover effects
+- ✅ Accessibility optimized with proper alt text
+- ✅ Performance optimized with lazy loading
+- ✅ Comprehensive error handling
+
+**Image Handling:**
+- Automatic resolution of ImageMetadata objects
+- Graceful fallback to placeholder image
+- Support for legacy string paths
+- Dynamic alt text generation
+- Console warnings for debugging
+
+**Accessibility:**
+- Semantic HTML structure
+- Proper ARIA labels and roles
+- Keyboard navigation support
+- Screen reader optimized
+- High contrast design
+
+### BlogSection.astro
+
+Blog posts section with card-based layout using BlogCard components.
+
+**Features:**
+- ✅ Responsive blog card grid
 - ✅ Image optimization with lazy loading
 - ✅ Accessible content structure
 - ✅ SEO-friendly markup

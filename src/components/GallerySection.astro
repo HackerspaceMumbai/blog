@@ -14,28 +14,86 @@ import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
   <div class="max-w-6xl mx-auto">
     <h2 class="text-3xl font-bold mb-12 text-center text-primary">Media Gallery</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {[
-        { src: pinnedpic1, alt: 'Pinned Pic 1' },
-        { src: pinnedpic2, alt: 'Pinned Pic 2' },
-        { src: pinnedpic3, alt: 'Pinned Pic 3' },
-        { src: pinnedpic4, alt: 'Pinned Pic 4' },
-        { src: pinnedpic5, alt: 'Pinned Pic 5' },
-        { src: pinnedpic6, alt: 'Pinned Pic 6' },
-        { src: pinnedpic7, alt: 'Pinned Pic 7' },
-        { src: pinnedpic8, alt: 'Pinned Pic 8' }
-      ].map(img => (
-        <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-          <Image
-            src={img.src}
-            alt={img.alt}
-            width={400}
-            height={400}
-            class="w-full h-full object-cover"
-            format="webp"
-            loading="lazy"
-          />
-        </div>
-      ))}
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic1.src}
+          alt="Developers collaborating during open source workshop"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic2.src}
+          alt="Tech meetup attendees networking during break"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic3.src}
+          alt="Speaker presenting React fundamentals to engaged audience"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic4.src}
+          alt="Hackathon participants coding together at workstations"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic5.src}
+          alt="Workshop participants learning JavaScript debugging techniques"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic6.src}
+          alt="Community members discussing open source contributions"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic7.src}
+          alt="Lightning talks session with audience engagement"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+        <img
+          src={pinnedpic8.src}
+          alt="Hackerspace Mumbai organizers at annual community meetup"
+          width="400"
+          height="400"
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
     </div>
     <div class="text-center mt-10">
   <CTAButton href="/gallery" variant="soft">View Full Gallery</CTAButton>

@@ -1,24 +1,195 @@
 ---
-import CTAButton from './CTAButton.astro';
+import NewsletterForm from './NewsletterForm.astro';
 ---
-<section id="newsletter" class="py-16 px-4 bg-base-200 text-base-content">
-  <div class="max-w-4xl mx-auto text-center">
-    <h2 class="text-3xl font-bold mb-6 text-primary">Stay Updated</h2>
-    <p class="mb-8 text-base-content">Subscribe to our newsletter for the latest events, blog posts, and community news.</p>
-    <form class="flex flex-col md:flex-row gap-4 justify-center">
-      <label for="newsletter-email" class="sr-only">Email address (required)</label>
-      <input 
-        type="email" 
-        id="newsletter-email"
-        name="email"
-        placeholder="Your email address *" 
-        class="input input-primary md:min-w-[300px]" 
-        required
-        aria-describedby="email-required"
-        aria-required="true"
+
+<section id="newsletter" class="py-20 px-4 bg-gradient-to-br from-base-200 to-base-300 relative overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0 opacity-5" aria-hidden="true">
+    <div class="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 right-10 w-40 h-40 bg-secondary rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-accent rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-5xl mx-auto text-center relative z-10">
+    <!-- Enhanced header section -->
+    <div class="mb-12">
+      <!-- Newsletter icon -->
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6">
+        <svg 
+          class="w-8 h-8 text-primary" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
+        </svg>
+      </div>
+      
+      <!-- Enhanced typography -->
+      <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-base-content leading-tight">
+        Stay in the 
+        <span class="text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Loop
+        </span>
+      </h2>
+      
+      <p class="text-lg lg:text-xl text-base-content/80 mb-4 max-w-2xl mx-auto leading-relaxed">
+        Join our community newsletter and never miss out on the latest events, 
+        insightful blog posts, and exciting community updates.
+      </p>
+      
+      <!-- Value proposition badges -->
+      <div class="flex flex-wrap justify-center gap-3 mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Weekly Updates
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-medium">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Event Announcements
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Exclusive Content
+        </div>
+      </div>
+    </div>
+    
+    <!-- Enhanced form container -->
+    <div class="bg-base-100/50 backdrop-blur-sm rounded-2xl p-8 lg:p-10 shadow-xl border border-base-content/10">
+      <NewsletterForm 
+        formId="newsletter-section-form"
+        placeholder="Enter your email address"
+        buttonText="Join the Community"
+        className="mt-0"
       />
-      <span id="email-required" class="sr-only">This field is required</span>
-      <CTAButton type="submit" variant="primary">Subscribe</CTAButton>
-    </form>
+      
+      <!-- Trust indicators -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6 text-sm text-base-content/60">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <span>No spam, ever</span>
+        </div>
+        <div class="hidden sm:block w-1 h-1 bg-base-content/30 rounded-full"></div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-info" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <span>Unsubscribe anytime</span>
+        </div>
+        <div class="hidden sm:block w-1 h-1 bg-base-content/30 rounded-full"></div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+          </svg>
+          <span>1000+ subscribers</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  /* Enhanced newsletter section styling */
+  #newsletter {
+    position: relative;
+  }
+
+  /* Gradient text animation */
+  #newsletter .bg-gradient-to-r {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Enhanced backdrop blur support */
+  #newsletter .backdrop-blur-sm {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Improved focus states for accessibility */
+  #newsletter .rounded-full:focus-visible {
+    outline: 2px solid hsl(var(--p));
+    outline-offset: 2px;
+  }
+
+  /* Enhanced shadow for the form container */
+  #newsletter .shadow-xl {
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Responsive enhancements */
+  @media (max-width: 640px) {
+    #newsletter .bg-gradient-to-br {
+      background-image: linear-gradient(to bottom, hsl(var(--b2)), hsl(var(--b3)));
+    }
+    
+    #newsletter .backdrop-blur-sm {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: hsl(var(--b1) / 0.8);
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    #newsletter .bg-gradient-to-br {
+      background: hsl(var(--b2));
+    }
+    
+    #newsletter .border-base-content\/10 {
+      border-color: hsl(var(--bc) / 0.3);
+    }
+    
+    #newsletter .text-base-content\/80 {
+      color: hsl(var(--bc));
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    #newsletter .bg-gradient-to-r {
+      animation: none;
+    }
+    
+    #newsletter .absolute {
+      display: none;
+    }
+  }
+
+  /* Dark mode enhancements */
+  @media (prefers-color-scheme: dark) {
+    #newsletter .shadow-xl {
+      box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+  }
+</style>

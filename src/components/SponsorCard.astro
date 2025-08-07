@@ -114,7 +114,7 @@ const isClickable = sponsor.url && sponsor.status === 'active';
           <div class="flex items-center justify-center w-full" style="min-height:64px;">
             <img 
               src={sponsor.logo} 
-              alt={`${sponsor.name} logo`}
+              alt={sponsor.name}
               class={`w-20 h-16 object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md bg-yellow-300 border-4 border-red-500`}
               loading="lazy"
               style="display:block;"
@@ -190,7 +190,7 @@ const isClickable = sponsor.url && sponsor.status === 'active';
           <div class="flex-shrink-0">
             <img 
               src={sponsor.logo} 
-              alt={`${sponsor.name} logo`}
+              alt={sponsor.name}
               class={`${logoSizes[size]} w-auto object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-sm group-hover:drop-shadow-md`}
               loading="lazy"
               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"

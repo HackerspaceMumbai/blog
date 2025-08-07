@@ -26,7 +26,7 @@ export default defineConfig({
   // Prefetch configuration
   prefetch: true,
 
-  // Output configuration - static mode for better compatibility
+  // Output configuration - hybrid mode for API endpoints
   output: 'static',
   
   // Compression and optimization

@@ -2,580 +2,416 @@
 
 ## Overview
 
-This design document outlines the comprehensive modernization of the Hackerspace Mumbai website, focusing on bringing all components up to the high standards demonstrated in the BlogSection and SponsorsSection. The design emphasizes accessibility, performance, responsive design, and maintainable component architecture while preserving the site's existing visual identity and brand.
+This design document outlines the systematic improvement of image alt text across the Hackerspace Mumbai website to enhance accessibility for screen reader users. The focus is on removing redundant words like "image", "photo", and "picture" from alt text while ensuring all images have descriptive, meaningful alternative text that conveys the same information as the visual content.
 
 ## Architecture
 
-### Component Hierarchy
+### Image Audit Strategy
+
+The implementation will follow a systematic approach to identify and improve all images across the website:
 
 ```
-Layout (Root)
-├── Header (Enhanced)
-├── Main Content
-│   ├── HeroSection (Modernized)
-│   ├── EventsSection (Redesigned)
-│   ├── BlogSection (Reference Standard)
-│   ├── AboutSection (Enhanced)
-│   ├── JoinSection (Improved)
-│   ├── SponsorsSection (Reference Standard)
-│   ├── GallerySection (Modernized)
-│   └── NewsletterSection (Enhanced)
-└── Footer (Improved)
+Website Structure
+├── Layout Components
+│   ├── Header (logo, navigation icons)
+│   └── Footer (social media icons, logos)
+├── Page Sections
+│   ├── HeroSection (background images, featured graphics)
+│   ├── EventsSection (event photos, venue images)
+│   ├── BlogSection (article thumbnails, author photos)
+│   ├── AboutSection (team photos, community images)
+│   ├── JoinSection (platform logos, community graphics)
+│   ├── SponsorsSection (sponsor logos)
+│   ├── GallerySection (event photos, community images)
+│   └── NewsletterSection (decorative graphics)
+├── Content Images
+│   ├── Blog post images
+│   ├── Event photos
+│   └── User-generated content
+└── Static Assets
+    ├── Icons and logos
+    ├── Background images
+    └── Decorative graphics
 ```
 
-### Design System Foundation
+### Alt Text Classification System
 
-The design will establish a comprehensive design system based on the existing DaisyUI theme with enhanced accessibility and consistency:
+Images will be categorized and handled according to their purpose:
 
-- **Color System**: Maintain existing dark theme with improved contrast ratios
-- **Typography Scale**: Implement consistent heading hierarchy and text sizing
-- **Spacing System**: Standardize padding, margins, and gaps using Tailwind utilities
-- **Component Variants**: Create consistent button, card, and form component variants
-- **Animation System**: Implement performance-optimized animations with reduced motion support
+- **Informative Images**: Convey important information (logos, charts, screenshots)
+- **Decorative Images**: Purely aesthetic with no informational value
+- **Functional Images**: Part of links or buttons that perform actions
+- **Complex Images**: Charts, diagrams, or detailed graphics requiring longer descriptions
 
 ## Components and Interfaces
 
-### 1. Enhanced Layout Component
+### 1. Alt Text Standards and Guidelines
 
 **Current Issues:**
-- Basic meta tag implementation
-- Limited accessibility features
-- No performance optimizations
+- Many images contain redundant words like "image", "photo", "picture"
+- Some images lack alt text entirely
+- Alt text often doesn't convey the actual purpose or content of images
+- Inconsistent approach to decorative vs informative images
 
 **Design Improvements:**
 ```typescript
-interface LayoutProps {
-  title?: string;
-  description?: string;
-  image?: string;
-  canonical?: string;
-  noindex?: boolean;
-  structuredData?: object;
-  preloadFonts?: string[];
-  criticalCSS?: string;
+interface ImageAltTextGuidelines {
+  informative: {
+    logos: "Organization name + context (e.g., 'Hackerspace Mumbai logo')";
+    photos: "Key activity or scene (e.g., 'Developers collaborating at workshop')";
+    screenshots: "Interface or content description";
+    charts: "Key data summary or trend";
+  };
+  decorative: {
+    backgrounds: "Empty alt attribute (alt='')";
+    dividers: "Empty alt attribute (alt='')";
+    aesthetic: "Empty alt attribute (alt='')";
+  };
+  functional: {
+    linkedImages: "Describe destination or action, not image";
+    buttons: "Action description (e.g., 'Subscribe to newsletter')";
+    icons: "Function description (e.g., 'Open menu')";
+  };
 }
 ```
 
-**Features:**
-- Enhanced SEO meta tags with Open Graph and Twitter Cards
-- Structured data injection
-- Critical CSS inlining
-- Font preloading
-- Accessibility improvements (skip links, focus management)
-- Performance monitoring integration
+**Implementation Standards:**
+- Remove redundant words: "image", "photo", "picture", "graphic", "icon" (unless specifically relevant)
+- Keep alt text concise (under 125 characters when possible)
+- Use active voice and present tense
+- Focus on content and purpose, not visual appearance
+- Provide context relevant to surrounding content
 
-### 2. Modernized HeroSection
+### 2. HeroSection Alt Text Improvements
 
 **Current Issues:**
-- Inline styles in component
-- Limited accessibility
-- Basic responsive design
+- Background images may lack proper alternative text context
+- Hero graphics might use redundant descriptive words
+- Missing alt text for any featured images or graphics
 
 **Design Improvements:**
-- Move all styles to CSS classes
-- Add proper ARIA labels and landmarks
-- Implement progressive image loading
-- Add animation with reduced motion support
-- Enhance keyboard navigation
+- Background images: Use CSS backgrounds with no alt text needed, or provide context via aria-label on container
+- Featured graphics: Descriptive alt text focusing on content/message
+- Logo images: "Hackerspace Mumbai logo" (remove "image" or "graphic")
+- Call-to-action graphics: Describe the action or destination
 
-### 3. Enhanced EventsSection
+### 3. EventsSection Alt Text Improvements
 
 **Current Issues:**
-- Basic card layout
-- Limited accessibility
-- No loading states
-- Poor responsive design
+- Event photos may have generic alt text like "event image"
+- Venue photos lack descriptive context
+- Speaker photos may not identify the person or context
 
 **Design Improvements:**
 ```typescript
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  description: string;
-  rsvpLink: string;
-  coverImage?: string;
-  tags?: string[];
-  capacity?: number;
-  attendeeCount?: number;
-}
-
-interface EventsSectionProps {
-  events: Event[];
-  loading?: boolean;
-  error?: string;
-  showPastEvents?: boolean;
-  maxEvents?: number;
+interface EventImageAltText {
+  eventPhotos: "Activity description (e.g., 'Developers networking at tech meetup')";
+  venuePhotos: "Location context (e.g., 'Conference room setup for workshop')";
+  speakerPhotos: "Person and context (e.g., 'Sarah Johnson presenting on React')";
+  logoImages: "Organization name (e.g., 'Google Developer Group logo')";
 }
 ```
 
-**Features:**
-- Enhanced event card design with better visual hierarchy
-- Loading and error states
-- Improved responsive grid layout
-- Accessibility enhancements (ARIA labels, keyboard navigation)
-- Event filtering and sorting capabilities
-- Structured data for events
+**Alt Text Examples:**
+- Instead of: "Event image" → "Developers collaborating during hackathon"
+- Instead of: "Speaker photo" → "Tech lead presenting microservices architecture"
+- Instead of: "Venue picture" → "Modern coworking space with presentation setup"
 
-### 4. Improved AboutSection
+### 4. AboutSection Alt Text Improvements
 
 **Current Issues:**
-- Inconsistent styling with other sections
-- Poor responsive layout for stats
-- Limited accessibility
+- Team photos may use generic descriptions like "team member photo"
+- Community images lack context about activities
+- Stats graphics may not convey the numerical information
 
 **Design Improvements:**
-- Consistent section styling matching BlogSection pattern
-- Enhanced stats grid with better responsive behavior
-- Improved testimonials layout with proper attribution
-- Better visual hierarchy and typography
-- Accessibility improvements for stats and testimonials
+- Team photos: Include name and role context when relevant
+- Community images: Describe the activity or gathering
+- Infographic elements: Convey the key information, not just "chart" or "graph"
+- Decorative elements: Use empty alt attributes
 
-### 5. Enhanced JoinSection
+**Alt Text Examples:**
+- Instead of: "Team photo" → "Hackerspace Mumbai organizers at annual meetup"
+- Instead of: "Community image" → "Open source contributors collaborating on project"
+- Instead of: "Stats graphic" → Empty alt (if stats are in surrounding text) or "Community statistics showing 500+ members"
+
+### 5. JoinSection Alt Text Improvements
 
 **Current Issues:**
-- Inconsistent card heights
-- Poor responsive behavior
-- Limited visual feedback
+- Platform logos may include redundant words like "logo image"
+- Social media icons might not describe their function
+- Decorative graphics lack proper classification
 
 **Design Improvements:**
-- Consistent card design with equal heights
-- Better responsive grid layout
-- Enhanced button states and interactions
-- Improved visual hierarchy
-- Better icon integration and accessibility
+- Platform logos: Organization name only (e.g., "Discord", "GitHub", "Meetup")
+- Social media icons: Platform name or function (e.g., "Join Discord community")
+- Decorative graphics: Empty alt attributes for purely aesthetic elements
 
-### 6. Modernized GallerySection
+### 6. GallerySection Alt Text Improvements
 
 **Current Issues:**
-- Placeholder content only
-- No image optimization
-- Poor accessibility
+- Event photos often have generic alt text like "gallery image"
+- Photos lack context about what's happening
+- Similar photos aren't differentiated
 
 **Design Improvements:**
 ```typescript
-interface GalleryImage {
-  id: string;
-  src: string;
-  alt: string;
-  caption?: string;
-  thumbnail: string;
-  category?: string;
-  date?: string;
-}
-
-interface GallerySectionProps {
-  images: GalleryImage[];
-  loading?: boolean;
-  categories?: string[];
-  showCategories?: boolean;
+interface GalleryImageAltText {
+  eventPhotos: "Specific activity and context";
+  groupPhotos: "Group composition and setting";
+  presentationPhotos: "Speaker and topic when identifiable";
+  workshopPhotos: "Activity and participants";
+  venuePhotos: "Location and setup description";
 }
 ```
 
-**Features:**
-- Responsive masonry/grid layout
-- Image lazy loading and optimization
-- Lightbox functionality with keyboard navigation
-- Category filtering
-- Proper alt text and captions
-- Loading states and error handling
+**Alt Text Examples:**
+- Instead of: "Gallery image" → "Workshop participants learning React fundamentals"
+- Instead of: "Event photo" → "Lightning talks session with audience engagement"
+- Instead of: "Group picture" → "Hackerspace Mumbai members at monthly meetup"
 
-### 7. Enhanced NewsletterSection
+### 7. SponsorsSection Alt Text Improvements
 
 **Current Issues:**
-- Basic form without validation
-- No success/error states
-- Limited accessibility
+- Sponsor logos often include redundant words like "logo image" or "sponsor logo"
+- Lack of context about sponsorship level or relationship
+- Generic descriptions that don't identify the organization
 
 **Design Improvements:**
-- Form validation with real-time feedback
-- Success and error state handling
-- GDPR compliance features
-- Enhanced accessibility (labels, error announcements)
-- Loading states during submission
-- Integration with email service providers
+- Sponsor logos: Organization name only (e.g., "Microsoft", "Google", "GitHub")
+- Tier indicators: Include sponsorship level if visually important (e.g., "Platinum sponsor: Microsoft")
+- Linked logos: Focus on destination, not image (e.g., "Visit Microsoft developer resources")
 
-### 8. Improved Header and Footer
+### 8. BlogSection Alt Text Improvements
+
+**Current Issues:**
+- Article thumbnails may have generic alt text
+- Author photos lack identification
+- Featured images don't relate to article content
+
+**Design Improvements:**
+- Article thumbnails: Brief content description (e.g., "Code snippet showing React hooks")
+- Author photos: Author name (e.g., "John Smith, author")
+- Featured images: Relate to article topic (e.g., "JavaScript debugging tools interface")
+- Decorative blog graphics: Empty alt attributes
+
+### 9. Header and Footer Alt Text Improvements
 
 **Header Improvements:**
-- Enhanced navigation with mobile menu
-- Better accessibility (skip links, ARIA labels)
-- Improved responsive design
-- Theme toggle integration
-- Search functionality (future)
+- Main logo: "Hackerspace Mumbai" (remove "logo" or "image")
+- Navigation icons: Function description (e.g., "Open navigation menu")
+- Social media icons: Platform name (e.g., "Twitter", "LinkedIn")
 
 **Footer Improvements:**
-- Comprehensive site links and information
-- Social media integration
-- Newsletter signup integration
-- Accessibility improvements
-- Better responsive layout
+- Organization logos: Organization name only
+- Social media icons: Platform name or action (e.g., "Follow on Twitter")
+- Partner logos: Partner organization name
+- Decorative elements: Empty alt attributes
 
 ## Data Models
 
-### Enhanced Type Definitions
+### Alt Text Implementation Types
 
 ```typescript
-// Core types
-interface BaseComponent {
-  id?: string;
-  className?: string;
-  'aria-label'?: string;
-  'data-testid'?: string;
+// Alt text classification
+type ImageType = 'informative' | 'decorative' | 'functional' | 'complex';
+
+// Alt text guidelines interface
+interface AltTextGuidelines {
+  type: ImageType;
+  maxLength: number;
+  shouldAvoidWords: string[];
+  requiredContext?: string[];
+  examples: string[];
 }
 
-// Event types
-interface Event extends BaseComponent {
-  title: string;
-  date: string;
-  location: string;
-  description: string;
-  rsvpLink: string;
-  coverImage?: string;
-  tags?: string[];
-  capacity?: number;
-  attendeeCount?: number;
-  status: 'upcoming' | 'ongoing' | 'past' | 'cancelled';
+// Image audit interface
+interface ImageAuditItem {
+  filePath: string;
+  currentAlt: string;
+  suggestedAlt: string;
+  imageType: ImageType;
+  context: string;
+  needsUpdate: boolean;
+  priority: 'high' | 'medium' | 'low';
 }
 
-// Sponsor types (enhanced from existing)
-interface Sponsor extends BaseComponent {
-  name: string;
-  logo?: string;
-  url?: string;
-  tier: 'platinum' | 'gold' | 'silver' | 'bronze' | 'community';
-  description?: string;
-  featured?: boolean;
-  startDate?: string;
-  endDate?: string;
+// Component-specific alt text patterns
+interface ComponentAltTextPatterns {
+  HeroSection: {
+    backgroundImages: 'Use CSS backgrounds or aria-label on container';
+    featuredGraphics: 'Describe content/message, avoid "image"';
+    logos: 'Organization name only';
+  };
+  EventsSection: {
+    eventPhotos: 'Activity description (e.g., "Developers networking")';
+    venuePhotos: 'Location context (e.g., "Conference room setup")';
+    speakerPhotos: 'Person and context (e.g., "Sarah presenting React")';
+  };
+  BlogSection: {
+    thumbnails: 'Content description (e.g., "Code snippet showing hooks")';
+    authorPhotos: 'Author name (e.g., "John Smith, author")';
+    featuredImages: 'Relate to article topic';
+  };
+  SponsorsSection: {
+    logos: 'Organization name only (e.g., "Microsoft")';
+    tierIndicators: 'Include level if relevant (e.g., "Platinum sponsor")';
+  };
+  GallerySection: {
+    eventPhotos: 'Specific activity and context';
+    groupPhotos: 'Group composition and setting';
+    workshopPhotos: 'Activity and participants';
+  };
 }
 
-// Blog post types (enhanced from existing)
-interface BlogPost extends BaseComponent {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  author: string;
-  tags?: string[];
-  coverImage?: string;
-  readingTime?: number;
-  featured?: boolean;
-}
-
-// Gallery types
-interface GalleryImage extends BaseComponent {
-  src: string;
-  alt: string;
-  caption?: string;
-  thumbnail: string;
-  category?: string;
-  date?: string;
-  photographer?: string;
-}
-
-// Stats types
-interface CommunityStats {
-  yearsRunning: number;
-  meetupsHosted: number;
-  membersCount: string;
-  projectsSupported: number;
-  githubStars?: number;
-  discordMembers?: number;
-}
-
-// Testimonial types
-interface Testimonial extends BaseComponent {
-  quote: string;
-  author: string;
-  role?: string;
-  company?: string;
-  avatar?: string;
-  date?: string;
+// Alt text validation interface
+interface AltTextValidation {
+  hasRedundantWords: boolean;
+  redundantWords: string[];
+  isAppropriateLength: boolean;
+  length: number;
+  hasContext: boolean;
+  suggestions: string[];
 }
 ```
 
-## Error Handling
+## Implementation Strategy
 
-### Comprehensive Error Boundary System
+### Alt Text Audit Process
 
 ```typescript
-interface ErrorBoundaryProps {
-  fallback?: ComponentType<ErrorFallbackProps>;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  isolate?: boolean;
-}
-
-interface ErrorFallbackProps {
-  error: Error;
-  resetError: () => void;
-  componentStack?: string;
+interface AltTextAuditProcess {
+  discovery: {
+    scanAllComponents: 'Identify all img elements and background images';
+    catalogImages: 'Create inventory of current alt text';
+    classifyImages: 'Categorize as informative, decorative, or functional';
+  };
+  analysis: {
+    identifyIssues: 'Find redundant words and missing alt text';
+    prioritizeChanges: 'High priority: missing alt, medium: redundant words';
+    validateContext: 'Ensure alt text matches image purpose';
+  };
+  implementation: {
+    updateAltText: 'Replace problematic alt text with improved versions';
+    addMissingAlt: 'Add alt text to images that lack it';
+    markDecorative: 'Add empty alt attributes to decorative images';
+  };
+  validation: {
+    screenReaderTest: 'Test with screen reader software';
+    accessibilityAudit: 'Run automated accessibility checks';
+    userTesting: 'Get feedback from screen reader users';
+  };
 }
 ```
 
-**Error Handling Strategy:**
-1. **Component-Level Errors**: Each major section has its own error boundary
-2. **Data Loading Errors**: Graceful fallbacks for missing or invalid data
-3. **Network Errors**: Retry mechanisms and offline indicators
-4. **Validation Errors**: Real-time form validation with clear error messages
-5. **404 Handling**: Custom 404 pages with helpful navigation
-6. **Performance Errors**: Monitoring and alerting for performance issues
+### Implementation Phases
 
-### Error States Design
+**Phase 1: Critical Images (High Priority)**
+- Main logo and navigation elements
+- Functional images (buttons, links)
+- Images that convey essential information
 
-- **Loading States**: Skeleton screens and progress indicators
-- **Empty States**: Meaningful messages with actionable next steps
-- **Error States**: Clear error messages with recovery options
-- **Offline States**: Offline indicators and cached content access
+**Phase 2: Content Images (Medium Priority)**
+- Blog post thumbnails and featured images
+- Event photos and speaker images
+- Gallery images with context
+
+**Phase 3: Decorative Images (Low Priority)**
+- Background graphics and decorative elements
+- Aesthetic images that don't convey information
+- Properly mark as decorative with empty alt
+
+### Quality Assurance Process
+
+- **Automated Checks**: Scan for common redundant words
+- **Manual Review**: Human review of alt text quality
+- **Screen Reader Testing**: Test with actual assistive technology
+- **User Feedback**: Collect feedback from accessibility community
 
 ## Testing Strategy
 
-### Component Testing Framework
+### Alt Text Testing Framework
 
 ```typescript
-// Test utilities
-interface TestingProps {
-  mockData?: any;
-  mockFunctions?: Record<string, jest.Mock>;
-  renderOptions?: RenderOptions;
+// Alt text testing utilities
+interface AltTextTestConfig {
+  checkRedundantWords: string[];
+  maxLength: number;
+  requiredPatterns: RegExp[];
+  forbiddenPatterns: RegExp[];
 }
 
-// Accessibility testing
-interface A11yTestConfig {
-  rules?: Record<string, any>;
-  tags?: string[];
-  skipFailures?: boolean;
+// Accessibility testing for images
+interface ImageA11yTestConfig {
+  checkMissingAlt: boolean;
+  checkEmptyAlt: boolean;
+  checkRedundantWords: boolean;
+  validateContext: boolean;
 }
 ```
 
 **Testing Approach:**
-1. **Unit Tests**: Individual component functionality
-2. **Integration Tests**: Component interactions and data flow
-3. **Accessibility Tests**: Automated a11y testing with axe-core
-4. **Visual Regression Tests**: Screenshot comparison testing
-5. **Performance Tests**: Core Web Vitals monitoring
-6. **Cross-Browser Tests**: Automated browser compatibility testing
+1. **Automated Alt Text Validation**: Check for redundant words and missing alt text
+2. **Screen Reader Testing**: Test with NVDA, JAWS, and VoiceOver
+3. **Accessibility Audits**: Use axe-core to validate image accessibility
+4. **Manual Review**: Human review of alt text quality and context
+5. **User Testing**: Feedback from actual screen reader users
 
 ### Test Coverage Requirements
 
-- **Component Coverage**: 90%+ for all new/modified components
-- **Accessibility Coverage**: 100% automated a11y testing
-- **Performance Coverage**: Core Web Vitals monitoring for all pages
-- **Cross-Browser Coverage**: Chrome, Firefox, Safari, Edge testing
+- **Image Coverage**: 100% of images must have appropriate alt text
+- **Redundant Word Detection**: Automated detection of "image", "photo", "picture"
+- **Context Validation**: Manual review of alt text relevance
+- **Screen Reader Compatibility**: Testing with multiple screen readers
 
-## Performance Optimization
+## Alt Text Best Practices
 
-### Image Optimization Strategy
+### Content Guidelines
 
 ```typescript
-interface ImageOptimizationConfig {
-  formats: ['webp', 'avif', 'jpg'];
-  sizes: {
-    thumbnail: 300;
-    small: 600;
-    medium: 1200;
-    large: 1800;
-  };
-  quality: {
-    webp: 80;
-    avif: 70;
-    jpg: 85;
-  };
-  lazyLoading: true;
-  placeholder: 'blur' | 'empty';
+interface AltTextBestPractices {
+  doWrite: [
+    'Describe the content or function of the image',
+    'Keep it concise (under 125 characters)',
+    'Use active voice and present tense',
+    'Include relevant context from surrounding content',
+    'Differentiate between similar images'
+  ];
+  dontWrite: [
+    'Redundant words like "image", "photo", "picture"',
+    'Overly detailed descriptions',
+    'Information already in surrounding text',
+    'Subjective interpretations',
+    'File names or technical details'
+  ];
+  decorativeImages: [
+    'Use empty alt attribute (alt="")',
+    'Ensure they truly add no information',
+    'Consider if they could be CSS backgrounds instead'
+  ];
 }
 ```
 
-**Optimization Techniques:**
-1. **Image Optimization**: Modern formats with fallbacks, responsive images
-2. **Code Splitting**: Route-based and component-based splitting
-3. **CSS Optimization**: Critical CSS inlining, unused CSS removal
-4. **Font Optimization**: Font preloading, font-display: swap
-5. **JavaScript Optimization**: Tree shaking, minification, compression
-6. **Caching Strategy**: Service worker implementation, CDN optimization
+### Context-Specific Guidelines
 
-### Performance Monitoring
+**Logos and Branding:**
+- Use organization name only
+- Example: "Hackerspace Mumbai" not "Hackerspace Mumbai logo image"
 
-- **Core Web Vitals**: LCP, FID, CLS monitoring
-- **Custom Metrics**: Component render times, API response times
-- **Real User Monitoring**: Performance data from actual users
-- **Synthetic Monitoring**: Automated performance testing
+**People in Photos:**
+- Include name and context when relevant
+- Example: "Sarah Johnson presenting React hooks" not "Speaker photo"
 
-## Accessibility Implementation
+**Event and Activity Photos:**
+- Describe the activity or scene
+- Example: "Developers collaborating during hackathon" not "Event image"
 
-### WCAG 2.1 AA Compliance
+**Technical Screenshots:**
+- Describe the interface or content shown
+- Example: "VS Code editor showing JavaScript function" not "Code screenshot"
 
-**Implementation Strategy:**
-1. **Semantic HTML**: Proper heading hierarchy, landmark elements
-2. **Keyboard Navigation**: Full keyboard accessibility, focus management
-3. **Screen Reader Support**: ARIA labels, live regions, descriptions
-4. **Color Contrast**: Minimum 4.5:1 contrast ratio for normal text
-5. **Focus Management**: Visible focus indicators, logical tab order
-6. **Alternative Text**: Descriptive alt text for all images
-7. **Form Accessibility**: Proper labels, error handling, instructions
+**Charts and Graphs:**
+- Summarize the key data or trend
+- Example: "Membership growth from 100 to 500 over 3 years" not "Chart image"
 
-### Accessibility Testing Tools
-
-- **Automated Testing**: axe-core integration in tests
-- **Manual Testing**: Keyboard navigation, screen reader testing
-- **Color Contrast**: Automated contrast ratio checking
-- **Focus Testing**: Focus indicator visibility and behavior
-
-## Responsive Design System
-
-### Breakpoint Strategy
-
-```css
-/* Mobile First Approach */
-/* xs: 0px - 475px */
-/* sm: 476px - 640px */
-/* md: 641px - 768px */
-/* lg: 769px - 1024px */
-/* xl: 1025px - 1280px */
-/* 2xl: 1281px+ */
-```
-
-**Responsive Implementation:**
-1. **Mobile-First Design**: Start with mobile and enhance for larger screens
-2. **Flexible Grids**: CSS Grid and Flexbox for adaptive layouts
-3. **Responsive Typography**: Fluid typography with clamp() function
-4. **Touch-Friendly**: Minimum 44px touch targets on mobile
-5. **Responsive Images**: Appropriate image sizes for each breakpoint
-6. **Content Priority**: Progressive disclosure for smaller screens
-
-### Grid System Enhancement
-
-```typescript
-interface GridConfig {
-  columns: {
-    xs: 1;
-    sm: 2;
-    md: 2;
-    lg: 3;
-    xl: 4;
-    '2xl': 4;
-  };
-  gaps: {
-    xs: '1rem';
-    sm: '1.5rem';
-    md: '2rem';
-    lg: '2.5rem';
-    xl: '3rem';
-  };
-  autoRows: 'fr' | 'auto' | 'min-content';
-}
-```
-
-## Security Considerations
-
-### Content Security Policy
-
-```typescript
-interface CSPConfig {
-  'default-src': ["'self'"];
-  'script-src': ["'self'", "'unsafe-inline'", "trusted-domains"];
-  'style-src': ["'self'", "'unsafe-inline'"];
-  'img-src': ["'self'", "data:", "trusted-image-domains"];
-  'font-src': ["'self'", "fonts.googleapis.com"];
-  'connect-src': ["'self'", "api-domains"];
-}
-```
-
-**Security Measures:**
-1. **Input Validation**: Sanitize all user inputs
-2. **XSS Prevention**: Proper escaping of dynamic content
-3. **CSRF Protection**: Token-based CSRF protection for forms
-4. **Secure Headers**: Implementation of security headers
-5. **Dependency Security**: Regular security audits of dependencies
-6. **Privacy Protection**: GDPR compliance for data collection
-
-## Integration Points
-
-### External Service Integration
-
-```typescript
-interface ServiceIntegrations {
-  analytics: {
-    provider: 'plausible' | 'google-analytics';
-    config: AnalyticsConfig;
-  };
-  newsletter: {
-    provider: 'mailchimp' | 'convertkit';
-    config: NewsletterConfig;
-  };
-  events: {
-    provider: 'meetup' | 'eventbrite';
-    config: EventsConfig;
-  };
-  monitoring: {
-    provider: 'sentry' | 'bugsnag';
-    config: MonitoringConfig;
-  };
-}
-```
-
-**Integration Strategy:**
-1. **Analytics Integration**: Privacy-focused analytics implementation
-2. **Newsletter Integration**: Email service provider integration
-3. **Event Management**: Meetup.com API integration
-4. **Error Monitoring**: Real-time error tracking and alerting
-5. **Performance Monitoring**: Core Web Vitals tracking
-6. **Social Media**: Social sharing and embedding capabilities
-
-## Migration Strategy
-
-### Phased Implementation Approach
-
-**Phase 1: Foundation**
-- Enhanced Layout component with SEO and accessibility
-- Improved global styles and design system
-- Enhanced CTAButton and Card components
-
-**Phase 2: Core Sections**
-- Modernized HeroSection
-- Enhanced EventsSection
-- Improved AboutSection
-
-**Phase 3: Interactive Features**
-- Enhanced JoinSection
-- Modernized GallerySection
-- Improved NewsletterSection
-
-**Phase 4: Polish and Optimization**
-- Header and Footer improvements
-- Performance optimizations
-- Comprehensive testing
-- Documentation updates
-
-### Backward Compatibility
-
-- Maintain existing API interfaces where possible
-- Gradual migration of styling approaches
-- Feature flags for new functionality
-- Comprehensive testing during migration
-
-## Documentation and Maintenance
-
-### Component Documentation
-
-```typescript
-interface ComponentDocumentation {
-  description: string;
-  props: PropDefinition[];
-  examples: CodeExample[];
-  accessibility: A11yGuidelines;
-  testing: TestingGuidelines;
-  performance: PerformanceNotes;
-}
-```
-
-**Documentation Strategy:**
-1. **Component Documentation**: Comprehensive prop documentation
-2. **Usage Examples**: Real-world usage examples
-3. **Accessibility Guidelines**: A11y implementation notes
-4. **Performance Guidelines**: Performance best practices
-5. **Testing Documentation**: Testing strategies and examples
-6. **Migration Guides**: Step-by-step migration instructions
-
-This design provides a comprehensive foundation for modernizing the Hackerspace Mumbai website while maintaining its existing functionality and visual identity. The implementation will follow the established patterns from BlogSection and SponsorsSection to ensure consistency and maintainability.
+This design provides a comprehensive foundation for improving image accessibility across the Hackerspace Mumbai website by systematically updating alt text to remove redundant words and provide meaningful descriptions for screen reader users.

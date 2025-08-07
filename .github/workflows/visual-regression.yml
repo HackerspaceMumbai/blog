@@ -1,0 +1,79 @@
+name: Visual Regression Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/components/**'
+      - 'src/content/posts/**'
+      - 'src/assets/images/**'
+      - 'src/styles/**'
+      - 'package.json'
+      - 'vitest.config.js'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/components/**'
+      - 'src/content/posts/**'
+      - 'src/assets/images/**'
+      - 'src/styles/**'
+      - 'package.json'
+      - 'vitest.config.js'
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Install Playwright browsers
+      run: pnpm exec playwright install chromium
+      
+    - name: Build project
+      run: pnpm build
+      
+    - name: Start preview server
+      run: pnpm preview &
+      
+    - name: Wait for server to be ready
+      run: |
+        timeout 30 bash -c 'until curl -f http://localhost:4321; do sleep 1; done'
+        
+    - name: Run visual regression tests
+      run: pnpm test src/components/__tests__/BlogImageVisualRegression.test.js --run
+      env:
+        CI: true
+        
+    - name: Upload visual regression artifacts
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: visual-regression-screenshots
+        path: |
+          test-screenshots/
+        retention-days: 7
+        
+    - name: Upload baseline screenshots (on main branch)
+      uses: actions/upload-artifact@v4
+      if: github.ref == 'refs/heads/main'
+      with:
+        name: visual-regression-baseline
+        path: |
+          test-screenshots/baseline/
+        retention-days: 30

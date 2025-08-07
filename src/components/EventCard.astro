@@ -19,7 +19,7 @@ const { title, date, location, description, rsvpLink, coverImage } = Astro.props
 >
   {coverImage && (
     <figure class="relative aspect-[3/1] w-full overflow-hidden">
-      <img src={coverImage} alt={title + ' event cover'} class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+      <img src={coverImage} alt={title} class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" loading="eager" />
       <div class="absolute inset-0 bg-black/50 pointer-events-none"></div>
     </figure>
   )}

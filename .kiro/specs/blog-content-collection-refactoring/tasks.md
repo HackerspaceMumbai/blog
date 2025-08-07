@@ -71,6 +71,8 @@
 
 
 
+
+
   - Convert inline image references in MDX files to use colocated images
   - Update import statements to reference local images (e.g., `import image from './image.png'`)
   - Ensure all inline images use Astro's Image component for optimization
@@ -88,7 +90,7 @@
   - Validate that inline images in blog content render correctly
   - Check for any console errors or warnings related to image loading
   - _Requirements: 3.1, 5.3_
-
+  
 - [x] 8. Test production build compatibility
 
 

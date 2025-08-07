@@ -1,70 +1,20 @@
 ---
 import CTAButton from './CTAButton.astro';
 import BlogCard from './BlogCard.astro';
-import type { CollectionEntry } from 'astro:content';
-
-interface Props {
-  posts: CollectionEntry<'posts'>[];
-}
 
 const { posts } = Astro.props;
 
-console.log('BlogSection - Posts received:', posts?.length || 0);
-console.log('BlogSection - First post:', posts?.[0]?.data?.title || 'No posts');
+// Validate posts array
+const validatedPosts = Array.isArray(posts) ? posts.filter(post => post && post.data && post.data.title) : [];
 
-// Validate and sanitize posts array
-const validatePosts = (posts: CollectionEntry<'posts'>[]): CollectionEntry<'posts'>[] => {
-  try {
-    if (!Array.isArray(posts)) {
-      console.warn('Posts is not an array, using empty array');
-      return [];
-    }
-    
-    // Filter out invalid posts and limit to reasonable number
-    const validPosts = posts
-      .filter(post => {
-        // Basic validation for post structure
-        if (!post || typeof post !== 'object') {
-          console.warn('Invalid post object found, skipping');
-          return false;
-        }
-        
-        if (!post.data || typeof post.data !== 'object') {
-          console.warn('Post missing data object, skipping');
-          return false;
-        }
-        
-        if (!post.slug || typeof post.slug !== 'string') {
-          console.warn('Post missing valid slug, skipping');
-          return false;
-        }
-        
-        return true;
-      })
-      .slice(0, 12); // Limit to maximum 12 posts for performance
-    
-    return validPosts;
-  } catch (error) {
-    console.error('Error validating posts:', error);
-    return [];
-  }
-};
-
-const validatedPosts = validatePosts(posts || []);
-
-console.log('BlogSection - Validated posts:', validatedPosts.length);
-
-// Determine grid layout based on number of posts
-const getGridClasses = (postCount: number): string => {
-  if (postCount === 0) return '';
-  if (postCount === 1) return 'grid-cols-1 max-w-md mx-auto';
-  if (postCount === 2) return 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto';
-  return 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3';
+// Dynamic grid classes based on number of posts
+const getGridClasses = (count) => {
+  if (count === 1) return 'grid-cols-1 max-w-2xl mx-auto';
+  if (count === 2) return 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto';
+  return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
 };
 
 const gridClasses = getGridClasses(validatedPosts.length);
-
-console.log('BlogSection - Grid classes:', gridClasses);
 ---
 
 <section 
@@ -95,8 +45,11 @@ console.log('BlogSection - Grid classes:', gridClasses);
         aria-live="polite"
         aria-busy="false"
       >
-        {validatedPosts.map((post) => (
-          <BlogCard post={post} />
+        {validatedPosts.map((post, index) => (
+          <BlogCard 
+            post={post} 
+            featured={index === 0}
+          />
         ))}
       </div>
     )}
@@ -143,26 +96,3 @@ console.log('BlogSection - Grid classes:', gridClasses);
     </footer>
   </div>
 </section>
-
-<!-- Skip link for keyboard navigation -->
-<a 
-  href="#main-content" 
-  class="
-    sr-only 
-    focus:not-sr-only 
-    focus:absolute 
-    focus:top-4 
-    focus:left-4 
-    focus:z-50 
-    focus:px-4 
-    focus:py-2 
-    focus:bg-primary 
-    focus:text-primary-content 
-    focus:rounded-md 
-    focus:shadow-lg
-    focus:ring-2 
-    focus:ring-primary-focus
-  "
->
-  Skip to main content
-</a>

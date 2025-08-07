@@ -45,6 +45,23 @@ Before creating your post:
 2. **Prepare your images** (cover + inline images)
 3. **Outline your content structure**
 
+### ⚠️ CRITICAL: Cover Image Requirements
+
+**Every blog post MUST have a cover image** to display properly in the blog cards. The BlogCard component has been updated with robust image handling, but following these guidelines ensures optimal display:
+
+**Required Cover Image Specifications:**
+- **File Location**: Must be in the same directory as your blog post
+- **File Name**: Must be named `cover.png`, `cover.jpg`, or `cover.webp`
+- **Frontmatter**: Must reference the image with `cover: ./cover.png` (note the `./` prefix)
+- **Dimensions**: 800x450px (16:9 aspect ratio) recommended for consistent display
+- **File Size**: Under 500KB for optimal performance
+- **Quality**: High-quality images that represent your content visually
+
+**What Happens Without a Cover Image:**
+- The BlogCard will automatically display a placeholder image
+- Your post will still be functional but less visually appealing
+- The placeholder ensures no broken images are shown
+
 ### Step 2: Create Post Directory
 
 ```bash
@@ -79,7 +96,7 @@ Create `index.mdx` with proper frontmatter:
 title: "Your Compelling Blog Post Title"
 date: 2024-01-15
 description: "A clear, SEO-friendly description that will appear in search results and social media previews. Keep it under 160 characters."
-cover: ./cover.png
+cover: ./cover.png  # REQUIRED: Must match your actual cover image file
 author: "Your Name"
 tags:
   - javascript
@@ -129,6 +146,23 @@ For any images referenced in your content:
 4. **Use Astro's Image component for display**
 
 ## 🖼️ Image Best Practices
+
+### 🔧 New Robust Image System (2024 Update)
+
+The blog now features an enhanced image handling system with automatic fallback and error recovery:
+
+**Key Improvements:**
+- ✅ **Automatic Fallback**: Missing cover images automatically show a placeholder
+- ✅ **Error Recovery**: Broken image links won't break the entire page
+- ✅ **Type Safety**: Full support for Astro's ImageMetadata objects
+- ✅ **Legacy Support**: Still works with old string-based image paths
+- ✅ **Debug Logging**: Console warnings help identify image issues
+
+**How It Works:**
+1. **Primary**: Uses your specified cover image if it exists and loads correctly
+2. **Fallback**: Automatically switches to a placeholder image if there are any issues
+3. **Accessibility**: Generates appropriate alt text based on the image type
+4. **Performance**: Optimizes images automatically through Astro's image pipeline
 
 ### Cover Images
 
@@ -282,6 +316,12 @@ pnpm test:a11y
 
 **Solutions:**
 
+**✅ NEW: Automatic Fallback System**
+With the updated BlogCard component, cover image issues are automatically handled:
+- Missing cover images show a placeholder instead of breaking
+- Console warnings help identify the issue without breaking the UI
+- The blog remains functional even with image problems
+
 **Check import paths:**
 ```mdx
 <!-- ✅ Correct - relative path with ./ -->
@@ -311,6 +351,12 @@ cover: ./cover.png  ❌ Wrong extension
 - Default placeholder shows instead of your cover
 - Cover works in development but not production
 
+**✅ NEW: Enhanced Debugging**
+The updated system provides better debugging information:
+- Check browser console for specific image resolution warnings
+- Placeholder images indicate the fallback system is working correctly
+- Console messages help identify the exact issue
+
 **Solutions:**
 
 **Verify frontmatter path:**
@@ -324,6 +370,13 @@ cover: /cover.png     ❌ Wrong path format
 ```bash
 ls src/content/posts/your-post-slug/
 # Should show: index.mdx, cover.png, ...
+```
+
+**Debug with console:**
+```javascript
+// Look for these messages in browser console:
+// "Error resolving blog cover image: [specific error]"
+// This helps identify the exact problem
 ```
 
 #### 3. Build Errors

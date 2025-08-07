@@ -1,9 +1,15 @@
 ---
 import StatsGrid from './StatsGrid.astro';
 import Testimonials from './Testimonials.astro';
+import { Image } from 'astro:assets';
 
 const stats = Astro.props.stats;
 const testimonials = Astro.props.testimonials;
+
+// Import team and community images
+import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
+import pinnedpic6 from '../assets/images/gallery/pinnedpic-6.jpg';
+import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
 ---
 <section id="about" class="py-12 sm:py-16 lg:py-20 px-4 bg-base-200 text-base-content" aria-labelledby="about-heading" role="region">
   <div class="max-w-6xl mx-auto">
@@ -30,6 +36,75 @@ const testimonials = Astro.props.testimonials;
         <StatsGrid stats={stats} />
       </div>
     </div>
+
+    <!-- Team and Community Images Section -->
+    <div class="mt-12 sm:mt-16 lg:mt-20">
+      <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 text-center text-primary">
+        Our Community
+      </h3>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Team organizers photo -->
+        <div class="group bg-base-100 border border-primary rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div class="aspect-[4/3] overflow-hidden">
+            <Image
+              src={pinnedpic8}
+              alt="Hackerspace Mumbai organizers at annual community meetup"
+              width={400}
+              height={300}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4 sm:p-5">
+            <h4 class="font-semibold text-accent mb-2">Our Organizers</h4>
+            <p class="text-sm text-base-content/70">
+              Dedicated volunteers who make our community events possible
+            </p>
+          </div>
+        </div>
+
+        <!-- Community collaboration photo -->
+        <div class="group bg-base-100 border border-primary rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div class="aspect-[4/3] overflow-hidden">
+            <Image
+              src={pinnedpic6}
+              alt="Open source contributors collaborating on project"
+              width={400}
+              height={300}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4 sm:p-5">
+            <h4 class="font-semibold text-accent mb-2">Collaboration</h4>
+            <p class="text-sm text-base-content/70">
+              Members working together on open source projects and learning
+            </p>
+          </div>
+        </div>
+
+        <!-- Workshop activity photo -->
+        <div class="group bg-base-100 border border-primary rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
+          <div class="aspect-[4/3] overflow-hidden">
+            <Image
+              src={pinnedpic1}
+              alt="Developers collaborating during open source workshop"
+              width={400}
+              height={300}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4 sm:p-5">
+            <h4 class="font-semibold text-accent mb-2">Learning Together</h4>
+            <p class="text-sm text-base-content/70">
+              Hands-on workshops where members learn new technologies
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <!-- Add testimonials section 
   <Testimonials testimonials={testimonials} />
    when ready -->

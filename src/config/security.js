@@ -16,53 +16,11 @@ export const TRUSTED_SCRIPTS = {
 };
 
 // Content Security Policy configuration
-export const CSP_CONFIG = {
-  // Production CSP (strict)
-  production: {
-    'default-src': ["'self'"],
-    'script-src': [
-      "'self'",
-      "'unsafe-inline'", // Required for Astro inline scripts - minimize usage
-      'https://unpkg.com',
-      'https://cdn.jsdelivr.net',
-      'https://www.google-analytics.com',
-      'https://www.googletagmanager.com'
-    ],
-    'style-src': [
-      "'self'",
-      "'unsafe-inline'", // Required for component styles
-      'https://fonts.googleapis.com'
-    ],
-    'img-src': [
-      "'self'",
-      'data:',
-      'https:',
-      'https://picsum.photos',
-      'https://images.unsplash.com'
-    ],
-    'font-src': [
-      "'self'",
-      'https://fonts.gstatic.com'
-    ],
-    'connect-src': [
-      "'self'",
-      'https://api.github.com',
-      'https://www.google-analytics.com'
-    ],
-    'media-src': ["'self'"],
-    'object-src': ["'none'"],
-    'child-src': ["'none'"],
-    'frame-src': ["'none'"],
-    'worker-src': ["'self'"],
-    'manifest-src': ["'self'"],
-    'base-uri': ["'self'"],
-    'form-action': ["'self'"],
-    'frame-ancestors': ["'none'"],
-    'upgrade-insecure-requests': true
-  },
-  
-  // Development CSP (relaxed)
-  development: {
+     'form-action': ["'self'"],
+     'frame-ancestors': ["'none'"],
+     'report-uri': ['/api/csp-report'],
+     'report-to': ['csp-endpoint'],
+     'upgrade-insecure-requests': true  development: {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
@@ -105,8 +63,6 @@ export const CSP_CONFIG = {
 export const SECURITY_HEADERS = {
   // Prevent XSS attacks
   'X-XSS-Protection': '1; mode=block',
-  
-  // Prevent MIME type sniffing
   'X-Content-Type-Options': 'nosniff',
   
   // Prevent clickjacking
@@ -179,6 +135,50 @@ export const SANITIZATION_RULES = [
     name: 'script_tags',
     pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
     replacement: ''
+    pattern: /<script\b[^>]*>.*?<\/script>/gis,
+    replacement: ''  {
+    name: 'javascript_urls',
+    pattern: /javascript:/gi,
+    replacement: ''
+  },
+  // Remove event handlers
+  {
+    name: 'event_handlers',
+    pattern: /on\w+\s*=/gi,
+    replacement: ''
+  },
+  // Remove iframe tags
+  {
+    name: 'iframe_tags',
+    pattern: /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+    replacement: ''
+  },
+  // Remove object/embed tags
+  {
+    name: 'object_embed_tags',
+    pattern: /<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi,
+    replacement: ''
+  },
+  // Remove data URLs with HTML content
+  {
+    name: 'data_html_urls',
+    pattern: /data:text\/html[^"']*/gi,
+    replacement: ''
+  },
+  // Remove vbscript URLs
+  {
+    name: 'vbscript_urls',
+    pattern: /vbscript:/gi,
+    replacement: ''
+  },
+  // Remove CSS expressions
+// Input sanitization rules
+export const SANITIZATION_RULES = [
+  // Remove script tags
+  {
+    name: 'script_tags',
+    pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    replacement: ''
   },
   // Remove javascript: URLs
   {
@@ -221,54 +221,20 @@ export const SANITIZATION_RULES = [
     name: 'css_expressions',
     pattern: /expression\s*\(/gi,
     replacement: ''
+  },
+  // Remove SVG script elements
+  {
+    name: 'svg_scripts',
+    pattern: /<svg[^>]*>[\s\S]*?<script[\s\S]*?<\/script>[\s\S]*?<\/svg>/gi,
+    replacement: ''
+  },
+  // Remove SVG onload and other event attributes
+  {
+    name: 'svg_events',
+    pattern: /<svg[^>]*\son\w+\s*=/gi,
+    replacement: '<svg'
   }
-];
-
-// XSS detection patterns
-export const XSS_PATTERNS = [
-  /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-  /javascript:/gi,
-  /on\w+\s*=/gi,
-  /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
-  /expression\s*\(/gi,
-  /vbscript:/gi,
-  /data:text\/html/gi,
-  /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi,
-  /<embed\b[^<]*>/gi,
-  /<link\b[^<]*rel\s*=\s*["']?stylesheet["']?[^<]*>/gi,
-  /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi
-];
-
-// SQL injection detection patterns
-export const SQL_INJECTION_PATTERNS = [
-  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)/gi,
-  /(\b(OR|AND)\s+\d+\s*=\s*\d+)/gi,
-  /(;|\-\-|\/\*|\*\/)/g,
-  /(\b(EXEC|EXECUTE)\s*\()/gi,
-  /(\bUNION\s+(ALL\s+)?SELECT)/gi,
-  /(\bINSERT\s+INTO)/gi,
-  /(\bUPDATE\s+\w+\s+SET)/gi,
-  /(\bDELETE\s+FROM)/gi
-];
-
-// Suspicious URL patterns
-export const SUSPICIOUS_URL_PATTERNS = [
-  /\d+\.\d+\.\d+\.\d+/, // IP addresses
-  /[a-z0-9]{20,}\./, // Very long random subdomains
-  /\.(tk|ml|ga|cf)$/, // Suspicious TLDs
-  /bit\.ly|tinyurl|t\.co/, // URL shorteners
-  /[^\w\-\.]/g // Non-standard characters in domain
-];
-
-// Security monitoring configuration
-export const MONITORING_CONFIG = {
-  // Enable different types of monitoring
-  cspViolations: true,
-  xssAttempts: true,
-  sqlInjectionAttempts: true,
-  formTampering: true,
-  suspiciousLinks: true,
-  excessiveConsoleUsage: true,
+];  excessiveConsoleUsage: true,
   devToolsDetection: true,
   
   // Thresholds
@@ -379,19 +345,87 @@ export const SecurityUtils = {
       crypto.getRandomValues(array);
       return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     } else {
-      return Math.random().toString(36).substring(2) + Date.now().toString(36);
+      throw new Error('Crypto API not available. Cannot generate secure CSRF token.');
     }
   },
   
-  // Simple hash function for form signatures
-  simpleHash(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
+  /**
+   * Cryptographically secure hash function using SHA-256
+   * 
+   * This function replaces the insecure simpleHash implementation with a proper
+   * cryptographic hash function. It works in both browser and Node.js environments.
+   * 
+   * @param {string} data - The data to hash
+   * @param {string} encoding - Output encoding: 'hex' (default) or 'base64'
+   * @returns {Promise<string>} The hash as a hex or base64 encoded string
+   * 
+   * @example
+   * // Generate hex hash (default)
+   * const hexHash = await SecurityUtils.cryptoHash('my-data');
+   * 
+   * @example
+   * // Generate base64 hash
+   * const base64Hash = await SecurityUtils.cryptoHash('my-data', 'base64');
+   * 
+   * @example
+   * // Use for form signatures
+   * const formData = JSON.stringify({ user: 'john', action: 'login' });
+   * const signature = await SecurityUtils.cryptoHash(formData + secretKey);
+   */
+  async cryptoHash(data, encoding = 'hex') {
+    // Convert string to Uint8Array
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    
+    // Check for Web Crypto API (browser) or Node.js crypto
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      // Browser environment - use Web Crypto API
+      const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashArray = new Uint8Array(hashBuffer);
+      
+      if (encoding === 'base64') {
+        // Convert to base64
+        let binary = '';
+        hashArray.forEach(byte => binary += String.fromCharCode(byte));
+        return btoa(binary);
+      } else {
+        // Convert to hex (default)
+        return Array.from(hashArray)
+          .map(byte => byte.toString(16).padStart(2, '0'))
+          .join('');
+      }
+    } else if (typeof require !== 'undefined') {
+      // Node.js environment - use built-in crypto module
+      try {
+        const crypto = require('crypto');
+        const hash = crypto.createHash('sha256');
+        hash.update(data, 'utf8');
+        return hash.digest(encoding);
+      } catch (error) {
+        throw new Error('Node.js crypto module not available');
+      }
+    } else {
+      throw new Error('No secure crypto implementation available');
     }
-    return hash.toString(36);
+  },
+  
+  /**
+   * Legacy wrapper for backward compatibility (DEPRECATED)
+   * 
+   * @deprecated Use cryptoHash() instead for secure hashing
+   * @param {string} str - The string to hash
+   * @returns {Promise<string>} The hash as a hex string
+   * 
+   * @example
+   * // ❌ DEPRECATED - Don't use this
+   * const hash = await SecurityUtils.simpleHash('data');
+   * 
+   * // ✅ RECOMMENDED - Use this instead
+   * const hash = await SecurityUtils.cryptoHash('data', 'hex');
+   */
+  async simpleHash(str) {
+    console.warn('simpleHash is deprecated. Use cryptoHash for secure hashing.');
+    return await this.cryptoHash(str, 'hex');
   }
 };
 

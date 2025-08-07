@@ -20,8 +20,13 @@
 - **Vitest** - Fast unit testing framework with jsdom environment
 - **@testing-library/dom** - Simple and complete testing utilities
 - **Axe-core** - Accessibility testing
-- **Puppeteer** - Cross-browser and security testing
+- **Playwright** - Cross-browser testing and visual regression testing
 - **Custom test suites** for accessibility, cross-browser, and security
+
+### Critical Testing Requirements
+- **Blog Image Display Tests** - MANDATORY: All blog-related components must have automated tests verifying cover images display correctly
+- **Visual Regression Prevention** - Any changes to BlogCard, BlogSection, or blog index page must include image display verification
+- **Content Collection Image Handling** - Tests must verify Astro's image() schema works correctly with content collections
 
 ## Package Management
 - **pnpm** - Fast, disk space efficient package manager
@@ -42,6 +47,7 @@ pnpm test             # Run unit tests
 pnpm test:watch       # Run tests in watch mode
 pnpm test:ui          # Run tests with UI
 pnpm test:coverage    # Run tests with coverage report
+pnpm test:blog-images # Run blog image display tests (CRITICAL)
 ```
 
 ### Quality Assurance

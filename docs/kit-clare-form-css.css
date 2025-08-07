@@ -1,0 +1,392 @@
+/* =============================================================================
+   HACKERSPACE MUMBAI BRAND COLORS FOR KIT CLARE FORM
+   ============================================================================= */
+
+/* Brand Color Variables (matching your blog's DaisyUI theme) */
+:root {
+  --hm-primary: #FFC107;           /* Golden yellow - your primary brand color */
+  --hm-primary-dark: #FFB300;      /* Darker shade for hover states */
+  --hm-primary-light: #FFECB3;     /* Lighter shade for backgrounds */
+  --hm-secondary: #4DB6AC;         /* Teal green - your secondary color */
+  --hm-accent: #7986CB;            /* Blue - your accent color */
+  --hm-dark: #1A1A1A;             /* Very dark background */
+  --hm-dark-lighter: #2D2D2D;     /* Slightly lighter dark */
+  --hm-text-light: #F5F5F5;       /* Light text */
+  --hm-text-muted: #B0B0B0;       /* Muted text */
+  --hm-success: #4CAF50;          /* Success green */
+  --hm-error: #F44336;            /* Error red */
+}
+
+/* =============================================================================
+   FORM CONTAINER STYLING
+   ============================================================================= */
+
+/* Main form container */
+.formkit-form {
+  background: var(--hm-dark) !important;
+  border: 1px solid var(--hm-dark-lighter) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+  padding: 2rem !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Form wrapper */
+.formkit-wrapper {
+  background: transparent !important;
+}
+
+/* =============================================================================
+   TYPOGRAPHY STYLING
+   ============================================================================= */
+
+/* Form title/heading */
+.formkit-header h1,
+.formkit-header h2,
+.formkit-header h3 {
+  color: var(--hm-text-light) !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.25 !important;
+}
+
+/* Form description */
+.formkit-subheader,
+.formkit-description {
+  color: var(--hm-text-muted) !important;
+  font-size: 1.125rem !important;
+  line-height: 1.75 !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Field labels */
+.formkit-label {
+  color: var(--hm-text-light) !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* =============================================================================
+   INPUT FIELD STYLING
+   ============================================================================= */
+
+/* Email input field */
+.formkit-input {
+  background: var(--hm-dark-lighter) !important;
+  border: 1px solid var(--hm-dark-lighter) !important;
+  border-radius: 8px !important;
+  color: var(--hm-text-light) !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.2s ease-in-out !important;
+  width: 100% !important;
+}
+
+/* Input field focus state */
+.formkit-input:focus {
+  outline: none !important;
+  border-color: var(--hm-primary) !important;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2) !important;
+  background: var(--hm-dark) !important;
+}
+
+/* Input field hover state */
+.formkit-input:hover {
+  border-color: var(--hm-primary) !important;
+  background: var(--hm-dark) !important;
+}
+
+/* Placeholder text */
+.formkit-input::placeholder {
+  color: var(--hm-text-muted) !important;
+  opacity: 0.7 !important;
+}
+
+/* =============================================================================
+   SUBMIT BUTTON STYLING
+   ============================================================================= */
+
+/* Primary submit button */
+.formkit-submit {
+  background: linear-gradient(135deg, var(--hm-primary) 0%, var(--hm-primary-dark) 100%) !important;
+  border: 1px solid var(--hm-primary) !important;
+  border-radius: 8px !important;
+  color: #1A1A1A !important; /* Dark text on yellow background */
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  min-height: 44px !important; /* Accessibility - touch target */
+}
+
+/* Submit button hover state */
+.formkit-submit:hover {
+  background: linear-gradient(135deg, var(--hm-primary-dark) 0%, var(--hm-primary) 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 15px -3px rgba(255, 193, 7, 0.3), 
+              0 4px 6px -4px rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Submit button active state */
+.formkit-submit:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 4px 6px -1px rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Submit button focus state */
+.formkit-submit:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--hm-dark), 
+              0 0 0 4px var(--hm-primary) !important;
+}
+
+/* Loading state for submit button */
+.formkit-submit[data-loading="true"] {
+  opacity: 0.7 !important;
+  cursor: wait !important;
+  pointer-events: none !important;
+}
+
+/* =============================================================================
+   SUCCESS AND ERROR STATES
+   ============================================================================= */
+
+/* Success message */
+.formkit-success {
+  background: rgba(76, 175, 80, 0.1) !important;
+  border: 1px solid var(--hm-success) !important;
+  border-radius: 8px !important;
+  color: var(--hm-success) !important;
+  padding: 1rem !important;
+  margin-top: 1rem !important;
+  font-weight: 500 !important;
+}
+
+/* Error message */
+.formkit-error {
+  background: rgba(244, 67, 54, 0.1) !important;
+  border: 1px solid var(--hm-error) !important;
+  border-radius: 8px !important;
+  color: var(--hm-error) !important;
+  padding: 1rem !important;
+  margin-top: 1rem !important;
+  font-weight: 500 !important;
+}
+
+/* Field-specific error messages */
+.formkit-field-error {
+  color: var(--hm-error) !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.25rem !important;
+}
+
+/* =============================================================================
+   TRUST INDICATORS AND ADDITIONAL ELEMENTS
+   ============================================================================= */
+
+/* Privacy notice / disclaimer text */
+.formkit-disclaimer,
+.formkit-privacy {
+  color: var(--hm-text-muted) !important;
+  font-size: 0.75rem !important;
+  line-height: 1.5 !important;
+  margin-top: 1rem !important;
+  text-align: center !important;
+}
+
+/* Links in disclaimer */
+.formkit-disclaimer a,
+.formkit-privacy a {
+  color: var(--hm-primary) !important;
+  text-decoration: underline !important;
+}
+
+.formkit-disclaimer a:hover,
+.formkit-privacy a:hover {
+  color: var(--hm-primary-dark) !important;
+}
+
+/* Powered by Kit link styling */
+.formkit-powered-by {
+  opacity: 0.5 !important;
+  transition: opacity 0.2s ease-in-out !important;
+}
+
+.formkit-powered-by:hover {
+  opacity: 0.8 !important;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .formkit-form {
+    padding: 1.5rem !important;
+    margin: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .formkit-input {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  .formkit-submit {
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+}
+
+/* =============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================================================= */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .formkit-input {
+    border-width: 2px !important;
+  }
+  
+  .formkit-submit {
+    border-width: 2px !important;
+  }
+  
+  .formkit-submit:focus {
+    outline: 3px solid var(--hm-primary) !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .formkit-input,
+  .formkit-submit {
+    transition: none !important;
+  }
+  
+  .formkit-submit:hover {
+    transform: none !important;
+  }
+}
+
+/* =============================================================================
+   CUSTOM ENHANCEMENTS FOR HACKERSPACE MUMBAI
+   ============================================================================= */
+
+/* Add subtle gradient background */
+.formkit-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 193, 7, 0.05) 0%, 
+    rgba(77, 182, 172, 0.05) 50%, 
+    rgba(121, 134, 203, 0.05) 100%);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Add subtle animation to submit button */
+@keyframes pulse-primary {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+}
+
+.formkit-submit:focus {
+  animation: pulse-primary 2s infinite;
+}
+
+/* Custom checkbox styling (if used) */
+.formkit-checkbox {
+  accent-color: var(--hm-primary) !important;
+}
+
+/* Custom radio button styling (if used) */
+.formkit-radio {
+  accent-color: var(--hm-primary) !important;
+}
+
+/* =============================================================================
+   LOADING STATES
+   ============================================================================= */
+
+/* Loading spinner */
+.formkit-spinner {
+  border: 2px solid rgba(255, 193, 7, 0.3) !important;
+  border-top: 2px solid var(--hm-primary) !important;
+  border-radius: 50% !important;
+  width: 20px !important;
+  height: 20px !important;
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   FORM FIELD GROUPS AND LAYOUTS
+   ============================================================================= */
+
+/* Field groups */
+.formkit-fields {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+}
+
+/* Inline field groups (for side-by-side fields) */
+.formkit-fields.formkit-inline {
+  flex-direction: row !important;
+  gap: 1rem !important;
+}
+
+@media (max-width: 768px) {
+  .formkit-fields.formkit-inline {
+    flex-direction: column !important;
+  }
+}
+
+/* =============================================================================
+   FINAL POLISH
+   ============================================================================= */
+
+/* Ensure all text is readable */
+.formkit-form * {
+  color: var(--hm-text-light) !important;
+}
+
+/* Override any conflicting styles */
+.formkit-form input,
+.formkit-form button,
+.formkit-form select,
+.formkit-form textarea {
+  font-family: inherit !important;
+}
+
+/* Smooth focus transitions */
+.formkit-form *:focus {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Ensure proper contrast for all interactive elements */
+.formkit-form button,
+.formkit-form input,
+.formkit-form select {
+  min-height: 44px !important; /* WCAG AA compliance */
+}

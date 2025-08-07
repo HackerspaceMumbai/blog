@@ -1,120 +1,112 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
+import { formatDate } from '../utils/formatting';
 import placeholderImage from '../assets/images/gallery/pinnedpic-1.jpg';
 
-export interface Props {
-  post: CollectionEntry<'posts'>;
-  featured?: boolean;
-  className?: string;
-  'aria-labelledby'?: string;
-  'data-post-index'?: number;
-}
+const { post, featured = false } = Astro.props;
 
-const { post, featured = false, className = '', ...props } = Astro.props;
-
-// Dynamic image resolution with fallback
-const coverImage = post.data.cover || placeholderImage;
-
-// Calculate reading time (rough estimate: 200 words per minute)
-const calculateReadingTime = (content: string): string => {
-  const wordsPerMinute = 200;
-  const wordCount = content.trim().split(/\s+/).length;
-  const readingTime = Math.ceil(wordCount / wordsPerMinute);
-  return `${readingTime} min read`;
+// Robust image resolution function
+const getBlogCoverImage = (post) => {
+  try {
+    // Handle the case where post.data.cover might be ImageMetadata or undefined
+    const cover = post?.data?.cover;
+    
+    if (!cover) {
+      return placeholderImage;
+    }
+    
+    // If it's an ImageMetadata object, return it directly
+    if (typeof cover === 'object' && cover.src) {
+      return cover;
+    }
+    
+    // If it's a string path (legacy), return it
+    if (typeof cover === 'string' && cover.length > 0) {
+      return cover;
+    }
+    
+    // Fallback to placeholder
+    return placeholderImage;
+  } catch (error) {
+    console.warn('Error resolving blog cover image:', error);
+    return placeholderImage;
+  }
 };
 
-// Format date
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+// Generate appropriate alt text based on image type
+const getImageAltText = (post, coverImage) => {
+  if (coverImage === placeholderImage) {
+    return ''; // Empty alt for decorative placeholder
+  }
+  return `${post.data.title} article thumbnail`;
 };
 
-const readingTime = calculateReadingTime(post.body || post.data.description || '');
+const href = `/blog/${post.slug}/`;
+const coverImage = getBlogCoverImage(post);
+const imageAltText = getImageAltText(post, coverImage);
 const formattedDate = formatDate(post.data.date.toString());
 ---
 
-<article 
-  class={`blog-card group ${featured ? 'featured' : ''} ${className} bg-base-100 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden`}
-  {...props}
->
-  <a 
-    href={`/blog/${post.slug}/`}
-    class="block h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-base-100 rounded-lg"
-    aria-label={`Read article: ${post.data.title}`}
-  >
-    <!-- Cover Image -->
-    <div class="image-container relative overflow-hidden aspect-video">
-      <Image
-        src={coverImage}
-        alt={post.data.cover ? `Cover image for ${post.data.title}` : 'Default cover image'}
-        width={800}
-        height={450}
-        format="webp"
-        loading="lazy"
-        class="cover-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      
-      <!-- Reading time badge -->
-      <div class="absolute top-4 right-4 bg-base-100/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-base-content">
-        {readingTime}
+<article class="card bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary hover:scale-[1.02] hover:-translate-y-1 group cursor-pointer transition-all duration-300 ease-out overflow-hidden h-full flex flex-col">
+  <figure class="relative aspect-[3/2] w-full overflow-hidden">
+    <Image
+      src={coverImage}
+      alt={imageAltText}
+      width={800}
+      height={450}
+      loading="lazy"
+      class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+    />
+    <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+    {featured && (
+      <div class="absolute top-4 left-4 badge badge-primary badge-lg font-semibold">
+        Featured
       </div>
+    )}
+  </figure>
+  
+  <div class="card-body flex flex-col flex-1 p-6">
+    <h2 class="card-title text-primary text-xl font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2">
+      {post.data.title}
+    </h2>
+    
+    <div class="flex items-center gap-2 text-base-content/70 text-sm mb-3">
+      <time datetime={post.data.date.toISOString()}>
+        {formattedDate}
+      </time>
+      {post.data.author && (
+        <>
+          <span>•</span>
+          <span>By {post.data.author}</span>
+        </>
+      )}
     </div>
     
-    <!-- Content -->
-    <div class="p-6">
-      <!-- Categories/Tags -->
-      {post.data.categories && post.data.categories.length > 0 && (
-        <div class="mb-3">
-          {post.data.categories.slice(0, 2).map((category) => (
-            <span class="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2">
-              {category}
-            </span>
-          ))}
-        </div>
-      )}
-      
-      <!-- Title -->
-      <h3 class="text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
-        {post.data.title}
-      </h3>
-      
-      <!-- Description -->
-      <p class="text-base-content/70 mb-4 line-clamp-3">
-        {post.data.description}
-      </p>
-      
-      <!-- Meta information -->
-      <div class="flex items-center justify-between text-sm text-base-content/60">
-        <div class="flex items-center space-x-4">
-          <!-- Author -->
-          <span class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-            </svg>
-            {post.data.author}
-          </span>
-          
-          <!-- Date -->
-          <time datetime={post.data.date.toISOString()} class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-            </svg>
-            {formattedDate}
-          </time>
-        </div>
-        
-        <!-- Read more indicator -->
-        <span class="text-primary font-medium group-hover:underline">
-          Read more →
-        </span>
+    <p class="mb-4 text-base-content/80 line-clamp-3 text-base leading-relaxed flex-1">
+      {post.data.description || 'Click to read more about this blog post...'}
+    </p>
+    
+    {post.data.tags && post.data.tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-4">
+        {post.data.tags.slice(0, 3).map((tag) => (
+          <span class="badge badge-outline badge-sm">{tag}</span>
+        ))}
+        {post.data.tags.length > 3 && (
+          <span class="badge badge-ghost badge-sm">+{post.data.tags.length - 3} more</span>
+        )}
       </div>
+    )}
+    
+    <div class="card-actions mt-auto">
+      <a 
+        href={href} 
+        class="btn btn-primary w-full transition-all duration-200 group-hover:btn-accent"
+        aria-label={`Read the full blog post: ${post.data.title}`}
+      >
+        Read More
+      </a>
     </div>
-  </a>
+  </div>
 </article>
 
 <style>
@@ -130,9 +122,5 @@ const formattedDate = formatDate(post.data.date.toString());
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
-  
-  .aspect-video {
-    aspect-ratio: 16 / 9;
   }
 </style>

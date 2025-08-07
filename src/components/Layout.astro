@@ -41,7 +41,7 @@ const organizationSchema = {
   "name": "Hackerspace Mumbai",
   "alternateName": "HackMum",
   "url": siteUrl,
-  "logo": `${siteUrl}/logo.png`,
+  "logo": `${siteUrl}/logo.svg`,
   "description": "Mumbai's largest open source community and longest-running tech meetup",
   "foundingDate": "2018",
   "location": {
@@ -81,7 +81,7 @@ const pageSchema = type === 'article' ? {
     "name": "Hackerspace Mumbai",
     "logo": {
       "@type": "ImageObject",
-      "url": `${siteUrl}/logo.png`
+      "url": `${siteUrl}/logo.svg`
     }
   }
 } : null;
@@ -153,7 +153,7 @@ const pageSchema = type === 'article' ? {
         </div>
       </header>
       
-      <main id="main-content" class="flex-1" role="main" tabindex="-1">
+      <main id="main-content" class="flex-1" role="main">
         <slot/>
       </main>
       

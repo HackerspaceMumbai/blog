@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Remove Zone Identifier for WSL copied files
 *Zone.Identifier*
+
+# Local Netlify folder
+.netlify

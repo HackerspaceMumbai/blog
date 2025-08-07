@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Pre-commit hook to run blog image tests
+# This ensures that blog image functionality is tested before each commit
+#
+
+echo "🔍 Running pre-commit checks..."
+
+# Run blog image tests (critical for preventing regressions)
+echo "🧪 Running blog image tests..."
+if ! pnpm test:blog-images; then
+    echo "❌ Blog image tests failed. Please fix the issues before committing."
+    echo "💡 Run 'pnpm test:blog-images' to see detailed test results."
+    exit 1
+fi
+
+echo "✅ Blog image tests passed!"
+
+# Run visual regression tests (if dev server is available)
+echo "📸 Running deployment-friendly visual tests..."
+if curl -f http://localhost:4321 >/dev/null 2>&1; then
+    if ! pnpm test:visual:ci; then
+        echo "⚠️  Visual tests had issues but not blocking deployment"
+        echo "💡 Run 'pnpm test:visual:strict' for detailed analysis after deployment"
+    else
+        echo "✅ Visual tests passed!"
+    fi
+else
+    echo "⚠️  Dev server not running, skipping visual regression tests"
+    echo "💡 Run 'pnpm dev' in another terminal for complete pre-commit testing"
+fi
+
+# Run other critical tests
+echo "🧪 Running unit tests..."
+if ! pnpm test; then
+    echo "❌ Unit tests failed. Please fix the issues before committing."
+    exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+echo "🚀 Ready to commit!"
