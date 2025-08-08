@@ -71,7 +71,8 @@
     "daisyui": "^5.0.46",
     "sharp": "^0.34.1",
     "tailwindcss": "^4.1.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

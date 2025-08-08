@@ -3,6 +3,7 @@
  * Centralized security settings for the application
  */
 
+import sanitizeHtml from 'sanitize-html';
 // External script integrity hashes
 export const SCRIPT_INTEGRITY = {
   'web-vitals': 'sha384-tUgwVZ2bKq/fuT9mwiC3+HXDJki4u+mELqxwTbti8M20qg2kokVmY3/j4uvnqiG6',
@@ -162,11 +163,10 @@ export const FORM_SECURITY = {
 
 // Input sanitization rules
 export const SANITIZATION_RULES = [
-  // Remove script tags
+  // Remove script tags using sanitize-html
   {
     name: 'script_tags',
-    pattern: /<script\b[^>]*>.*?<\/script>/gis,
-    replacement: ''
+    sanitize: (input) => sanitizeHtml(input, { allowedTags: sanitizeHtml.defaults.allowedTags.filter(tag => tag !== 'script') }),
   },
   // Remove javascript: URLs
   {
