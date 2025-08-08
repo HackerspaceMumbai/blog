@@ -3,7 +3,8 @@
  * Centralized security settings for the application
  */
 
-import sanitizeHtml from 'sanitize-html';
+import sanitizeHtmlLib from 'sanitize-html';
+
 // External script integrity hashes
 export const SCRIPT_INTEGRITY = {
   'web-vitals': 'sha384-tUgwVZ2bKq/fuT9mwiC3+HXDJki4u+mELqxwTbti8M20qg2kokVmY3/j4uvnqiG6',
@@ -162,77 +163,117 @@ export const FORM_SECURITY = {
 };
 
 // Input sanitization rules
+// NOTE: These rules are deprecated in favor of the sanitizeHtml() function
+// which uses a proper HTML parser instead of vulnerable regex patterns
 export const SANITIZATION_RULES = [
-  // Remove script tags using sanitize-html
+  // Use sanitize-html library for all HTML sanitization
   {
-    name: 'script_tags',
-    sanitize: (input) => sanitizeHtml(input, { allowedTags: sanitizeHtml.defaults.allowedTags.filter(tag => tag !== 'script') }),
+    name: 'html_content',
+    sanitize: (input) => sanitizeHtmlLib(input, HTML_SANITIZE_OPTIONS)
   },
-  // Remove javascript: URLs
-  {
-    name: 'javascript_urls',
-    pattern: /javascript:/gi,
-    replacement: ''
-  },
-  // Remove event handlers
-  {
-    name: 'event_handlers',
-    pattern: /on\w+\s*=/gi,
-    replacement: ''
-  },
-  // Remove iframe tags
-  {
-    name: 'iframe_tags',
-    pattern: /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
-    replacement: ''
-  },
-  // Remove object/embed tags
-  {
-    name: 'object_embed_tags',
-    pattern: /<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi,
-    replacement: ''
-  },
-  // Remove data URLs with HTML content
-  {
-    name: 'data_html_urls',
-    pattern: /data:text\/html[^"']*/gi,
-    replacement: ''
-  },
-  // Remove vbscript URLs
-  {
-    name: 'vbscript_urls',
-    pattern: /vbscript:/gi,
-    replacement: ''
-  },
-  // Remove CSS expressions
-  {
-    name: 'css_expressions',
-    pattern: /expression\s*\(/gi,
-    replacement: ''
-  },
-  // Remove SVG script elements
-  {
-    name: 'svg_scripts',
-    pattern: /<svg[^>]*>[\s\S]*?<script[\s\S]*?<\/script>[\s\S]*?<\/svg>/gi,
-    replacement: ''
-  },
-  // Remove SVG onload and other event attributes
-  {
-    name: 'svg_events',
-    pattern: /<svg[^>]*\son\w+\s*=/gi,
-    replacement: '<svg'
-  }
+  // DEPRECATED: All regex-based sanitization rules have been replaced
+  // with the secure sanitizeHtml() function to prevent bypass attacks.
+  // 
+  // The sanitizeHtml() function with HTML_SANITIZE_OPTIONS provides comprehensive protection against:
+  // - Script injection attacks (including <script>, <iframe>, <object>, <embed>)
+  // - Event handler injection (onclick, onload, etc.)
+  // - Data URL attacks (data:text/html, javascript:, vbscript:)
+  // - CSS expression attacks
+  // - SVG-based attacks
+  // - And many other XSS vectors that regex patterns cannot safely handle
+  //
+  // Use SecurityUtils.sanitizeInput() or sanitizeHtml() directly for all HTML sanitization.
 ];
 
-// XSS Detection patterns
-export const XSS_PATTERNS = [
-  /<script[^>]*>.*?<\/script>/gi,
-  /javascript:/gi,
-  /on\w+\s*=/gi,
-  /<iframe/gi,
-  /<object/gi,
-  /<embed/gi
-];
+// XSS Detection and Sanitization
+// Note: Using sanitize-html library instead of regex patterns for security
+// Regex-based HTML filtering is inherently vulnerable to bypass attacks
+
+// Safe HTML sanitization configuration
+export const HTML_SANITIZE_OPTIONS = {
+  allowedTags: [
+    'p', 'br', 'strong', 'em', 'u', 'i', 'b', 
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'blockquote', 'code', 'pre',
+    'a', 'img'
+  ],
+  allowedAttributes: {
+    'a': ['href', 'title', 'target'],
+    'img': ['src', 'alt', 'title', 'width', 'height'],
+    '*': ['class', 'id']
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  allowedSchemesByTag: {
+    img: ['http', 'https', 'data']
+  },
+  allowProtocolRelative: false,
+  disallowedTagsMode: 'discard',
+  allowedClasses: {
+    '*': ['highlight', 'code', 'language-*']
+  }
+};
+
+// Secure HTML sanitization function
+export function sanitizeHtml(html) {
+  if (typeof html !== 'string') {
+    return '';
+  }
+  return sanitizeHtmlLib(html, HTML_SANITIZE_OPTIONS);
+}
+
+// XSS Detection and Prevention
+// SECURITY NOTE: We do NOT use regex patterns for XSS detection as they are inherently vulnerable
+// to bypass attacks. Instead, we use the sanitize-html library for proper HTML sanitization.
+// 
+// Common regex bypass examples that make regex-based filtering unsafe:
+// - <script>alert(1)</script foo="bar"> (malformed closing tag)
+// - <SCRIPT>alert(1)</SCRIPT> (case variations)  
+// - <script>alert(1)</script > (space before closing)
+// - javascript&#58;alert(1) (HTML entity encoding)
+// - <svg onload=alert(1)> (event handlers in allowed tags)
+//
+// For XSS prevention, use the sanitizeHtml() function below instead.
+
+/**
+ * Secure XSS detection using sanitization comparison
+ * This approach is much safer than regex patterns as it uses a proper HTML parser
+ */
+export function detectXSS(input) {
+  if (typeof input !== 'string') {
+    return false;
+  }
+  
+  // Use sanitization to detect potential XSS
+  const sanitized = sanitizeHtml(input);
+  
+  // If the sanitized version is significantly different, it likely contained malicious content
+  const originalLength = input.length;
+  const sanitizedLength = sanitized.length;
+  
+  // Check for significant content removal (indicating potential XSS)
+  const removalPercentage = ((originalLength - sanitizedLength) / originalLength) * 100;
+  
+  // Also check for specific dangerous patterns that would be completely removed
+  const containsDangerousContent = (
+    originalLength > 0 && 
+    sanitizedLength === 0 && 
+    input.trim().length > 0
+  );
+  
+  return removalPercentage > 30 || containsDangerousContent;
+}
+
+/**
+ * Safe XSS prevention function
+ * Always use this instead of regex-based filtering
+ */
+export function preventXSS(input) {
+  if (typeof input !== 'string') {
+    return '';
+  }
+  
+  return sanitizeHtml(input);
+}
 
 // SQL Injection patterns
 export const SQL_INJECTION_PATTERNS = [
@@ -326,9 +367,33 @@ export function getTrustedScript(scriptName) {
 
 // Security utility functions
 export const SecurityUtils = {
-  // Check if input contains XSS patterns
+  // Check if input contains XSS patterns (secure implementation using sanitization)
   containsXSS(input) {
-    return XSS_PATTERNS.some(pattern => pattern.test(input));
+    if (typeof input !== 'string') {
+      return false;
+    }
+    
+    // Use sanitization to detect XSS - if sanitized version differs significantly,
+    // it likely contained malicious content. This approach is much safer than regex patterns.
+    const sanitized = sanitizeHtml(input);
+    const originalLength = input.length;
+    const sanitizedLength = sanitized.length;
+    
+    // If sanitization removed more than 10% of content, it's likely malicious
+    const significantReduction = (originalLength - sanitizedLength) / originalLength > 0.1;
+    
+    // Check if the entire input was removed (indicating it was entirely malicious)
+    const completelyRemoved = originalLength > 0 && sanitizedLength === 0 && input.trim().length > 0;
+    
+    return significantReduction || completelyRemoved;
+  },
+  
+  // Sanitize HTML input securely
+  sanitizeInput(input) {
+    if (typeof input !== 'string') {
+      return '';
+    }
+    return sanitizeHtml(input);
   },
   
   // Check if input contains SQL injection patterns
