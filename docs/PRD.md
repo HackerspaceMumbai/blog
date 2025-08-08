@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the requirements for a complete revamp of the Hackerspace Mumbai website ([hackmum.in](http://hackmum.in)), migrating from Eleventy to Astro and introducing significant feature enhancements. The goal is to create a modern, high-performance, and community-driven platform for Mumbai’s largest open source community and its flagship #meetup events.
+This document outlines the requirements for a complete revamp of the Hackerspace Mumbai website ([hackmum.in](http://hackmum.in)), migrating from Eleventy to Astro and introducing significant feature enhancements. The goal is to create a modern, high-performance, and community-driven platform for Mumbai’s largest open-source community and its flagship #meetup events.
 
 ---
 
@@ -16,7 +16,7 @@ This document outlines the requirements for a complete revamp of the Hackerspace
 
 ## Target Audience
 
-- Open source enthusiasts, developers, and technologists in Mumbai and beyond.
+- Open-source enthusiasts, developers, and technologists in Mumbai and beyond.
 - Newcomers interested in OSS, tech meetups, and community events.
 - Existing Hackerspace Mumbai members and contributors.
 
@@ -54,7 +54,7 @@ This document outlines the requirements for a complete revamp of the Hackerspace
 
 - Clear instructions on how to join the community (e.g., Discord, Telegram, mailing list).
 - Volunteer and contribution opportunities (e.g., “How to Contribute”, “Become a Speaker”).
-- Links to GitHub and open source projects.
+- Links to GitHub and open-source projects.
 
 ### 6. Sponsors & Partners
 

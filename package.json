@@ -14,7 +14,6 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:blog-images": "vitest run src/components/__tests__/BlogCard.test.js src/components/__tests__/BlogSection.test.js src/components/__tests__/BlogIndexPage.test.js src/components/__tests__/BlogCard.image-display.test.js src/components/__tests__/BlogCard.edge-cases.test.js",
-    "test:blog-images:full": "vitest run src/components/__tests__/BlogCard.test.js src/components/__tests__/BlogSection.test.js src/components/__tests__/BlogIndexPage.test.js src/components/__tests__/BlogCard.image-display.test.js src/components/__tests__/BlogCard.edge-cases.test.js",
     "test:blog-images:watch": "vitest src/components/__tests__/BlogCard.test.js src/components/__tests__/BlogSection.test.js src/components/__tests__/BlogIndexPage.test.js src/components/__tests__/BlogCard.image-display.test.js src/components/__tests__/BlogCard.edge-cases.test.js",
     "test:blog-images:coverage": "vitest run --coverage src/components/__tests__/BlogCard.test.js src/components/__tests__/BlogSection.test.js src/components/__tests__/BlogIndexPage.test.js src/components/__tests__/BlogCard.image-display.test.js src/components/__tests__/BlogCard.edge-cases.test.js",
     "test:blog-images:runner": "node scripts/run-blog-image-tests.js",

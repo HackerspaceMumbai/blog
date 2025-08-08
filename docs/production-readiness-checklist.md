@@ -78,7 +78,7 @@ This checklist ensures the newsletter integration is production-ready before dep
 - [ ] Newsletter API responding to OPTIONS requests
 - [ ] Newsletter subscription flow working end-to-end
 - [ ] Error handling working correctly
-- [ ] Rate limiting functional
+- [ ] Rate-limiting functional
 - [ ] Analytics tracking working
 - [ ] Email confirmations being sent (if configured)
 

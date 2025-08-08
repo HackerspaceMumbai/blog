@@ -14,8 +14,8 @@ This documentation provides comprehensive guidelines for developing, maintaining
 
 1. **Development Setup**
    ```bash
-   npm install
-   npm run dev
+   pnpm install
+   pnpm dev
    ```
    
    **Built-in Development Tools**: When you run `pnpm run dev`, you'll see integrated testing tools in your browser:
@@ -27,16 +27,16 @@ This documentation provides comprehensive guidelines for developing, maintaining
 
 2. **Building for Production**
    ```bash
-   npm run build
-   npm run preview
+   pnpm build
+   pnpm preview
    ```
 
 3. **Running Tests**
    ```bash
-   npm run test
-   npm run test:a11y
-   npm run test:cross-browser
-   npm run test:security
+   pnpm test
+   pnpm test:a11y
+   pnpm test:cross-browser
+   pnpm test:security
    ```
 
 ## 🏗️ Architecture Overview

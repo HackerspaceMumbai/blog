@@ -1,11 +1,11 @@
 
 # Hackerspace Mumbai Community Site (Astro)
 
-Welcome to the official repository for [hackmum.in](http://hackmum.in), the home of Hackerspace Mumbai — the largest open source community in Mumbai and host of the city’s longest-running tech meetup (#meetup).
+Welcome to the official repository for [hackmum.in](http://hackmum.in), the home of Hackerspace Mumbai — the largest open-source community in Mumbai and host of the city’s longest-running tech meetup (#meetup).
 
 ## 🚀 Migration Notice
 
-This site has been migrated from [Eleventy High Performance Blog](https://github.com/HackerspaceMumbai/eleventy-high-performance-blog) to [Astro](https://astro.build/) for a modern, high-performance, and maintainable experience.
+This site has been migrated from [Eleventy High-Performance Blog](https://github.com/HackerspaceMumbai/eleventy-high-performance-blog) to [Astro](https://astro.build/) for a modern, high-performance, and maintainable experience.
 
 ## 🌟 Home Page Features
 
