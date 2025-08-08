@@ -35,34 +35,28 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium
 
-      - name: Run unit tests
-        run: pnpm test
-
-      - name: Run blog image tests (Critical)
-        run: pnpm test:blog-images
-
-      - name: Run visual regression tests
-        run: pnpm test:blog-images
+      - name: Run CI Test Orchestrator
+        run: pnpm test:ci-orchestrator
         env:
           CI: true
-
-      - name: Run function tests
-        run: pnpm functions:test
 
       - name: Build project
         run: pnpm build
 
-      - name: Run accessibility tests
-        run: pnpm a11y:audit
-
-      - name: Run security tests
-        run: pnpm security:audit
-
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage-${{ matrix.node-version }}
           path: coverage/
+          retention-days: 7
+
+      - name: Upload CI reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-reports-${{ matrix.node-version }}
+          path: ci-reports/
           retention-days: 7
 
       - name: Upload accessibility reports
