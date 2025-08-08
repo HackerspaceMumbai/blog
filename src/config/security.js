@@ -16,11 +16,43 @@ export const TRUSTED_SCRIPTS = {
 };
 
 // Content Security Policy configuration
-     'form-action': ["'self'"],
-     'frame-ancestors': ["'none'"],
-     'report-uri': ['/api/csp-report'],
-     'report-to': ['csp-endpoint'],
-     'upgrade-insecure-requests': true  development: {
+export const CSP_CONFIG = {
+  production: {
+    'default-src': ["'self'"],
+    'script-src': [
+      "'self'",
+      "'unsafe-inline'",
+      'https://unpkg.com/web-vitals@3',
+      'https://unpkg.com/axe-core@4.8.4'
+    ],
+    'style-src': [
+      "'self'",
+      "'unsafe-inline'",
+      'https:'
+    ],
+    'img-src': [
+      "'self'",
+      'data:',
+      'https:'
+    ],
+    'font-src': [
+      "'self'",
+      'https:',
+      'data:'
+    ],
+    'connect-src': [
+      "'self'",
+      'https:'
+    ],
+    'media-src': ["'self'", 'https:'],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'frame-ancestors': ["'none'"],
+    'report-uri': ['/api/csp-report'],
+    'report-to': ['csp-endpoint'],
+    'upgrade-insecure-requests': true
+  },development: {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
@@ -133,51 +165,7 @@ export const SANITIZATION_RULES = [
   // Remove script tags
   {
     name: 'script_tags',
-    pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    replacement: ''
     pattern: /<script\b[^>]*>.*?<\/script>/gis,
-    replacement: ''  {
-    name: 'javascript_urls',
-    pattern: /javascript:/gi,
-    replacement: ''
-  },
-  // Remove event handlers
-  {
-    name: 'event_handlers',
-    pattern: /on\w+\s*=/gi,
-    replacement: ''
-  },
-  // Remove iframe tags
-  {
-    name: 'iframe_tags',
-    pattern: /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
-    replacement: ''
-  },
-  // Remove object/embed tags
-  {
-    name: 'object_embed_tags',
-    pattern: /<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi,
-    replacement: ''
-  },
-  // Remove data URLs with HTML content
-  {
-    name: 'data_html_urls',
-    pattern: /data:text\/html[^"']*/gi,
-    replacement: ''
-  },
-  // Remove vbscript URLs
-  {
-    name: 'vbscript_urls',
-    pattern: /vbscript:/gi,
-    replacement: ''
-  },
-  // Remove CSS expressions
-// Input sanitization rules
-export const SANITIZATION_RULES = [
-  // Remove script tags
-  {
-    name: 'script_tags',
-    pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
     replacement: ''
   },
   // Remove javascript: URLs
@@ -234,7 +222,39 @@ export const SANITIZATION_RULES = [
     pattern: /<svg[^>]*\son\w+\s*=/gi,
     replacement: '<svg'
   }
-];  excessiveConsoleUsage: true,
+];
+
+// XSS Detection patterns
+export const XSS_PATTERNS = [
+  /<script[^>]*>.*?<\/script>/gi,
+  /javascript:/gi,
+  /on\w+\s*=/gi,
+  /<iframe/gi,
+  /<object/gi,
+  /<embed/gi
+];
+
+// SQL Injection patterns
+export const SQL_INJECTION_PATTERNS = [
+  /(union|select|insert|update|delete|drop|create|alter|exec|execute)\s/gi,
+  /'/gi,
+  /--/gi,
+  /\/\*/gi,
+  /\*\//gi
+];
+
+// Suspicious URL patterns
+export const SUSPICIOUS_URL_PATTERNS = [
+  /bit\.ly/gi,
+  /tinyurl/gi,
+  /t\.co/gi,
+  /goo\.gl/gi
+];
+
+// Client-side monitoring configuration
+export const MONITORING_CONFIG = {
+  // Detection settings
+  excessiveConsoleUsage: true,
   devToolsDetection: true,
   
   // Thresholds
