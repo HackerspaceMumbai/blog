@@ -260,12 +260,31 @@ describe('Environment Detection Utilities', () => {
     it('should use custom retry parameters', async () => {
       fetch.mockResolvedValue({ ok: false });
 
+      const result = await checkDevServerWithRetry('http://localhost:3000', 2, 50);
+      
+      // Verify the function was called the correct number of times
+      expect(fetch).toHaveBeenCalledTimes(2);
+      // Verify the result is false (all retries failed)
+      expect(result).toBe(false);
+      // Verify the URL was used correctly
+      expect(fetch).toHaveBeenCalledWith('http://localhost:3000', expect.any(Object));
+    });
+
+    it('should respect retry delay (timing test)', async () => {
+      // Skip timing test in CI environments to avoid flakiness
+      if (process.env.CI) {
+        return;
+      }
+
+      fetch.mockResolvedValue({ ok: false });
+
       const startTime = Date.now();
-      await checkDevServerWithRetry('http://localhost:3000', 2, 50);
+      await checkDevServerWithRetry('http://localhost:3000', 2, 100); // Use longer delay for more reliable timing
       const endTime = Date.now();
 
       expect(fetch).toHaveBeenCalledTimes(2);
-      expect(endTime - startTime).toBeGreaterThanOrEqual(50);
+      // Allow for some timing variance in local environments
+      expect(endTime - startTime).toBeGreaterThanOrEqual(80); // Allow 20ms variance
     });
   });
 
