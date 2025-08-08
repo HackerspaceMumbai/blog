@@ -275,6 +275,23 @@ export function preventXSS(input) {
   return sanitizeHtml(input);
 }
 
+/**
+ * Safely extract text content from HTML
+ * Removes all HTML tags while preserving text content
+ * This is much safer than regex-based tag removal
+ */
+export function extractTextFromHtml(html) {
+  if (typeof html !== 'string') {
+    return '';
+  }
+  
+  return sanitizeHtmlLib(html, {
+    allowedTags: [], // Remove all HTML tags
+    allowedAttributes: {}, // Remove all attributes
+    textFilter: (text) => text.trim() // Keep and trim text content
+  });
+}
+
 // SQL Injection patterns
 export const SQL_INJECTION_PATTERNS = [
   /(union|select|insert|update|delete|drop|create|alter|exec|execute)\s/gi,
