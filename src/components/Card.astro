@@ -17,8 +17,14 @@ const {
   className = '',
   style = ''
 } = Astro.props as CardProps;
+
+const baseCardClasses = [
+  'card bg-base-200 border border-primary rounded-lg shadow-lg',
+  'hover:shadow-lg hover:shadow-primary',
+  'flex flex-col h-full'
+].join(' ');
 ---
-<div class={`card bg-base-200 border border-primary  rounded-lg shadow-lg hover:shadow-lg hover:shadow-primary flex flex-col h-full ${className}`} style={style}>
+<div class={`${baseCardClasses} ${className}`} style={style}>
   {image && (
     <figure class="mb-4">
       <img src={image} alt={imageAlt || title} class="w-full object-cover rounded" />
@@ -29,6 +35,8 @@ const {
     <slot />
   </div>
   <div class="mt-auto">
-    <slot name="actions">{actions ? <div>{actions}</div> : null}</slot>
+    <slot name="actions">
+      {actions && <div>{actions}</div>}
+    </slot>
   </div>
 </div>

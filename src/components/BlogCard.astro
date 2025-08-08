@@ -36,9 +36,9 @@ const getBlogCoverImage = (post) => {
 // Generate appropriate alt text based on image type
 const getImageAltText = (post, coverImage) => {
   if (coverImage === placeholderImage) {
-    return ''; // Empty alt for decorative placeholder
+    return ''; // Empty alt for decorative placeholder image
   }
-  return `${post.data.title} article thumbnail`;
+  return `Cover image for article: ${post.data.title}`;
 };
 
 const href = `/blog/${post.slug}/`;
@@ -71,7 +71,7 @@ const formattedDate = formatDate(post.data.date.toString());
     </h2>
     
     <div class="flex items-center gap-2 text-base-content/70 text-sm mb-3">
-      <time datetime={post.data.date.toISOString()}>
+      <time datetime={post.data.date.toISOString()} title={`Published on ${formattedDate}`}>
         {formattedDate}
       </time>
       {post.data.author && (
@@ -102,6 +102,8 @@ const formattedDate = formatDate(post.data.date.toString());
         href={href} 
         class="btn btn-primary w-full transition-all duration-200 group-hover:btn-accent"
         aria-label={`Read the full blog post: ${post.data.title}`}
+        role="button"
+        tabindex="0"
       >
         Read More
       </a>
@@ -109,18 +111,3 @@ const formattedDate = formatDate(post.data.date.toString());
   </div>
 </article>
 
-<style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>

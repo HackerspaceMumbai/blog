@@ -10,11 +10,6 @@ export default defineConfig({
   site: 'https://hackmum.in',
   integrations: [mdx()],
 
-  // Performance optimizations
-  build: {
-    // Build configuration
-  },
-
   // Image optimization
   image: {
     // Enable image optimization

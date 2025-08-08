@@ -11,7 +11,7 @@ This is the official website for Hackerspace Mumbai (hackmum.in) - Mumbai's larg
 - Serve as the central hub for meetup information and community resources
 
 ## Target Audience
-- Open source enthusiasts, developers, and technologists in Mumbai and beyond
+- Open-source enthusiasts, developers, and technologists in Mumbai and beyond
 - Newcomers interested in OSS, tech meetups, and community events
 - Existing Hackerspace Mumbai members and contributors
 

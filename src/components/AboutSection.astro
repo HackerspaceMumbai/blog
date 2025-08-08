@@ -1,10 +1,8 @@
 ---
 import StatsGrid from './StatsGrid.astro';
-import Testimonials from './Testimonials.astro';
 import { Image } from 'astro:assets';
 
 const stats = Astro.props.stats;
-const testimonials = Astro.props.testimonials;
 
 // Import team and community images
 import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
@@ -68,7 +66,7 @@ import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
           <div class="aspect-[4/3] overflow-hidden">
             <Image
               src={pinnedpic6}
-              alt="Open source contributors collaborating on project"
+              alt="Open-source contributors collaborating on project"
               width={400}
               height={300}
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
