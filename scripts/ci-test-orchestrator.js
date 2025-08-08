@@ -160,7 +160,7 @@ class CITestOrchestrator {
       
       console.log(`   ${isFallback ? 'Fallback ' : ''}Command: ${command}`);
       
-      const process = spawn(cmd, args, {
+      const childProcess = spawn(cmd, args, {
         stdio: 'pipe',
         shell: true,
         env: {
@@ -173,7 +173,7 @@ class CITestOrchestrator {
       let output = '';
       let errorOutput = '';
       
-      process.stdout.on('data', (data) => {
+      childProcess.stdout.on('data', (data) => {
         const text = data.toString();
         output += text;
         // Show real-time output for important tests
@@ -182,7 +182,7 @@ class CITestOrchestrator {
         }
       });
       
-      process.stderr.on('data', (data) => {
+      childProcess.stderr.on('data', (data) => {
         const text = data.toString();
         errorOutput += text;
         if (testConfig.required || !this.config.isCI) {
@@ -190,7 +190,7 @@ class CITestOrchestrator {
         }
       });
       
-      process.on('exit', (code) => {
+      childProcess.on('exit', (code) => {
         const success = code === 0;
         
         console.log(`   ${success ? '✅' : '❌'} ${testConfig.name} ${isFallback ? 'fallback ' : ''}${success ? 'passed' : 'failed'} (exit code: ${code})`);
@@ -208,7 +208,7 @@ class CITestOrchestrator {
         });
       });
       
-      process.on('error', (error) => {
+      childProcess.on('error', (error) => {
         console.log(`   ❌ ${testConfig.name} ${isFallback ? 'fallback ' : ''}failed to execute: ${error.message}`);
         
         resolve({
