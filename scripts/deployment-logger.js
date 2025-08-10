@@ -7,6 +7,7 @@
 import { writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { randomBytes } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,10 +48,11 @@ class DeploymentLogger {
   }
 
   /**
-   * Generate unique session ID
+   * Generate unique session ID using cryptographically secure random bytes
    */
   generateSessionId() {
-    return `deploy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const randomSuffix = randomBytes(6).toString('hex'); // 6 bytes = 12 hex characters
+    return `deploy_${Date.now()}_${randomSuffix}`;
   }
 
   /**
