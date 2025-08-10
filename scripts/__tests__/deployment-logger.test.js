@@ -22,6 +22,10 @@ describe('DeploymentLogger', () => {
     // Save original environment
     originalEnv = { ...process.env };
     
+    // Clear CI environment variables to ensure consistent local environment detection
+    delete process.env.CI;
+    delete process.env.GITHUB_ACTIONS;
+    
     // Setup test log directory
     testLogDir = join(__dirname, '../test-logs');
     if (existsSync(testLogDir)) {

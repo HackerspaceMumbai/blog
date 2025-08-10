@@ -31,3 +31,6 @@ pnpm-debug.log*
 
 # Backup files
 *.backup
+
+# CI test reports
+ci-reports/

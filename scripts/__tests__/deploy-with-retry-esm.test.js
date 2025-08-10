@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 import { deployWithRetry, verifyDeploymentStatus, sanitizeErrorMessage, calculateDelay, isRetryableError } from '../deploy-with-retry.js';
 
 let spawn;
@@ -162,6 +162,9 @@ describe('deploy-with-retry', () => {
       expect(mockSpawn).toHaveBeenCalledTimes(3);
     });
     it('should fail after max retries on retryable errors', async () => {
+      // Mock timers to speed up the test
+      vi.useFakeTimers();
+      
       mockChild.stdout.on.mockImplementation(() => {});
       mockChild.stderr.on.mockImplementation((event, callback) => {
         if (event === 'data') {
@@ -173,9 +176,29 @@ describe('deploy-with-retry', () => {
           callback(1); // Always fail
         }
       });
-      await expect(deployWithRetry(['--site=test-site'])).rejects.toThrow('Network timeout occurred');
-      expect(mockSpawn).toHaveBeenCalledTimes(4); // Initial + 3 retries
-    });
+      
+      try {
+        // Start the deployment promise and handle rejection properly
+        const deployPromise = deployWithRetry(['--site=test-site']);
+        
+        // Set up proper promise rejection handling before advancing timers
+        const rejectionPromise = deployPromise.catch(error => {
+          expect(error.message).toContain('Network timeout occurred');
+          return error; // Return the error instead of re-throwing
+        });
+        
+        // Fast-forward through all timers
+        await vi.runAllTimersAsync();
+        
+        // Wait for the rejection to be handled
+        const result = await rejectionPromise;
+        expect(result).toBeInstanceOf(Error);
+        
+        expect(mockSpawn).toHaveBeenCalledTimes(4); // Initial + 3 retries
+      } finally {
+        vi.useRealTimers();
+      }
+    }, 10000);
     it('should not retry on non-retryable errors', async () => {
       mockChild.stdout.on.mockImplementation(() => {});
       mockChild.stderr.on.mockImplementation((event, callback) => {
