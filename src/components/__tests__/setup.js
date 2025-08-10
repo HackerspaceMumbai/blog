@@ -3,7 +3,7 @@
  * Configures global test environment and mocks
  */
 
-import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 
 // Mock DOM APIs that might not be available in test environment
 beforeAll(() => {

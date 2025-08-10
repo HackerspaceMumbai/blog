@@ -16,6 +16,15 @@ NC='\033[0m' # No Color
 # Default environment
 ENVIRONMENT=${1:-preview}
 
+# Detect CI environment
+IS_CI=false
+if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+    IS_CI=true
+    echo -e "${BLUE}🤖 Running in CI environment${NC}"
+else
+    echo -e "${BLUE}💻 Running in local development environment${NC}"
+fi
+
 echo -e "${BLUE}🚀 Deploying Hackerspace Mumbai Blog to Netlify ($ENVIRONMENT)${NC}"
 
 # Check if netlify CLI is installed
@@ -24,10 +33,40 @@ if ! command -v netlify &> /dev/null; then
     npm install -g netlify-cli
 fi
 
-# Check if user is logged in to Netlify
-if ! netlify status &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Not logged in to Netlify. Please login...${NC}"
-    netlify login
+# Handle authentication based on environment
+if [ "$IS_CI" = "true" ]; then
+    echo -e "${BLUE}🔐 Verifying CI authentication...${NC}"
+    
+    # Check for required environment variables in CI
+    if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+        echo -e "${RED}❌ NETLIFY_AUTH_TOKEN environment variable is required for CI deployment${NC}"
+        echo -e "${YELLOW}💡 Please set NETLIFY_AUTH_TOKEN in your GitHub repository secrets${NC}"
+        echo -e "${YELLOW}   Go to: Settings > Secrets and variables > Actions > New repository secret${NC}"
+        exit 1
+    fi
+    
+    if [ -z "$NETLIFY_SITE_ID" ]; then
+        echo -e "${RED}❌ NETLIFY_SITE_ID environment variable is required for CI deployment${NC}"
+        echo -e "${YELLOW}💡 Please set NETLIFY_SITE_ID in your GitHub repository secrets${NC}"
+        echo -e "${YELLOW}   You can find your site ID in Netlify dashboard > Site settings > General${NC}"
+        exit 1
+    fi
+    
+    # Verify authentication works before deployment
+    echo -e "${BLUE}🔍 Testing Netlify authentication...${NC}"
+    if netlify status --json > /dev/null 2>&1; then
+        echo -e "${GREEN}✅ Netlify authentication verified${NC}"
+    else
+        echo -e "${RED}❌ Netlify authentication failed${NC}"
+        echo -e "${YELLOW}💡 Please check that NETLIFY_AUTH_TOKEN is valid and has the correct permissions${NC}"
+        exit 1
+    fi
+else
+    # Local development - check if user is logged in to Netlify
+    if ! netlify status &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Not logged in to Netlify. Please login...${NC}"
+        netlify login
+    fi
 fi
 
 # Check for required environment variables
@@ -72,10 +111,18 @@ fi
 # Deploy based on environment
 if [ "$ENVIRONMENT" = "production" ]; then
     echo -e "${BLUE}🌍 Deploying to production...${NC}"
-    netlify deploy --prod --dir=dist --functions=netlify/functions
+    if [ "$IS_CI" = "true" ]; then
+        netlify deploy --prod --site="$NETLIFY_SITE_ID" --dir=dist --functions=netlify/functions
+    else
+        netlify deploy --prod --dir=dist --functions=netlify/functions
+    fi
 elif [ "$ENVIRONMENT" = "preview" ]; then
     echo -e "${BLUE}🔍 Deploying preview...${NC}"
-    netlify deploy --dir=dist --functions=netlify/functions
+    if [ "$IS_CI" = "true" ]; then
+        netlify deploy --site="$NETLIFY_SITE_ID" --dir=dist --functions=netlify/functions
+    else
+        netlify deploy --dir=dist --functions=netlify/functions
+    fi
 else
     echo -e "${RED}❌ Invalid environment: $ENVIRONMENT. Use 'preview' or 'production'.${NC}"
     exit 1
@@ -98,19 +145,44 @@ if [ $? -eq 0 ]; then
     # Wait a moment for deployment to propagate
     sleep 5
     
-    # Check if the site is accessible (for production)
+    # Determine deployment URL
+    DEPLOYMENT_URL=""
     if [ "$ENVIRONMENT" = "production" ]; then
-        if curl -sSf https://hackmum.in > /dev/null; then
-            echo -e "${GREEN}✅ Site is accessible${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Site might not be fully propagated yet${NC}"
-        fi
+        DEPLOYMENT_URL="https://hackmum.in"
+    else
+        # For preview deployments, we'll use the URL from the last deployment
+        # This is a simplified approach - in CI, the URL would be extracted from JSON output
+        echo -e "${YELLOW}⚠️  Preview URL extraction not available in shell script${NC}"
+        echo -e "${BLUE}💡 Use 'pnpm deploy:preview:with-verify' for full health check integration${NC}"
+    fi
+    
+    # Run comprehensive health check if we have a URL
+    if [ -n "$DEPLOYMENT_URL" ]; then
+        echo -e "${BLUE}🏥 Running comprehensive health check for: $DEPLOYMENT_URL${NC}"
         
-        # Check if newsletter API is working
-        if curl -sSf -X OPTIONS https://hackmum.in/api/newsletter > /dev/null; then
-            echo -e "${GREEN}✅ Newsletter API is responding${NC}"
+        if node scripts/post-deployment-verify.js "$DEPLOYMENT_URL"; then
+            echo -e "${GREEN}✅ Comprehensive health check passed${NC}"
         else
-            echo -e "${RED}❌ Newsletter API is not responding${NC}"
+            echo -e "${YELLOW}⚠️  Comprehensive health check failed, but deployment succeeded${NC}"
+        fi
+    else
+        # Fallback to basic checks for preview deployments
+        echo -e "${BLUE}🔍 Running basic accessibility check...${NC}"
+        
+        # Basic check - this is limited without the actual deployment URL
+        if [ "$ENVIRONMENT" = "production" ]; then
+            if curl -sSf https://hackmum.in > /dev/null; then
+                echo -e "${GREEN}✅ Site is accessible${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Site might not be fully propagated yet${NC}"
+            fi
+            
+            # Check if health endpoint is working
+            if curl -sSf https://hackmum.in/.netlify/functions/health > /dev/null; then
+                echo -e "${GREEN}✅ Health endpoint is responding${NC}"
+            else
+                echo -e "${RED}❌ Health endpoint is not responding${NC}"
+            fi
         fi
     fi
     

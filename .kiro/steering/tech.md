@@ -1,5 +1,10 @@
 # Technology Stack & Build System
 
+## Development Environment
+- **WSL Ubuntu** - Development environment running in Windows Subsystem for Linux
+- **Module vs Script Considerations** - Avoid shebangs in files that need to be imported as ES modules for testing, as they cause parsing errors
+- **Linux file permissions** - Executable scripts may need execute permissions (`chmod +x`)
+
 ## Core Framework
 - **Astro 5.12.2** - Static site generator with modern web standards
 - **TypeScript** - Type-safe JavaScript with strict configuration
@@ -49,6 +54,12 @@ pnpm test:ui          # Run tests with UI
 pnpm test:coverage    # Run tests with coverage report
 pnpm test:blog-images # Run blog image display tests (CRITICAL)
 ```
+
+### Testing Best Practices
+- **Always use `--run` flag** when running vitest tests to ensure they terminate properly
+- **Use specific file paths** when testing individual files: `pnpm test path/to/test.js --run`
+- **Vitest Configuration**: Tests are configured in `vitest.config.js` with jsdom environment
+- **Test File Locations**: Follow the pattern `**/__tests__/**/*.test.js` for proper test discovery
 
 ### Quality Assurance
 ```bash

@@ -1,0 +1,74 @@
+name: Deploy with Comprehensive Logging
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Deploy with logging
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          DEPLOY_TYPE: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+          LOG_LEVEL: 'info'
+        run: node scripts/deploy-with-logging.js
+
+      - name: Upload deployment logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-logs-${{ github.run_id }}
+          path: |
+            logs/deployment.log
+            logs/deployment-metrics.json
+          retention-days: 30
+
+      - name: Comment deployment status on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'logs/deployment-metrics.json';
+            
+            if (fs.existsSync(path)) {
+              const metrics = JSON.parse(fs.readFileSync(path, 'utf8'));
+              const duration = Math.round(metrics.duration / 1000);
+              const status = metrics.status === 'success' ? '✅ Success' : '❌ Failed';
+              
+              const comment = `## Deployment Summary
+              
+              - **Status**: ${status}
+              - **Duration**: ${duration}s
+              - **Environment**: ${metrics.environment}
+              - **Errors**: ${metrics.events.filter(e => e.level === 'error').length}
+              - **Warnings**: ${metrics.events.filter(e => e.level === 'warn').length}
+              ${metrics.deploymentUrl ? `- **Preview URL**: ${metrics.deploymentUrl}` : ''}
+              
+              **Session ID**: ${metrics.sessionId}`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
