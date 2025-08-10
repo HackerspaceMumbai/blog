@@ -24,20 +24,20 @@ See the [Product Requirements Document](#product-requirements-document) below fo
 
 ## 📁 Project Structure
 
-```
+```text
 /public         # Static assets (images, favicon, etc.)
 /src
-	/assets       # Images and static content
-	/components   # Astro components (Header, Footer, etc.)
-	/content      # Blog posts and content config
-	/pages        # Astro pages (index.astro, blog, etc.)
-	/styles       # Global and component CSS
+  /assets       # Images and static content
+  /components   # Astro components (Header, Footer, etc.)
+  /content      # Blog posts and content config
+  /pages        # Astro pages (index.astro, blog, etc.)
+  /styles       # Global and component CSS
 astro.config.mjs
 package.json
 tsconfig.json
 ```
 
-## �‍💻 Getting Started
+## Getting Started
 
 All commands are run from the root of the project:
 
@@ -133,7 +133,7 @@ The GitHub Actions workflow automatically:
 Our blog uses Astro content collections with **colocated images** - each blog post has its own directory containing both content and images.
 
 **Basic Structure:**
-```
+```text
 src/content/posts/your-post-slug/
 ├── index.mdx        # Your blog post
 ├── cover.png        # Cover image (required)
@@ -170,11 +170,11 @@ import diagram from './diagram.png';
 
 ## 🤝 Community & Contribution
 
-- Join our [Discord](#) / [Telegram](#) / [Mailing List](#) (links TBD)
+- Join our Discord (TBD) / Telegram (TBD) / Mailing List (TBD)
 - Contribute via [GitHub Issues](https://github.com/HackerspaceMumbai/blog/issues) or pull requests
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed content creation guidelines
 
-## 📄 Product Requirements Document
+## Product Requirements Document
 
 ### Purpose
 Create a modern, engaging, and high-performance home page for Hackerspace Mumbai, showcasing the community, events, and content, and fostering engagement and growth.

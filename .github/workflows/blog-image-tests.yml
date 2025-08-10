@@ -2,21 +2,30 @@ name: Blog Image Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'src/components/**'
       - 'src/content/posts/**'
       - 'src/assets/images/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'vitest.config.js'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'src/components/**'
       - 'src/content/posts/**'
       - 'src/assets/images/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'vitest.config.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blog-image-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   blog-image-tests:
@@ -33,7 +42,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 9
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -42,7 +51,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run blog image tests
         run: pnpm test:blog-images
@@ -55,4 +64,5 @@ jobs:
           path: |
             coverage/
             test-results/
+          if-no-files-found: ignore
           retention-days: 7
