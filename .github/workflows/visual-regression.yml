@@ -2,86 +2,100 @@ name: Visual Regression Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'src/components/**'
       - 'src/content/posts/**'
       - 'src/assets/images/**'
       - 'src/styles/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'vitest.config.js'
+      - 'scripts/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'src/components/**'
       - 'src/content/posts/**'
       - 'src/assets/images/**'
       - 'src/styles/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'vitest.config.js'
+      - 'scripts/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-regression-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   visual-regression:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: latest
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'pnpm'
-        
-    - name: Install dependencies
-      run: pnpm install
-      
-    - name: Install Playwright browsers
-      run: pnpm exec playwright install chromium
-      
-    - name: Build project
-      run: pnpm build
-      
-    - name: Start preview server
-      run: pnpm preview &
-      
-    - name: Wait for server to be ready
-      run: |
-        timeout 60 bash -c 'until curl -f -s --max-time 5 http://localhost:4321 >/dev/null 2>&1; do sleep 2; done'
-        echo "Preview server is ready"
-        
-    - name: Run visual regression tests
-      run: pnpm test src/components/__tests__/BlogImageVisualRegression.deployment.test.js --run
-      env:
-        CI: true
-      continue-on-error: true
-      
-    - name: Report visual regression results
-      if: always()
-      run: |
-        echo "Visual regression tests completed"
-        echo "Check artifacts for detailed results"
-        
-    - name: Upload visual regression artifacts
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: visual-regression-screenshots
-        path: |
-          test-screenshots/
-        retention-days: 7
-        
-    - name: Upload baseline screenshots (on main branch)
-      uses: actions/upload-artifact@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        name: visual-regression-baseline
-        path: |
-          test-screenshots/baseline/
-        retention-days: 30
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Start preview server
+        run: pnpm preview &
+
+      - name: Wait for server to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f -s --max-time 5 http://localhost:4321 >/dev/null 2>&1; do sleep 2; done'
+          echo "Preview server is ready"
+
+      - name: Run visual regression tests
+        run: pnpm test:visual:strict
+        env:
+          CI: true
+        continue-on-error: true
+
+      - name: Report visual regression results
+        if: always()
+        run: |
+          echo "Visual regression tests completed"
+          echo "Check artifacts for detailed results"
+
+      - name: Upload visual regression artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-regression-screenshots
+          path: |
+            test-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload baseline screenshots (on main branch)
+        uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: visual-regression-baseline
+          path: |
+            test-screenshots/baseline/
+          if-no-files-found: ignore
+          retention-days: 30
