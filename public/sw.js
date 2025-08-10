@@ -55,11 +55,19 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
+        const validPrefixes = [
+          STATIC_CACHE.replace(/-v[\d.]+$/, ''),
+          DYNAMIC_CACHE.replace(/-v[\d.]+$/, ''),
+          IMAGE_CACHE.replace(/-v[\d.]+$/, '')
+        ];
+        const validNames = [STATIC_CACHE, DYNAMIC_CACHE, IMAGE_CACHE];
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && 
-                cacheName !== DYNAMIC_CACHE && 
-                cacheName !== IMAGE_CACHE) {
+            // Delete if cacheName starts with a valid prefix but is not the current version
+            const shouldDelete = validPrefixes.some(prefix =>
+              cacheName.startsWith(prefix) && !validNames.includes(cacheName)
+            );
+            if (shouldDelete) {
               console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }

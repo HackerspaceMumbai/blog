@@ -371,9 +371,29 @@ const {
       }
     }
 
+    // Sanitize and validate first name: trim, escape, max 50 chars
+    private sanitizeFirstName(input: string): string {
+      let value = input.trim().slice(0, 50);
+      // Escape <, >, &, ", ', /
+      value = value.replace(/[<>&"'/]/g, (c) => ({
+        '<': '&lt;',
+        '>': '&gt;',
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#x2F;'
+      })[c] || c);
+      return value;
+    }
+
     private handleFirstNameInput(event: Event): void {
       const target = event.target as HTMLInputElement;
-      this.state.firstName = target.value.trim();
+      let sanitized = this.sanitizeFirstName(target.value);
+      this.state.firstName = sanitized;
+      // Optionally update the input value to reflect sanitization
+      if (target.value !== sanitized) {
+        target.value = sanitized;
+      }
     }
 
     private handleEmailBlur(event: Event): void {
@@ -395,8 +415,10 @@ const {
       }
 
       const email = this.emailInput.value.trim();
-      const firstName = this.firstNameInput.value.trim();
-      
+      // Sanitize and validate first name before submit
+      const firstName = this.sanitizeFirstName(this.firstNameInput.value);
+      this.state.firstName = firstName;
+
       // Validate email
       const validation = this.validateEmail(email);
       if (!validation.isValid) {
@@ -404,16 +426,23 @@ const {
         this.emailInput.focus();
         return;
       }
+      
+      // Validate first name length (already sanitized above)
+      if (firstName.length > 50) {
+        this.handleError('First name must be 50 characters or less.');
+        this.firstNameInput.focus();
+        return;
+      }
 
       // Clear any previous messages
       this.clearMessages();
-      
+
       // Set loading state
       this.setLoadingState(true);
-      
+
       try {
         const response = await this.submitToAPI(email, firstName);
-        
+
         if (response.success) {
           this.handleSuccess(response.message);
         } else {
@@ -421,7 +450,7 @@ const {
         }
       } catch (error) {
         console.error('Newsletter subscription error:', error);
-        
+
         // Determine error type for better UX
         if (error instanceof TypeError && error.message.includes('fetch')) {
           this.handleError(this.ERROR_MESSAGES.NETWORK_ERROR);

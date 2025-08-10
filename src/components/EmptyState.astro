@@ -35,8 +35,9 @@ const {
     <a 
       href={actionHref}
       class="btn btn-primary"
+      rel={actionHref.startsWith('http') ? 'noopener noreferrer' : undefined}
+      aria-label={`${actionText} - ${title}`}
     >
       {actionText}
     </a>
-  )}
-</div>
+  )}</div>

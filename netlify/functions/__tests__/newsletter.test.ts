@@ -1,24 +1,42 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { HandlerEvent, HandlerContext } from '@netlify/functions';
 
-// Mock fetch globally
-global.fetch = vi.fn();
 
-// Import the handler after mocking fetch
-const { handler, __testing__ } = await import('../newsletter');
+// Declare handler and __testing__ for assignment in beforeEach
+let handler: typeof import('../newsletter').handler;
+let __testing__: typeof import('../newsletter').__testing__;
 
 describe('Newsletter Function', () => {
   let mockEvent: HandlerEvent;
   let mockContext: HandlerContext;
 
-  beforeEach(() => {
-    // Reset all mocks
-    vi.clearAllMocks();
-    
-    // Clear rate limiting store and subscriptions between tests
+  beforeEach(async () => {
+    // Reset all mocks and modules
+    vi.resetAllMocks();
+    vi.resetModules();
+
+    // Recreate global fetch mock
+    global.fetch = vi.fn();
+
+    // Setup environment variables before importing SUT
+    process.env.NODE_ENV = 'test';
+    process.env.CORS_ORIGIN = '*';
+    process.env.LOG_LEVEL = 'error'; // Reduce noise in tests
+    process.env.KIT_API_KEY = 'test-api-key';
+    process.env.KIT_FORM_ID = 'test-form-id';
+
+    // Import the SUT after env setup
+    // @ts-ignore
+    const imported = await import('../newsletter');
+    // @ts-ignore
+    handler = imported.handler;
+    // @ts-ignore
+    __testing__ = imported.__testing__;
+
+    // Clear module-local stores
     __testing__.clearRateLimitStore();
     __testing__.clearSubscriptions();
-    
+
     // Setup mock event
     mockEvent = {
       httpMethod: 'POST',
@@ -35,7 +53,6 @@ describe('Newsletter Function', () => {
       path: '/.netlify/functions/newsletter',
       queryStringParameters: null,
       multiValueQueryStringParameters: null,
-      pathParameters: null,
       multiValueHeaders: {},
       requestContext: {} as any,
       resource: '',
@@ -62,24 +79,17 @@ describe('Newsletter Function', () => {
       fail: vi.fn(),
       succeed: vi.fn()
     };
-
-    // Setup environment variables
-    process.env.NODE_ENV = 'test';
-    process.env.CORS_ORIGIN = '*';
-    process.env.LOG_LEVEL = 'error'; // Reduce noise in tests
-    process.env.KIT_API_KEY = 'test-api-key';
-    process.env.KIT_FORM_ID = 'test-form-id';
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('CORS and Method Validation', () => {
     it('should handle OPTIONS requests correctly', async () => {
       mockEvent.httpMethod = 'OPTIONS';
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(200);
       expect(response.headers).toHaveProperty('Access-Control-Allow-Origin');
@@ -90,7 +100,7 @@ describe('Newsletter Function', () => {
     it('should reject non-POST requests', async () => {
       mockEvent.httpMethod = 'GET';
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(405);
       const body = JSON.parse(response.body);
@@ -99,7 +109,7 @@ describe('Newsletter Function', () => {
     });
 
     it('should set correct CORS headers', async () => {
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.headers).toHaveProperty('Access-Control-Allow-Origin');
       expect(response.headers).toHaveProperty('Access-Control-Allow-Methods');
@@ -111,7 +121,7 @@ describe('Newsletter Function', () => {
     it('should reject invalid JSON', async () => {
       mockEvent.body = 'invalid json';
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -125,7 +135,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -140,7 +150,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -156,7 +166,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -171,7 +181,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -186,7 +196,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -201,7 +211,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -216,7 +226,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -231,7 +241,7 @@ describe('Newsletter Function', () => {
         source: 'website_newsletter'
       });
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(422);
       const body = JSON.parse(response.body);
@@ -263,7 +273,7 @@ describe('Newsletter Function', () => {
         })
       });
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -331,7 +341,7 @@ describe('Newsletter Function', () => {
         })
       });
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -364,7 +374,7 @@ describe('Newsletter Function', () => {
         })
       });
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(409);
       const body = JSON.parse(response.body);
@@ -409,7 +419,7 @@ describe('Newsletter Function', () => {
           json: async () => ({ message: 'Server error' })
         });
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       // Should return service unavailable error (503 status)
       expect(response.statusCode).toBe(503);
@@ -442,7 +452,7 @@ describe('Newsletter Function', () => {
         .mockRejectedValueOnce(timeoutError)
         .mockRejectedValueOnce(timeoutError);
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       // Should return timeout error (503 status)
       expect(response.statusCode).toBe(503);
@@ -456,7 +466,7 @@ describe('Newsletter Function', () => {
       delete process.env.KIT_API_KEY;
       delete process.env.KIT_FORM_ID;
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -474,7 +484,7 @@ describe('Newsletter Function', () => {
       // Mock an unexpected error
       (global.fetch as any).mockRejectedValue(new Error('Unexpected error'));
 
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       // Should fall back to local storage and succeed
       expect(response.statusCode).toBe(200);
@@ -485,7 +495,7 @@ describe('Newsletter Function', () => {
     it('should include request ID in error responses', async () => {
       mockEvent.body = 'invalid json';
       
-      const response = await handler(mockEvent, mockContext);
+  const response = await handler(mockEvent, mockContext) as any;
       
       const body = JSON.parse(response.body);
       expect(body).toHaveProperty('requestId');

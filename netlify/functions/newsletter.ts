@@ -52,12 +52,6 @@ interface KitResponse {
 // Rate limiting in-memory store (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { attempts: number; resetTime: number }>();
 
-// Export for testing
-export const __testing__ = {
-  clearRateLimitStore: () => rateLimitStore.clear(),
-  clearSubscriptions: () => subscriptions.clear()
-};
-
 // Constants
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS_PER_WINDOW = 5;
@@ -175,6 +169,14 @@ function trackPerformance(operation: string, startTime: number, metadata?: any) 
 
 // Mock database for subscriptions (fallback when Kit is not available)
 const subscriptions = new Set<string>();
+
+// Export for testing (conditionally populated)
+const __testing__ = process.env.NODE_ENV === 'test' ? {
+  clearRateLimitStore: () => rateLimitStore.clear(),
+  clearSubscriptions: () => subscriptions.clear()
+} : undefined;
+
+export { __testing__ };
 
 /**
  * Sanitizes input string by removing potentially harmful content
@@ -754,7 +756,6 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     if (!emailValidation.isValid) {
       log('warn', 'Email validation failed', { 
         email: email.substring(0, 5) + '***',
-        originalEmail: email,
         error: emailValidation.error,
         ipAddress: ipAddress.replace(/\.\d+$/, '.***')
       });
@@ -778,7 +779,6 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       log('warn', 'First name validation failed', { 
         requestId,
         firstName: firstName.substring(0, 5) + '***',
-        originalFirstName: firstName,
         error: firstNameValidation.error,
         ipAddress: ipAddress.replace(/\.\d+$/, '.***')
       });

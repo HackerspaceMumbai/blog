@@ -54,7 +54,6 @@ export async function checkDevServerAvailability(url = 'http://localhost:4321', 
     // Use AbortController for timeout handling
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
     const response = await fetch(url, {
       signal: controller.signal,
       method: 'GET',
@@ -62,26 +61,10 @@ export async function checkDevServerAvailability(url = 'http://localhost:4321', 
         'User-Agent': 'test-environment-checker'
       }
     });
-    
     clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
-    // If fetch fails, try a fallback approach using Playwright if available
-    try {
-      const { chromium } = await import('playwright');
-      const browser = await chromium.launch({ headless: true });
-      const page = await browser.newPage();
-      
-      await page.goto(url, { 
-        waitUntil: 'domcontentloaded', 
-        timeout: timeout 
-      });
-      
-      await browser.close();
-      return true;
-    } catch (playwrightError) {
-      return false;
-    }
+    return false;
   }
 }
 

@@ -1,11 +1,20 @@
 #!/bin/sh
+
+# Fail fast on errors and treat unset variables as errors
+set -eu
+
+# Ensure pnpm is available (clear error if missing)
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "❌ pnpm is not installed or not on PATH. Install pnpm: https://pnpm.io/installation"
+  exit 1
+fi
 #
+
 # Pre-commit hook to run blog image tests
 # This ensures that blog image functionality is tested before each commit
 #
 
 echo "🔍 Running pre-commit checks..."
-
 # Run blog image tests (critical for preventing regressions)
 echo "🧪 Running blog image tests..."
 if ! pnpm test:blog-images; then
@@ -16,18 +25,23 @@ fi
 
 echo "✅ Blog image tests passed!"
 
-# Run visual regression tests (if dev server is available)
-echo "📸 Running deployment-friendly visual tests..."
-if curl -f http://localhost:4321 >/dev/null 2>&1; then
-    if ! pnpm test:visual:ci; then
-        echo "⚠️  Visual tests had issues but not blocking deployment"
-        echo "💡 Run 'pnpm test:visual:strict' for detailed analysis after deployment"
-    else
-        echo "✅ Visual tests passed!"
-    fi
+# Run visual regression tests (if not skipped and dev server is available)
+if [ "${SKIP_VISUAL_TESTS:-0}" = "1" ]; then
+    echo "⚠️  SKIP_VISUAL_TESTS=1 is set, skipping visual regression tests."
 else
-    echo "⚠️  Dev server not running, skipping visual regression tests"
-    echo "💡 Run 'pnpm dev' in another terminal for complete pre-commit testing"
+    echo "📸 Running deployment-friendly visual tests..."
+    # Use curl HEAD request with short connect/read timeouts, no -f, treat any response as server up
+    if curl -I --connect-timeout 2 --max-time 4 http://localhost:4321 >/dev/null 2>&1; then
+        if ! pnpm test:visual:ci; then
+            echo "⚠️  Visual tests had issues but not blocking deployment"
+            echo "💡 Run 'pnpm test:visual:strict' for detailed analysis after deployment"
+        else
+            echo "✅ Visual tests passed!"
+        fi
+    else
+        echo "⚠️  Dev server not running or unreachable, skipping visual regression tests"
+        echo "💡 Run 'pnpm dev' in another terminal for complete pre-commit testing"
+    fi
 fi
 
 # Run other critical tests

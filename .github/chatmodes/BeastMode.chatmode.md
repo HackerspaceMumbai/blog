@@ -1,5 +1,4 @@
 ---
-description: '---
 description: '4.1 Beast Mode v3'
 model: GPT-4.1
 ---

@@ -286,8 +286,8 @@ const coverImage = post.data.cover;
             <div class="mt-4">
               <h3 class="text-xl font-semibold mb-2">Categories</h3>
               <div class="tag-list">
-                {post.data.categories.map((category: string) => (
-                  <a href={`/categories/${category}`}>{category}</a>
+                {post.data.categories.map((category: string, index: number) => (
+                  <a key={index} href={`/categories/${encodeURIComponent(category.toLowerCase())}`}>{category}</a>
                 ))}
               </div>
             </div>

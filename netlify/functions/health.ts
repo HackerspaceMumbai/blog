@@ -1,4 +1,6 @@
+
 // Health check endpoint for monitoring newsletter service
+import type { Handler } from '@netlify/functions';
 interface HealthCheckResponse {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
@@ -15,22 +17,28 @@ interface HealthCheckResponse {
   environment: string;
 }
 
-interface NetlifyEvent {
-  httpMethod: string;
-  headers: Record<string, string>;
-  path: string;
-}
 
-interface NetlifyResponse {
-  statusCode: number;
-  headers?: Record<string, string>;
-  body: string;
-}
 
 const VERSION = '1.0.0';
 const KIT_API_KEY = process.env.KIT_API_KEY;
 const KIT_API_URL = process.env.KIT_API_URL || 'https://api.kit.com/v4';
+
 const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// Netlify-aware CORS origin logic
+const NETLIFY_CONTEXT = process.env.CONTEXT;
+const NETLIFY_URL = process.env.URL;
+const NETLIFY_DEPLOY_PRIME_URL = process.env.DEPLOY_PRIME_URL;
+const NETLIFY_BRANCH = process.env.BRANCH;
+
+let allowedOrigin = '*';
+if (NETLIFY_CONTEXT === 'production') {
+  allowedOrigin = 'https://hackmum.in';
+} else if (NETLIFY_CONTEXT === 'deploy-preview' && NETLIFY_URL) {
+  allowedOrigin = NETLIFY_URL;
+} else if (NETLIFY_CONTEXT === 'branch-deploy' && NETLIFY_DEPLOY_PRIME_URL) {
+  allowedOrigin = NETLIFY_DEPLOY_PRIME_URL;
+}
 
 /**
  * Check Kit API availability
@@ -81,14 +89,15 @@ async function checkDatabaseService(): Promise<{ status: 'available' | 'unavaila
 /**
  * Main health check handler
  */
-export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => {
+export const handler: Handler = async (event, context) => {
   const corsHeaders = {
-    'Access-Control-Allow-Origin': NODE_ENV === 'production' ? 'https://hackmum.in' : '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0'
+    'Expires': '0',
+    'Vary': 'Origin'
   };
 
   try {

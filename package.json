@@ -22,7 +22,7 @@
     "test:a11y": "node scripts/accessibility-test.js",
     "test:a11y:ci": "node scripts/accessibility-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --outputDir ./accessibility-reports",
     "test:a11y:ci-safe": "node scripts/accessibility-test-ci.js",
-    "a11y:audit": "npm run build && npm run preview & sleep 5 && npm run test:a11y:ci && kill %1",
+    "a11y:audit": "npm run build && concurrently -k \"npm run preview\" \"wait-on http://localhost:4321 && npm run test:a11y:ci\"",
     "test:cross-browser": "node scripts/cross-browser-test.js",
     "test:cross-browser:ci": "node scripts/cross-browser-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --browsers chrome,firefox --devices 'iPhone 12','Pixel 5','iPad Air' --outputDir ./cross-browser-reports",
     "cross-browser:audit": "npm run build && npm run preview & sleep 5 && npm run test:cross-browser:ci && kill %1",

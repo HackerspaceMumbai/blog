@@ -92,9 +92,10 @@ function checkEnvironment(): 'healthy' | 'unhealthy' {
 function checkMemory(): { status: 'healthy' | 'degraded' | 'unhealthy'; usage?: any } {
   try {
     const memoryUsage = process.memoryUsage();
-    const memoryLimitMB = parseInt(process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE || '128');
+    // Netlify Functions default memory limit is 1024 MB (1 GB)
+    const memoryLimitMB = 1024;
     const memoryLimitBytes = memoryLimitMB * 1024 * 1024;
-    
+
     const usedPercentage = (memoryUsage.heapUsed / memoryLimitBytes) * 100;
 
     const usage = {
@@ -117,7 +118,6 @@ function checkMemory(): { status: 'healthy' | 'degraded' | 'unhealthy'; usage?: 
     return { status: 'degraded' };
   }
 }
-
 /**
  * Health check handler
  */

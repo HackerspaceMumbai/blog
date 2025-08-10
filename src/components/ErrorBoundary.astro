@@ -30,11 +30,16 @@ const {
   </p>
   
   {showRetry && (
-    <button 
+    <button
       class="btn btn-outline btn-error"
-      onclick="window.location.reload()"
+      id="retry-button"
     >
       Try Again
     </button>
   )}
-</div>
+
+<script>
+  document.getElementById('retry-button')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+</script></div>

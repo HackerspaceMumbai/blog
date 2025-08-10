@@ -5,11 +5,11 @@
   # Build settings
   publish = "dist"
   functions = "netlify/functions"
-  command = "npm run build"
+  command = "pnpm build"
 
 [build.environment]
   # Node.js version
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   # Enable pnpm
   NPM_FLAGS = "--version"
 
@@ -32,11 +32,13 @@
   from = "/api/newsletter"
   to = "/.netlify/functions/newsletter"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/subscribe"
   to = "/.netlify/functions/newsletter"
   status = 200
+  force = true
 
 # Health check endpoint
 [[redirects]]
@@ -72,8 +74,6 @@
 [[headers]]
   for = "/*.html"
   [headers.values]
-    Cache-Control = "public, max-age=3600"
-
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
@@ -82,6 +82,8 @@
     Access-Control-Allow-Methods = "POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
     Access-Control-Max-Age = "86400"
+    # Prevent caching of dynamic API responses
+    Cache-Control = "no-store"
     
     # Security for API endpoints
     X-Content-Type-Options = "nosniff"
@@ -94,7 +96,7 @@
     
     # Additional security headers for API endpoints
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy = "default-src 'none'; frame-ancestors 'none';"
+  Content-Security-Policy = "default-src 'none'; frame-ancestors 'none';"
 
 # Enhanced headers for newsletter function specifically
 [[headers]]

@@ -4,8 +4,7 @@ export interface CardProps {
   subtitle?: string;
   image?: string;
   imageAlt?: string;
-  actions?: any;
-  className?: string;
+  actions?: string | HTMLElement | astroHTML.JSX.Element;  className?: string;
   style?: string;
 }
 const {

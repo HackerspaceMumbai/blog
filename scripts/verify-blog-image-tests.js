@@ -7,6 +7,13 @@
  */
 
 import { existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Assume script is in scripts/ and repo root is one level up
+const repoRoot = path.resolve(__dirname, '..');
 
 const REQUIRED_FILES = [
   // Test files
@@ -54,7 +61,8 @@ let missingFiles = 0;
 
 for (const file of REQUIRED_FILES) {
   checkedFiles++;
-  if (existsSync(file)) {
+  const absPath = path.resolve(repoRoot, file);
+  if (existsSync(absPath)) {
     console.log(`✅ ${file}`);
   } else {
     console.log(`❌ ${file} - MISSING`);

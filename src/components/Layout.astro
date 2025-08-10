@@ -31,7 +31,7 @@ const {
 
 // Get the current URL for canonical and social sharing
 const currentUrl = canonical || Astro.url.href;
-const siteUrl = "https://hackmum.in";
+const siteUrl    = import.meta.env.SITE || Astro.site || "https://hackmum.in";
 const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
 
 // Generate structured data for the organization
@@ -63,7 +63,7 @@ const organizationSchema = {
 };
 
 // Generate page-specific structured data
-const pageSchema = type === 'article' ? {
+const pageSchema = type === 'article' && publishedTime ? {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": title,
@@ -81,7 +81,7 @@ const pageSchema = type === 'article' ? {
     "name": "Hackerspace Mumbai",
     "logo": {
       "@type": "ImageObject",
-      "url": `${siteUrl}/logo.svg`
+      "url": `${siteUrl}/logo.png`
     }
   }
 } : null;
