@@ -3,14 +3,14 @@
   "short_name": "HackMum",
   "description": "Mumbai's largest open source community and longest-running tech meetup",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#1f2937",
   "theme_color": "#ffc107",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "dir": "ltr",
-  "categories": ["technology", "community", "education"],
+  "dir": "ltr",  "categories": ["technology", "community", "education"],
   "icons": [
     {
       "src": "/favicon.ico",

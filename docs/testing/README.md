@@ -582,7 +582,6 @@ test('Mobile performance', async ({ page }) => {
 
 ### Continuous Integration Setup
 
-```yaml
 # .github/workflows/test.yml
 name: Test Suite
 
@@ -591,34 +590,51 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
         cache: 'npm'
-    
+
     - name: Install dependencies
       run: npm ci
-    
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
     - name: Build project
       run: npm run build
-    
+
+    - name: Start preview server
+      run: npm run preview &
+
+    - name: Wait for server to be ready
+      shell: bash
+      run: |
+        for i in {1..60}; do
+          if curl -sSf http://localhost:4321 >/dev/null; then
+            echo "Server is up"
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "Server did not become ready in time" >&2
+        exit 1
+
     - name: Run unit tests
       run: npm run test
-    
+
     - name: Run accessibility tests
-      run: npm run test:a11y:ci
-    
-    - name: Run cross-browser tests
+      run: npm run test:a11y:ci    - name: Run cross-browser tests
       run: npm run test:cross-browser:ci
-    
+
     - name: Run security tests
       run: npm run test:security:ci
-    
+
     - name: Upload test reports
       uses: actions/upload-artifact@v3
       if: always()
@@ -628,8 +644,6 @@ jobs:
           accessibility-reports/
           cross-browser-reports/
           security-reports/
-```
-
 ### Test Scripts Configuration
 
 ```json

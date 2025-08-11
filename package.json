@@ -40,8 +40,6 @@
     "deploy:preview": "netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --functions=netlify/functions",
     "deploy:preview:ci": "netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --functions=netlify/functions --json",
     "deploy:prod:ci": "netlify deploy --prod --site=$NETLIFY_SITE_ID --dir=dist --functions=netlify/functions --json",
-    "deploy:preview:with-verify": "node scripts/deploy-with-retry.js preview",
-    "deploy:prod:with-verify": "node scripts/deploy-with-retry.js production",
     "deploy:script": "./scripts/deploy.sh",
     "deploy:script:prod": "./scripts/deploy.sh production",
     "deploy:quick": "netlify deploy --dir=dist --functions=netlify/functions",
