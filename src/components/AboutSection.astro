@@ -14,9 +14,9 @@ import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
     <h2 id="about-heading" class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-primary leading-tight text-center">
       About Us
     </h2>
-  <div class="flex flex-col lg:flex-row flex-nowrap gap-8 sm:gap-10 lg:gap-12 items-start lg:items-center">
-  <div class="w-full lg:w-1/2 min-w-0 flex-shrink-0">
-        <div class="space-y-4 sm:space-y-5">
+  <div class="flex flex-col lg:flex-row flex-nowrap gap-8 sm:gap-10 lg:gap-12 items-start lg:items-stretch">
+    <div class="w-full lg:w-1/2 min-w-0 flex-shrink-0 flex flex-col">
+      <div class="space-y-4 sm:space-y-5">
           <p class="text-sm sm:text-base lg:text-lg leading-relaxed text-base-content/90">
             Hackerspace Mumbai is the largest open source community in Mumbai and hosts the city's longest-running tech meetup series. Founded in 2011, we bring together developers, designers, and tech enthusiasts to learn, collaborate, and build together.
           </p>
@@ -26,14 +26,14 @@ import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
           <p class="text-sm sm:text-base lg:text-lg leading-relaxed text-base-content/90">
             We organize regular meetups, workshops, hackathons, and other events to help members grow their skills, connect with peers, and contribute to meaningful projects.
           </p>
-        </div>
-      </div>
-      <div class="w-full lg:w-1/2 flex-shrink-0 flex items-center">
-        <div class="w-full max-w-[340px] mx-auto">
-          <StatsGrid stats={stats} />
-        </div>
       </div>
     </div>
+    <div class="w-full lg:w-1/2 flex-shrink-0 flex justify-center lg:items-stretch">
+      <div class="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-none mt-4 sm:mt-6 lg:mt-0">
+        <StatsGrid stats={stats} />
+      </div>
+    </div>
+  </div>
 
     <!-- Team and Community Images Section -->
     <div class="mt-12 sm:mt-16 lg:mt-20">
