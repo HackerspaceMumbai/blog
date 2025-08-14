@@ -1,6 +1,8 @@
 ---
 import Layout from "../components/Layout.astro";
 import HeroSection from "../components/HeroSection.astro";
+import heroBackground from '../assets/images/hero_background.jpg';
+import vscodeDevDayImage from '../assets/images/vscode_devday_mumbai.png';
 import EventsSection from "../components/EventsSection.astro";
 import BlogSection from "../components/BlogSection.astro";
 import AboutSection from "../components/AboutSection.astro";
@@ -23,7 +25,7 @@ const upcomingEvents = [
     location: "Microsoft Mumbai, Kalina",
     description: "Join us for VS Code Dev Days – a hands-on, developer-focused event designed to supercharge your coding skills with Visual Studio Code and the power of GitHub Copilot.",
     rsvpLink: "https://aka.ms/vscodedevdays/mumbai",
-    coverImage: "/images/vscode_devday_mumbai.png",
+    coverImage: vscodeDevDayImage,
   }
 ];
 
@@ -137,7 +139,7 @@ export const canonical = "https://hackmum.in/";
   <!-- Main page heading for screen readers - removed duplicate H1 -->
   <!-- H1 is now in HeroSection component -->
 
-  <HeroSection />
+  <HeroSection heroImage={heroBackground} />
 
   <EventsSection events={upcomingEvents} />
 

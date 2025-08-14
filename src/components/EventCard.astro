@@ -1,13 +1,15 @@
 ---
 // EventCard.astro: Renders a single event card for EventsSection with DaisyUI card aesthetics
 import CTAButton from './CTAButton.astro';
+import { Image } from 'astro:assets';
+
 export interface EventCardProps {
   title: string;
   date: string;
   location: string;
   description: string;
   rsvpLink: string;
-  coverImage?: string;
+  coverImage?: string | ImageMetadata;
 }
 const { title, date, location, description, rsvpLink, coverImage } = Astro.props;
 ---
@@ -19,8 +21,17 @@ const { title, date, location, description, rsvpLink, coverImage } = Astro.props
 >
   {coverImage && (
     <figure class="relative aspect-[3/1] w-full overflow-hidden">
-      <img src={coverImage} alt={title} class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-      <div class="absolute inset-0 bg-black/50 pointer-events-none"></div>
+      <Image 
+        src={coverImage} 
+        alt={title} 
+        class="object-cover w-full h-full transition-all duration-300 group-hover:scale-105 filter brightness-110 contrast-110 saturate-125 group-hover:brightness-125 group-hover:saturate-150" 
+        loading="lazy"
+        width={600}
+        height={200}
+        format="webp"
+        quality={85}
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"></div>
     </figure>
   )}
   <div class="card-body flex flex-col flex-1 px-8 py-7 md:px-12 md:py-8">
