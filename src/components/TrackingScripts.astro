@@ -1,0 +1,69 @@
+---
+// Get tracking IDs from environment variables
+const googleAnalyticsId = import.meta.env.GOOGLE_ANALYTICS_ID;
+const clarityId = import.meta.env.CLARITY_ID;
+
+// Only load tracking scripts in production
+const isProduction = import.meta.env.PROD;
+---
+
+{isProduction && googleAnalyticsId && (
+  <>
+    <!-- Google Analytics 4 -->
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${googleAnalyticsId}', {
+        // Privacy-focused configuration
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+        // Performance optimization
+        send_page_view: true,
+        // Enhanced measurement for better insights
+        enhanced_measurements: {
+          scrolls: true,
+          outbound_clicks: true,
+          site_search: true,
+          video_engagement: true,
+          file_downloads: true
+        }
+      });
+    </script>
+  </>
+)}
+
+{isProduction && clarityId && (
+  <>
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "${clarityId}");
+    </script>
+  </>
+)}
+
+{isProduction && (googleAnalyticsId || clarityId) && (
+  <!-- Privacy Notice Script -->
+  <script>
+    // Add privacy-focused tracking notice
+    console.log('🔒 Privacy Notice: This site uses analytics to improve user experience. Data is anonymized and not used for advertising.');
+    
+    // Optional: Add consent management for GDPR compliance
+    // You can extend this with a proper consent management platform
+    if (typeof gtag !== 'undefined') {
+      // Set default consent state
+      gtag('consent', 'default', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+    }
+  </script>
+)}

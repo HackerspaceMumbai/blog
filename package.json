@@ -19,6 +19,7 @@
     "test:blog-images:runner": "node scripts/run-blog-image-tests.js",
     "test:blog-images:runner:coverage": "node scripts/run-blog-image-tests.js --coverage",
     "test:blog-images:runner:watch": "node scripts/run-blog-image-tests.js --watch",
+    "test:analytics": "vitest run src/components/__tests__/TrackingScripts.test.js",
     "test:a11y": "node scripts/accessibility-test.js",
     "test:a11y:ci": "node scripts/accessibility-test.js --baseUrl http://localhost:4321 --pages /,/blog,/events --outputDir ./accessibility-reports",
     "test:a11y:ci-safe": "node scripts/accessibility-test-ci.js",

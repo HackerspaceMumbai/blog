@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import TrackingScripts from './TrackingScripts.astro';
 import socialPreviewImage from '../assets/images/hackerspace_mumbai_social.png';
 
 export interface Props {
@@ -148,7 +149,8 @@ const pageSchema = type === 'article' && publishedTime ? {
     <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     {pageSchema && <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />}
     
-    
+    <!-- Tracking Scripts -->
+    <TrackingScripts />
   </head>
   <body>
     <!-- Skip Links for Accessibility -->

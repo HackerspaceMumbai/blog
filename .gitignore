@@ -34,3 +34,6 @@ pnpm-debug.log*
 
 # CI test reports
 ci-reports/
+
+# Ignore Lighthouse reports
+**/lighthouse.*/
