@@ -1,0 +1,71 @@
+---
+export interface Props {
+  id: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  class?: string;
+  anchorClass?: string;
+}
+
+const { 
+  id, 
+  level = 2, 
+  class: className = "", 
+  anchorClass = "" 
+} = Astro.props;
+
+const Tag = `h${level}` as any;
+---
+
+<Tag 
+  id={id}
+  class={`group relative ${className}`}
+>
+  <slot />
+  <a 
+    href={`#${id}`}
+    class={`
+      absolute -left-6 top-0 bottom-0 flex items-center
+      opacity-0 group-hover:opacity-100 
+      transition-opacity duration-200
+      text-primary hover:text-primary/80
+      focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+      ${anchorClass}
+    `}
+    aria-label={`Link to ${id.replace(/-/g, ' ')} section`}
+    tabindex="0"
+  >
+    <svg 
+      class="w-5 h-5" 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        stroke-width="2" 
+        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+      />
+    </svg>
+  </a>
+</Tag>
+
+<style>
+  /* Ensure anchor links work with fixed header */
+  :target {
+    scroll-margin-top: 80px;
+  }
+  
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .group:hover .absolute {
+      opacity: 1;
+    }
+  }
+</style>

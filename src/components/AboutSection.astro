@@ -1,5 +1,6 @@
 ---
 import StatsGrid from './StatsGrid.astro';
+import SectionHeading from './SectionHeading.astro';
 import { Image } from 'astro:assets';
 
 const stats = Astro.props.stats;
@@ -11,9 +12,13 @@ import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
 ---
 <section id="about" class="py-12 sm:py-16 lg:py-20 px-4 bg-base-200 text-base-content" aria-labelledby="about-heading" role="region">
   <div class="max-w-6xl mx-auto">
-    <h2 id="about-heading" class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-primary leading-tight text-center">
+    <SectionHeading 
+      id="about" 
+      level={2}
+      class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-primary leading-tight text-center"
+    >
       About Us
-    </h2>
+    </SectionHeading>
   <div class="flex flex-col lg:flex-row flex-nowrap gap-8 sm:gap-10 lg:gap-12 items-start lg:items-stretch">
     <div class="w-full lg:w-1/2 min-w-0 flex-shrink-0 flex flex-col">
       <div class="space-y-4 sm:space-y-5">

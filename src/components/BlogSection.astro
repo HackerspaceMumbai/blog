@@ -1,6 +1,7 @@
 ---
 import CTAButton from './CTAButton.astro';
 import BlogCard from './BlogCard.astro';
+import SectionHeading from './SectionHeading.astro';
 
 const { posts } = Astro.props;
 
@@ -25,13 +26,13 @@ const gridClasses = getGridClasses(validatedPosts.length);
   <div class="max-w-7xl mx-auto">
     <!-- Section Header -->
     <header class="mb-16 text-center">
-      <h2 
-        id="blog-section-title"
+      <SectionHeading 
+        id="blog" 
+        level={2}
         class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
-        tabindex="-1"
       >
         Latest Blog Posts
-      </h2>
+      </SectionHeading>
       <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">
         Discover insights, tutorials, and updates from the Hackerspace Mumbai community
       </p>

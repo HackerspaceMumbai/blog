@@ -1,6 +1,7 @@
 ---
 import CTAButton from './CTAButton.astro';
 import EventCard from './EventCard.astro';
+import SectionHeading from './SectionHeading.astro';
 
 export interface Event {
   title: string;
@@ -74,12 +75,13 @@ const gridClasses = getGridClasses(validatedEvents.length);
   <div class="max-w-7xl mx-auto">
     <!-- Section Header -->
     <header class="mb-16 text-center">
-      <h2 
-        id="events-section-title"
+      <SectionHeading 
+        id="events" 
+        level={2}
         class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
       >
         {title}
-      </h2>
+      </SectionHeading>
       <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">
         Join us for upcoming meetups, workshops, and community events in Mumbai
       </p>

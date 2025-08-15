@@ -1,6 +1,7 @@
 ---
 import CTAButton from './CTAButton.astro';
 import SponsorCard from './SponsorCard.astro';
+import SectionHeading from './SectionHeading.astro';
 import type { Sponsor } from './types';
 import { sortSponsors, getSponsorStats } from './sponsorUtils';
 
@@ -48,20 +49,13 @@ const gridClasses = getGridClasses(processedSponsors.length);
   role="region"
 >
   <div class="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-    <h2 
-      id="sponsors-heading"
-      class="
-        text-2xl
-        sm:text-3xl 
-        font-bold 
-        mb-8
-        sm:mb-12 
-        text-primary
-        drop-shadow-sm
-      "
+    <SectionHeading 
+      id="sponsors" 
+      level={2}
+      class="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-primary drop-shadow-sm"
     >
       {title}
-    </h2>
+    </SectionHeading>
     <div 
       class={`
         grid 
