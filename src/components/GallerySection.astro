@@ -1,6 +1,6 @@
 ---
 import CTAButton from './CTAButton.astro';
-import { Image, Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
 import pinnedpic2 from '../assets/images/gallery/pinnedpic-2.jpg';
 import pinnedpic3 from '../assets/images/gallery/pinnedpic-3.jpg';
@@ -25,14 +25,12 @@ import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
         />
       </div>
       <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Picture
-          src={pinnedpic2}
+        <img
+          src={pinnedpic2.src}
           alt="Community workshop on web development fundamentals"
-          width={400}
-          height={400}
+          width="400"
+          height="400"
           class="w-full h-full object-cover"
-          formats={['avif', 'webp', 'jpeg']}
-          sizes="(min-width: 1024px) 25vw, 50vw"
           loading="lazy"
         />
       </div>

@@ -20,7 +20,7 @@ const createBlogCardElement = (post) => {
   figure.className = 'relative aspect-[3/2] w-full overflow-hidden';
   
   const img = document.createElement('img');
-  const coverImage = post.data.cover || '/images/social-preview.jpg';
+  const coverImage = post.data.cover || 'placeholder-image.jpg'; // Matches BlogCard component logic
   img.src = coverImage;
   img.alt = `Cover image for ${post.data.title}`;
   img.className = 'object-cover w-full h-full transition-transform duration-300 group-hover:scale-105';
@@ -347,12 +347,12 @@ describe('BlogCard Edge Cases', () => {
       // Test null cover - should use fallback image
       const cardNull = createBlogCardElement(postWithoutCover);
       const imgNull = cardNull.querySelector('img');
-      expect(imgNull.src).toBe('/images/social-preview.jpg');
+      expect(imgNull.src).toBe('placeholder-image.jpg');
       
       // Test empty cover - should use fallback image
       const cardEmpty = createBlogCardElement(postWithEmptyCover);
       const imgEmpty = cardEmpty.querySelector('img');
-      expect(imgEmpty.src).toBe('/images/social-preview.jpg');
+      expect(imgEmpty.src).toBe('placeholder-image.jpg');
     });
 
     it('should handle different image formats', () => {

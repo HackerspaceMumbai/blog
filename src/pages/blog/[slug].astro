@@ -227,19 +227,19 @@ const coverImage = post.data.cover;
     }
   }
 </style>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{post.data.title} | Hackerspace Mumbai Blog</title>
-    <meta name="description" content={post.data.description} />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-  </head>
-  <body>
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="scroll-progress-bar"></div>
-    </div>
-    <Layout>
+<Layout 
+  title={`${post.data.title} | Hackerspace Mumbai Blog`}
+  description={post.data.description}
+  type="article"
+  publishedTime={post.data.date.toISOString()}
+  modifiedTime={post.data.modifiedDate?.toISOString()}
+  author={post.data.author}
+  tags={post.data.tags || []}
+  image={coverImage?.src}
+>
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="scroll-progress-bar"></div>
+  </div>
       <div class="blog-container">
         <header class="blog-header">
           <h1 class="blog-title text-foreground">{post.data.title}</h1>
@@ -305,20 +305,18 @@ const coverImage = post.data.cover;
           </div>
         </footer>
       </div>
-    </Layout>
-    
-    <script>
-      // Progress bar scroll logic
-      window.addEventListener('scroll', () => {
-        const bar = document.getElementById('scroll-progress-bar');
-        if (!bar) return;
-        const doc = document.documentElement;
-        const body = document.body;
-        const scrollTop = window.scrollY || doc.scrollTop || body.scrollTop;
-        const scrollHeight = (doc.scrollHeight || body.scrollHeight) - window.innerHeight;
-        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-        bar.style.width = progress + '%';
-      });
-    </script>
-  </body>
-</html>
+  
+  <script>
+    // Progress bar scroll logic
+    window.addEventListener('scroll', () => {
+      const bar = document.getElementById('scroll-progress-bar');
+      if (!bar) return;
+      const doc = document.documentElement;
+      const body = document.body;
+      const scrollTop = window.scrollY || doc.scrollTop || body.scrollTop;
+      const scrollHeight = (doc.scrollHeight || body.scrollHeight) - window.innerHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      bar.style.width = progress + '%';
+    });
+  </script>
+</Layout>

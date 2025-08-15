@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import socialPreviewImage from '../assets/images/hackerspace_mumbai_social.png';
 
 export interface Props {
   title?: string;
@@ -19,7 +20,7 @@ export interface Props {
 const { 
   title = "Hackerspace Mumbai", 
   description = "Mumbai's largest open source community",
-  image = "/social-preview.jpg",
+  image = socialPreviewImage.src,
   canonical,
   noindex = false,
   type = "website",
@@ -32,7 +33,15 @@ const {
 // Get the current URL for canonical and social sharing
 const currentUrl = canonical || Astro.url.href;
 const siteUrl    = import.meta.env.SITE || Astro.site || "https://hackmum.in";
-const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
+
+// Handle image URL properly - if it's already a full URL or starts with /@fs, use as is
+// Otherwise, prepend the site URL
+let fullImageUrl;
+if (image.startsWith('http') || image.startsWith('/@fs')) {
+  fullImageUrl = image;
+} else {
+  fullImageUrl = image.startsWith('/') ? `${siteUrl}${image}` : `${siteUrl}/${image}`;
+}
 
 // Generate structured data for the organization
 const organizationSchema = {
