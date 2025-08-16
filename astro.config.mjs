@@ -15,7 +15,13 @@ export default defineConfig({
     // Enable image optimization with Sharp
     service: {
       entrypoint: 'astro/assets/services/sharp'
-    }
+    },
+    // Configure image formats and quality
+    domains: [],
+    remotePatterns: [],
+    // Default responsive layouts
+    layout: 'constrained',
+    responsiveStyles: true
   },
 
   // Prefetch configuration
@@ -30,9 +36,7 @@ export default defineConfig({
   // Build optimizations
   build: {
     // Inline small assets to reduce HTTP requests
-    inlineStylesheets: 'always',
-    // Split CSS for better caching
-    split: true
+    inlineStylesheets: 'always'
   },
 
   vite: {

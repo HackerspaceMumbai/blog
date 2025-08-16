@@ -11,9 +11,9 @@ const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/favicon.ico',
-  '/hero-background.jpg',
   '/social-preview.jpg',
-  // Add other critical assets
+  // Note: Hero background images are now optimized through Astro's Picture component
+  // and will be cached automatically when requested
 ];
 
 // Cache strategies

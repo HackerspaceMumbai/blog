@@ -1,13 +1,13 @@
 ---
 import CTAButton from './CTAButton.astro';
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 
 ---
 
-<section class="hero hero-background py-16 px-4 text-center relative" aria-label="Hackerspace Mumbai community hero section with geometric pattern background">
+<section class="hero py-16 px-4 text-center relative" style={`background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url(${Astro.props.heroImage.src}); background-size: cover; background-position: center; background-repeat: no-repeat;`} aria-label="Hackerspace Mumbai community hero section with geometric pattern background">
   <div class="max-w-4xl mx-auto relative z-10">
     <figure class="mb-6 w-full max-h-72 object-cover rounded-xl shadow-lg mx-auto overflow-hidden">
-      <Image
+      <Picture
         src={Astro.props.heroImage}
         alt="Hackerspace Mumbai community event"
         class="w-full max-h-72 object-cover rounded-xl shadow-lg mx-auto"
@@ -18,7 +18,7 @@ import { Image } from 'astro:assets';
         sizes="(max-width: 640px) 480px, (max-width: 768px) 640px, (max-width: 1024px) 800px, 1200px"
         width={800}
         height={288}
-        format="webp"
+        formats={['avif', 'webp', 'jpeg']}
         quality={75}
       />
     </figure>

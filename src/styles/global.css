@@ -452,13 +452,7 @@ body {
   contain: layout;
 }
 
-.hero-background {
-  background-image: url('/hero-background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
+/* Removed .hero-background CSS - now using inline styles with optimized images */
 
 /* Optimize animations for 60fps */
 .smooth-animation {
@@ -516,18 +510,12 @@ body {
   }
 }
 
-/* Preload critical resources */
-.preload-hero {
-  background-image: url('/hero-background.jpg');
-  background-size: 1px 1px;
-  background-repeat: no-repeat;
-  background-position: -9999px -9999px;
-}
+/* Removed preload for hero background - now using optimized Picture component */
 
 /* Optimize for reduced data usage */
 @media (prefers-reduced-data: reduce) {
-  .hero-background {
-    background-image: none;
+  .hero {
+    background-image: none !important;
     background-color: var(--color-base-200);
   }
   
