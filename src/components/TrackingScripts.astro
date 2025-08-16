@@ -7,63 +7,85 @@ const clarityId = import.meta.env.CLARITY_ID;
 const isProduction = import.meta.env.PROD;
 ---
 
-{isProduction && googleAnalyticsId && (
-  <>
-    <!-- Google Analytics 4 -->
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
-    <script define:vars={{ googleAnalyticsId }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', googleAnalyticsId, {
-        // Privacy-focused configuration
-        anonymize_ip: true,
-        allow_google_signals: false,
-        allow_ad_personalization_signals: false,
-        // Performance optimization
-        send_page_view: true,
-        // Enhanced measurement for better insights
-        enhanced_measurements: {
-          scrolls: true,
-          outbound_clicks: true,
-          site_search: true,
-          video_engagement: true,
-          file_downloads: true
-        }
-      });
-    </script>
-  </>
-)}
-
-{isProduction && clarityId && (
-  <>
-    <!-- Microsoft Clarity -->
-    <script type="text/javascript" define:vars={{ clarityId }}>
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", clarityId);
-    </script>
-  </>
-)}
-
 {isProduction && (googleAnalyticsId || clarityId) && (
-  <!-- Privacy Notice Script -->
-  <script>
-    // Add privacy-focused tracking notice
-    console.log('🔒 Privacy Notice: This site uses analytics to improve user experience. Data is anonymized and not used for advertising.');
+  <>
+    <!-- Error Handler (inline for immediate availability) -->
+    <script is:inline>
+      // Minimal inline error handler to prevent console spam
+      (function() {
+        const originalError = console.error;
+        console.error = function(...args) {
+          const message = args.join(' ').toLowerCase();
+          if (message.includes('clarity.ms') || message.includes('google-analytics.com') || 
+              message.includes('googletagmanager.com') || message.includes('net::err_blocked_by_client')) {
+            console.debug('Tracking blocked by privacy settings:', ...args);
+            return;
+          }
+          originalError.apply(console, args);
+        };
+        
+        window.addEventListener('error', function(event) {
+          if (event.target?.tagName === 'SCRIPT' && event.target.src) {
+            const src = event.target.src;
+            if (src.includes('clarity.ms') || src.includes('google-analytics.com') || src.includes('googletagmanager.com')) {
+              event.preventDefault();
+              console.debug('Tracking script blocked:', src);
+            }
+          }
+        }, true);
+      })();
+    </script>
     
-    // Optional: Add consent management for GDPR compliance
-    // You can extend this with a proper consent management platform
-    if (typeof gtag !== 'undefined') {
-      // Set default consent state
-      gtag('consent', 'default', {
-        'analytics_storage': 'granted',
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied'
+    <!-- Load tracking scripts after page load -->
+    <script is:inline define:vars={{ googleAnalyticsId, clarityId }}>
+      // Load tracking scripts after page is ready to avoid blocking render
+      window.addEventListener('load', function() {
+        // Small delay to ensure page is fully rendered
+        setTimeout(function() {
+          if (googleAnalyticsId) {
+            // Google Analytics
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + googleAnalyticsId;
+            document.head.appendChild(gaScript);
+            
+            // Analytics configuration
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){try{window.dataLayer.push(arguments);}catch(e){}}
+            gtag('js', new Date());
+            gtag('config', googleAnalyticsId, {
+              anonymize_ip: true,
+              allow_google_signals: false,
+              allow_ad_personalization_signals: false,
+              send_page_view: true
+            });
+            window.gtag = gtag;
+            
+            // Privacy consent
+            gtag('consent', 'default', {
+              'analytics_storage': 'granted',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied'
+            });
+          }
+          
+          if (clarityId) {
+            // Microsoft Clarity
+            if (!navigator.doNotTrack && !window.navigator.globalPrivacyControl) {
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                t.onerror=function(){console.debug('Clarity blocked by privacy settings');};
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", clarityId);
+            }
+          }
+          
+          // Privacy notice
+          console.log('🔒 Privacy Notice: This site uses analytics to improve user experience. Data is anonymized and not used for advertising.');
+        }, 100);
       });
-    }
-  </script>
+    </script>
+  </>
 )}

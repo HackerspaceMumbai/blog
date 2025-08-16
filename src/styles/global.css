@@ -436,13 +436,14 @@
 .aspect-4-3::before { padding-bottom: 75%; }
 .aspect-1-1::before { padding-bottom: 100%; }
 
-/* Font Loading Optimization */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* System Font Stack - Fast Loading */
+:root {
+  --font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Progressive font enhancement - Inter will be applied when loaded */
+body {
+  font-family: var(--font-family);
 }
 
 /* Critical CSS for above-the-fold content */

@@ -86,3 +86,45 @@ pnpm security:audit   # Full security audit
 - HTML compression
 - Asset inlining for small files
 - Prefetch configuration for faster navigation
+
+## Critical Development Guidelines
+
+### Performance & Security Requirements
+When adding any new feature or function, ensure it meets these strict requirements:
+
+1. **Performance Standards**
+   - Must not block critical rendering path
+   - Scripts should be deferred or loaded after page load
+   - Use `fetchpriority="high"` only for LCP elements
+   - Inline critical CSS and small scripts to avoid network requests
+   - All images must have proper `loading` attributes (`eager` for above-fold, `lazy` for below-fold)
+
+2. **Lighthouse Compliance**
+   - Must not introduce console errors or warnings
+   - Should not negatively impact Core Web Vitals (LCP, FID, CLS)
+   - External resources must be properly optimized and non-blocking
+   - Accessibility standards must be maintained (WCAG 2.1 AA)
+
+3. **Content Security Policy (CSP) Compliance**
+   - **NO inline event handlers** (`onclick`, `onload`, `onerror`, etc.)
+   - **NO inline scripts** without proper CSP directives
+   - Use `is:inline` directive for Astro inline scripts when necessary
+   - External scripts must be from approved domains in CSP
+   - Use `define:vars` for passing server-side data to client scripts
+
+4. **Implementation Best Practices**
+   - Prefer progressive enhancement over JavaScript-dependent features
+   - Use error handling for all external resources (analytics, fonts, etc.)
+   - Respect user privacy preferences (Do Not Track, Global Privacy Control)
+   - Load non-essential scripts after page load event
+   - Minimize and compress all assets
+
+### Code Review Checklist
+Before merging any changes, verify:
+- [ ] No blocking scripts in `<head>`
+- [ ] No inline event handlers
+- [ ] Proper image optimization and loading attributes
+- [ ] CSP compliance verified
+- [ ] Lighthouse audit passes without regressions
+- [ ] Error handling for external dependencies
+- [ ] Privacy-respecting implementation

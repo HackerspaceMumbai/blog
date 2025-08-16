@@ -252,7 +252,7 @@ const {
       <button 
         type="button" 
         class="retry-button text-xs bg-warning/20 hover:bg-warning/30 px-3 py-1 rounded-full transition-colors duration-200"
-        onclick="location.reload()"
+        data-action="retry"
       >
         Retry Connection
       </button>
@@ -353,6 +353,17 @@ const {
       
       // Clear errors on focus
       this.emailInput.addEventListener('focus', this.clearEmailError.bind(this));
+      
+      // Retry button functionality
+      this.form.addEventListener('click', this.handleRetryClick.bind(this));
+    }
+
+    private handleRetryClick(event: Event): void {
+      const target = event.target as HTMLElement;
+      if (target.matches('[data-action="retry"]')) {
+        event.preventDefault();
+        location.reload();
+      }
     }
 
     private setupAccessibility(): void {
