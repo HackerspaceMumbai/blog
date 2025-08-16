@@ -13,10 +13,12 @@ import { Image } from 'astro:assets';
         class="w-full max-h-72 object-cover rounded-xl shadow-lg mx-auto"
         loading="eager"
         decoding="async"
+        widths={[480, 640, 800, 1200]}
+        sizes="(max-width: 640px) 480px, (max-width: 768px) 640px, (max-width: 1024px) 800px, 1200px"
         width={800}
         height={288}
         format="webp"
-        quality={85}
+        quality={75}
       />
     </figure>
     <h2 class="text-4xl md:text-6xl font-bold mb-4">Hackerspace Mumbai</h2>

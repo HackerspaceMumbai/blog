@@ -16,6 +16,7 @@ export interface Props {
   modifiedTime?: string;
   author?: string;
   tags?: string[];
+  preloadImage?: string;
 }
 
 const { 
@@ -28,7 +29,8 @@ const {
   publishedTime,
   modifiedTime,
   author,
-  tags = []
+  tags = [],
+  preloadImage
 } = Astro.props;
 
 // Get the current URL for canonical and social sharing
@@ -103,10 +105,81 @@ const pageSchema = type === 'article' && publishedTime ? {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     
-    <!-- Fonts -->
+    <!-- Resource hints for better performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
+    
+    <!-- Preload critical images for LCP improvement -->
+    {preloadImage && (
+      <link rel="preload" as="image" href={preloadImage} type="image/webp" />
+    )}
+    
+    <!-- Critical CSS inlined for faster rendering -->
+    <style>
+      /* Critical CSS - Above the fold styles */
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5nw.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      /* Base styles */
+      html { font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.5; }
+      body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background-color: #f8fafc; color: #1e293b; }
+      /* Header styles */
+      header { position: sticky; top: 0; z-index: 50; background-color: #FFC107; }
+      nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem; }
+      /* Hero section */
+      .hero { padding: 4rem 1rem; text-align: center; position: relative; }
+      .hero figure { margin-bottom: 1.5rem; width: 100%; max-height: 18rem; object-fit: cover; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin-left: auto; margin-right: auto; overflow: hidden; }
+      .hero img { width: 100%; max-height: 18rem; object-fit: cover; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin-left: auto; margin-right: auto; }
+      /* Typography */
+      h1, h2, h3 { margin: 0 0 1rem 0; font-weight: 700; line-height: 1.2; color: #1e293b; }
+      h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+      h2 { font-size: 2rem; color: #FFC107; }
+      p { margin-bottom: 2rem; font-size: 1.25rem; color: #64748b; }
+      /* Buttons */
+      .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; margin: 0.25rem; }
+      .btn-primary { background-color: #FFC107; color: #000; }
+      .btn-primary:hover { background-color: #FFB300; transform: translateY(-1px); }
+      .btn-soft { background-color: rgba(255, 193, 7, 0.1); color: #FFC107; border: 1px solid #FFC107; }
+      /* Layout utilities */
+      .flex { display: flex; }
+      .flex-wrap { flex-wrap: wrap; }
+      .justify-center { justify-content: center; }
+      .gap-4 { gap: 1rem; }
+      .mb-4 { margin-bottom: 1rem; }
+      .mb-8 { margin-bottom: 2rem; }
+      .space-x-4 > * + * { margin-left: 1rem; }
+      /* Responsive */
+      @media (min-width: 768px) { 
+        h1 { font-size: 3.75rem; } 
+        h2 { font-size: 2.5rem; } 
+        p { font-size: 1.5rem; }
+        .hero { padding: 6rem 1rem; } 
+      }
+    </style>
+    
+    <!-- Fonts - Optimized loading with preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Preload the most critical font weights -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5nw.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Load font CSS asynchronously -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
     
     <!-- SEO Meta Tags -->
     <title>{title}</title>

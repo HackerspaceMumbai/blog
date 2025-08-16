@@ -26,10 +26,12 @@ const { title, date, location, description, rsvpLink, coverImage } = Astro.props
         alt={title} 
         class="object-cover w-full h-full transition-all duration-300 group-hover:scale-105 filter brightness-110 contrast-110 saturate-125 group-hover:brightness-125 group-hover:saturate-150" 
         loading="lazy"
+        widths={[300, 450, 600]}
+        sizes="(max-width: 640px) 300px, (max-width: 1024px) 450px, 600px"
         width={600}
         height={200}
         format="webp"
-        quality={85}
+        quality={80}
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"></div>
     </figure>
