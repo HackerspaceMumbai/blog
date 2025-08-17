@@ -105,9 +105,8 @@ const pageSchema = type === 'article' && publishedTime ? {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     
-    <!-- Resource hints for better performance -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+  <!-- Resource hints for better performance - defer loading Google Fonts CSS until after load; only prefetch font asset origin -->
+  <link rel="dns-prefetch" href="//fonts.gstatic.com" crossorigin />
     
     <!-- Preload critical images for LCP improvement -->
     {preloadImage && (
