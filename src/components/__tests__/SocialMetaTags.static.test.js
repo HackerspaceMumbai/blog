@@ -77,7 +77,7 @@ describe('Social Meta Tags Static Validation', () => {
     it('should validate homepage meta configuration', () => {
       const homepageConfig = {
         title: "Hackerspace Mumbai - Mumbai's Largest Open Source Community",
-        description: "Hackerspace Mumbai is the largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!",
+        description: "Mumbai's largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!",
         type: "website"
       };
 
@@ -167,7 +167,7 @@ describe('Social Meta Tags Static Validation', () => {
 
     it('should validate description length best practices', () => {
       const descriptions = [
-        "Hackerspace Mumbai is the largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!",
+        "Mumbai's largest open source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!",
         "Latest articles, tutorials, and news from the Hackerspace Mumbai community."
       ];
 
