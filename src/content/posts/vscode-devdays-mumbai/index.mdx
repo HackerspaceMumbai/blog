@@ -49,11 +49,11 @@ The [Pets Workshop](https://github.com/github-samples/pets-workshop/tree/main/co
 
     This paradigm shift was brought home vividly for participants during the first chapter of the workshop — “Add the Endpoints.” I asked attendees to share screenshots of their completions for the breed route, and while most received a correct GET verb from Copilot, a few were served a POST. Just one word of difference — but in the realm of REST APIs, it’s a world of semantic and functional divergence. This moment perfectly illustrated the probabilistic nature of AI-assisted development: Copilot doesn’t just follow instructions, it interprets intent. And unless the prompt is precise, the model may offer plausible but contextually incorrect — suggestions.
 
-<Image src={TweetScreenshotCompletionsPostVerb} alt="Tweet Screenshot Completions Post Verb" width={800} height={450} />
+<Image src={TweetScreenshotCompletionsPostVerb} alt="Tweet Screenshot Completions Post Verb" width={800}  />
 
 3. The Explore Project exercise showed attendees how to give GitHub Copilot the right project context by using the @workspace participant to index the repo, asking targeted natural‑language questions to surface files and dependencies, and clearing unrelated tabs to avoid noisy local context. With descriptive, repo‑aware prompts participants quickly located the database, found the files that list dogs, and identified where to add new routes — turning unfamiliar stacks (Python and Svelte/Astro) into approachable codebases within minutes. Recent model changes — larger context windows, stronger repository grounding, and improved prompt-following — noticeably improved the quality and relevance of replies, so precise prompts produced higher‑quality outputs, cut the number of edit iterations, and reduced token usage, saving both time and money for developers in resource‑constrained environments.
 
-    <Image src={ExploreProjectsBetterPrompts} alt="Explore Projects Better Prompts" width={800} height={450} />
+    <Image src={ExploreProjectsBetterPrompts} alt="Explore Projects Better Prompts" width={800} />
 
 4. In the “Add the Filter Feature” chapter I used the moment to spark a discussion about [model selection](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)(a perenially hot topic) and demonstrate GitHub’s new [auto model picker](https://docs.github.com/en/copilot/concepts/auto-model-selection): showing how Copilot Edits and Copilot Chat can automatically choose the best available model to balance latency, capability, and rate‑limit behavior, while still letting users override the choice when needed; this practical demo made it easy to explain when a higher‑capacity model helps with complex multi‑file edits and when the auto picker will favor efficiency or availability, letting attendees focus on intent and prompts rather than model logistics.
 
@@ -71,7 +71,7 @@ Building on Kamal’s keynote and the foundational Pets Workshop, the final sess
 
 As VS Code crossed the landmark of 50 million downloads, I couldn’t help but reflect on my own journey with it. That moment sparked a question: When did I first use VS Code? Instead of digging through old emails or vague memories, I turned to GitHub Copilot — and asked it to help me trace my earliest commit in a repo I remembered working on. Sure enough, it surfaced a timestamp from January 30, 2017, tucked inside a .vscode/settings.json file. That tiny breadcrumb became a full-circle moment: from my first steps in VS Code to now helping 300+ developers unlock its full potential with AI.
 It was poetic: using an AI agent to rediscover the origin of my coding journey, while standing in front of a room full of developers learning to shape their own.
-<Image src={Tweet50MDownloads} alt="Tweet 50M Downloads" width={800} height={450} />
+<Image src={Tweet50MDownloads} alt="Tweet 50M Downloads" width={800} height={750} />
 
 ### Wonderland of AI Assisted Coding: Awesome Copilot
 
@@ -86,7 +86,7 @@ And here’s the kicker: in agent mode, VS Code treats .prompt.md files as execu
 
 Further, I dived into when to use Prompt files (.prompt.md) which are reusable, structured instructions saved as markdown that can be executed directly in VS Code — ideal for repeatable tasks like generating READMEs, refactoring code, or onboarding contributors. Chat modes, which Burke made famous with his Beast mode, on the other hand, customize Copilot’s behavior dynamically (e.g., “Explain like I’m new to Python” or “Be concise and formal”) and are best used when you want Copilot to adapt its tone, depth, or role in real-time. Use prompt files for workflow automation, and chat modes for interactive guidance and persona-driven responses.
 
-<Image src={ChatModeAzureSearch} alt="Chat Mode Azure Search" width={800} height={450} />
+<Image src={ChatModeAzureSearch} alt="Chat Mode Azure Search" width={800} height={750} />
 
 ### Show me the numbers
 
