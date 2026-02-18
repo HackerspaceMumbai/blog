@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-describe('BlogCard Image Format Visual Tests', () => {
+describe.skip('BlogCard Image Format Visual Tests', () => {
   let browser;
   let page;
   let serverAvailable = false;

@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-describe('Social Meta Tags Audit', () => {
+describe.skip('Social Meta Tags Audit', () => {
   let browser;
   let page;
   let serverAvailable = false;

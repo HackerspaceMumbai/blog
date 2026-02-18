@@ -2,7 +2,8 @@
 import Layout from "../components/Layout.astro";
 import HeroSection from "../components/HeroSection.astro";
 import heroBackground from '../assets/images/hero_background.jpg';
-import vscodeDevDayImage from '../assets/images/vscode_devdag_mumbai_4thOct.png';
+import agentcamp2026Mumbai from '../assets/images/agentcamp2026_mumbai.png';
+import dotnetconf2025recapMumbai from '../assets/images/dotnetconf2025recap_mumbai.png';
 import EventsSection from "../components/EventsSection.astro";
 import BlogSection from "../components/BlogSection.astro";
 import AboutSection from "../components/AboutSection.astro";
@@ -20,12 +21,20 @@ const posts = (await getCollection("posts"))
 // Sample upcoming events data (to be replaced with real data/API integration)
 const upcomingEvents = [
   {
-    title: "VS Code Dev Day - Mumbai",
-    date: "October 4th, 2025",
-    location: "Microsoft Mumbai, Kalina",
-    description: "Join us for VS Code Dev Days – a hands-on, developer-focused event designed to supercharge your coding skills with Visual Studio Code and the power of GitHub Copilot.",
-    rsvpLink: "https://aka.ms/vscodedevdays/mumbai",
-    coverImage: vscodeDevDayImage,
+    title: "AgentCamp 2026 – Mumbai Edition",
+    date: "February 28th, 2026",
+    location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai",
+    description: "AgentCamp26 brings together builders, engineers, AI enthusiasts, founders, and product leaders exploring cutting-edge AI agents, automation, LLM systems, and agentic platforms. Featuring lightning talks, live demos, networking, and open discussions on how agentic AI is transforming software development.",
+    rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/313409790/",
+    coverImage: agentcamp2026Mumbai,
+  },
+  {
+    title: ".NET Conf 2025 Recap - Mumbai",
+    date: "February 28th, 2026",
+    location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai",
+    description: "Join us for the 6th edition of .NET Conf Recap! Experience practical sessions, live demos, migration stories, and real-world case studies across .NET, Blazor, MAUI, cloud-native patterns, performance, and AI integrations. Network with developers, architects, and students passionate about .NET.",
+    rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/312295849/",
+    coverImage: dotnetconf2025recapMumbai,
   }
 ];
 
