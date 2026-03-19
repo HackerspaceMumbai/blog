@@ -4,9 +4,15 @@ import BlogCard from "../../components/BlogCard.astro";
 import heroBackground from '../../assets/images/hero_background.jpg';
 import { getCollection, type CollectionEntry } from "astro:content";
 
-// Get all posts and sort by date (newest first)
+
+// Get all posts, filter out posts without dates, and only include posts with a date in the future
+const now = new Date();
 const posts: CollectionEntry<'posts'>[] = (await getCollection("posts"))
-  .filter(post => post.data.date) // Filter out posts without dates
+  .filter(post => {
+    if (!post.data.date) return false;
+    const postDate = new Date(post.data.date);
+    return postDate.getTime() > now.getTime();
+  })
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
 console.log('DEBUG: Posts count:', posts.length);
@@ -103,7 +109,7 @@ console.log('DEBUG: Posts count:', posts.length);
       <h1 id="blog-title" class="text-4xl md:text-5xl font-bold mb-4">
         Hackerspace Mumbai Blog
       </h1>
-      <p class="text-xl text-accent opacity-90" role="doc-subtitle">
+      <p class="text-xl text-accent opacity-90">
         Latest articles, tutorials, and insights from our community
       </p>
     </div>

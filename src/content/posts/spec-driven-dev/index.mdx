@@ -1,0 +1,277 @@
+
+---
+title: "From Vibes to Verification: Mastering Spec‑Driven Development for AI‑Assisted Coding"
+description: "Why vibe coding doesn't scale and how Spec‑Driven Development, OpenSpec, and Context Engineering keep AI aligned with human intent."
+date: 2026-03-19
+author: "Augustine Correa"
+slug: "from-vibes-to-verification-spec-driven-development"
+tags: ["AI", "Spec-Driven Development", "OpenSpec",  "Speckit","Context Engineering", "Hackerspace Mumbai"]
+cover: "./hero-spec-driven-development.png"
+ogImage: "./og-spec-driven-development.png"
+---
+import { Image } from 'astro:assets';
+import ContextDriftImage from './context_drift.png';
+import SpecBridge from './spec_bridge.PNG';
+import GlobalLocalContext from './globalVlocal_context.PNG';
+import OpenSpecWorkflowImage from './open_spec_workflow.PNG';
+import SeparationOfConcernsImage from './separation_of_concerns.PNG';
+import TacticalToStrategicImage from './tactical2strategic.PNG';
+import SpecDeltasImage from './spec_deltas.PNG';
+import AutomatedVerificationImage from './automated_verification.PNG';
+import BrownfieldFirstImage from './brownfield_first.PNG';
+import FrictionStructureImage from './friction_structure.PNG';
+import ToolLandscapeImage from './tool_landscape.PNG';
+import DecisionFrameworkImage from './decision_framework.PNG';
+import SpecSourceCodeImage from './spec_sourcecode.PNG';
+
+Mumbai developers love vibes.
+
+We vibe with tools, with frameworks, with late‑night chai, and if we’re honest 👉with our AI assistants.
+
+But as I’ve learned (and re‑learned) while building systems with GitHub Copilot, Speckits, Kiro, OpenSpec workflows, and our own Hackerspace Mumbai projects: **vibes don’t scale**.
+
+At some point, every project hits that moment where “talking nicely to the AI” stops working, and suddenly your feature branches look like parallel universes. One morning you’re prototyping at lightning speed. The next morning your AI is “helpfully” rewriting half the repo because it *felt* like your intent changed.
+
+This post is about that moment, and what we can do about it.
+
+As a Microsoft MVP in AI and Developer Technologies, I’ve spent the last two years moving our projects from "guessing" with AI to governing AI. This shift is what separates a quick prototype from a production-ready system.
+
+---
+
+## The Hidden Cost of Vibe Coding
+
+In every workshop we’ve run, there’s always this one familiar pattern:
+
+Someone gives the AI a clear instruction.  
+The AI responds with something *almost* right.  
+Everyone nods.  
+And someone says the fatal words:  
+**“It’s fine, I’ll fix it later.”**
+
+But that tiny drift: just a word or two, grows with complexity.
+
+In our own blog repo, we saw this when working on Image Optimization tasks
+. We wanted the AI to compress assets before upload, but without strict boundaries, agents can easily drift into rewriting existing Astro configurations or hallucinating unnecessary libraries
+
+That slippage is Context Drift.  
+And the larger the project, the more expensive that drift becomes.
+
+<Image src={ContextDriftImage} alt="Context Drift Illustration" />
+
+---
+
+## Context Engineering: The Bridge Between Idea and Implementation
+
+We often speak about *prompting*, but prompting is not engineering.  
+
+**Context Engineering** is the practice of intentionally structuring information so the agent understands **need**, not just syntax. It’s the bridge between:
+
+- *abstract human intent*  
+- *concrete machine implementation*
+
+<Image src={SpecBridge} alt="Spec Bridge illustration" />
+
+
+This works because of a core architectural principle: Separation of Concerns. We keep the Functional Requirements (the "What") strictly separate from the Technical Implementation (the "How"). By doing this, we manage the Attention Budget of the AI agent, ensuring it focuses on the "signal" of our intent rather than the "noise" of the entire codebase.
+
+<Image src={SeparationOfConcernsImage} alt="Illustration showing separation of functional requirements from technical implementation details." />
+
+
+In our Hackerspace repos, we use `.prompt.md` files not as chat transcripts, but as **executable artifacts**. These act as a stable bridge across sessions, machines, contributors, and AI agents.
+
+
+When your context becomes structured, reproducibility stops being an accident - and becomes a guarantee.
+
+---
+
+## Binary, Noise, and the Attention Budget
+
+Here’s the truth nobody likes saying aloud:
+
+> Dumping your whole repo into the AI is not “providing context.”  
+> It’s **creating noise**.
+
+To an AI, a repo without structure is just a binary soup: too many tokens, no obvious critical path, and a sea of irrelevant details.
+
+This is where **Global vs Local Context** shines:
+
+<Image src={GlobalLocalContext} alt="Diagram comparing global context with local context in AI-assisted development workflows." /> 
+
+### Global Context
+
+Your constitution. The immutable rules: product goals, architecture principles, naming conventions, and constraints.
+
+### Local Context
+
+The one feature you’re working on today. Nothing else. A minimal, isolated sandbox the AI can reason about without distraction.
+
+In our blog’s Astro content system, colocating Markdown + images in their own folder acts as a natural “Local Context boundary.” AI agents instantly know what’s relevant, and more importantly, what’s not.
+
+---
+
+## Spec Workflows: Thinking Before Doing
+
+Once teams adopt SDD, something interesting happens:  
+The pace doesn’t slow down—**the chaos slows down**.
+
+OpenSpec has a four‑stage spec workflow [which is almost followed by other tools like Kiro and Spec‑Kit](https://github.com/HackerspaceMumbai/OpenSpec):
+
+1. **Propose** – What problem are we solving?  
+2. **Design** – What’s the intended behavior?  
+3. **Task** – What exact steps must be executed?  
+4. **Apply** – Only now does the AI write code.
+
+With the recent OpenSpec 1.0 updates, this workflow is triggered via /opsx new commands and includes a strict verification step that checks the implementation for completeness, correctness, and coherence before archiving
+
+
+
+It forces a small but powerful pause between intent and execution.
+
+In our project workflows, from [Visage's Speckit](https://github.com/HackerspaceMumbai/Visage/tree/main/specs) planning docs to this blog repo’s task verification notes, we don’t allow code generation until “Design” and “Task” phases are written and committed in-repo. The result?  
+
+No more agents hallucinating architecture.  
+No more random refactors.  
+No more “where did this file come from?”
+
+<Image src={OpenSpecWorkflowImage} alt="OpenSpec workflow diagram showing the staged cycle of propose, design, task, apply, verify, archive, and explore." />
+
+---
+
+## Spec‑Driven Development (SDD): Documentation as Source of Truth
+
+This was the heart of the talk, and the heart of this post.
+
+**Spec‑Driven Development is Documentation‑First engineering.**
+
+The spec is not a suggestion.  
+Not a README.  
+Not a fuzzy note on Notion.
+
+It is the **single source of truth**, and the implementation must align with it: never the other way around.
+
+Before writing Blazor Hybrid components in the Visage project, we always write natural language, behavior‑focused specs. That way, the human intention (left side) and binary representation (right side) remain perfectly aligned.
+
+To achieve this alignment, structure your specs like a professional Product Requirements Document (PRD) covering six core areas: Executable Commands, Testing expectations, Project structure, Code style snippets, Git workflows, and Boundaries. For boundaries, use a three-tier system to effectively govern the agent: Always do (e.g., run tests before commits), Ask first (e.g., before database schema changes), and Never do (e.g., never commit secrets)
+
+<Image src={TacticalToStrategicImage} alt="Three maturity levels of Spec-Driven Development from tactical spec-first to spec-as-source." />
+
+
+---
+
+## Spec Deltas: Tracking What Actually Changed
+
+Traditional Git diffs show code differences.  
+Spec Deltas show **requirement differences**.
+
+Whenever we modify a workflow - like updating image optimization logic—we update the spec with a **`## MODIFIED Requirements`** section.
+
+That tiny ritual creates a superpower:  
+Future developers (and future AIs) will always know *why* something changed.
+
+<Image src={SpecDeltasImage} alt="Before-and-after example showing a requirement change captured as a spec delta." />
+
+A typical Spec Delta in our workflow looks like this:
+
+```markdown
+## MODIFIED Requirements (v1.2)
+- **Feature:** Image Optimization.
+- **Delta:** Use GitHub Copilot to compress assets before upload.
+- **Reason:** Reduce latency for mobile users in rural areas like we experienced in far flung colleges in Mangaluru.
+```
+
+> However, remember that OpenSpec's "spec deltas" remain static during the implementation phase
+. For large, multi-service initiatives where specs must self-update bidirectionally if the AI changes its approach mid-task, you may need to pair this with a living-spec platform like Intent
+
+---
+
+## Auditing the AI: Trust, but Verify
+
+No matter how advanced your agent is, one rule remains eternal:
+
+> **Never assume the AI followed instructions.**
+
+Our audit stages:
+
+- **Completeness** – Did it cover every requirement?  
+- **Correctness** – Did it match the rules in the spec?  
+- **Coherence** – Does the output fit into the rest of the system?
+
+In our repo, `task8-verification-report.md` is a great example of this discipline: a manual checklist ensuring the AI doesn’t take “creative liberties.”
+
+<Image src={AutomatedVerificationImage} alt="Verification checklist illustrating completeness, correctness, and coherence when auditing AI output." />
+
+---
+
+## Brownfield Reality: Where SDD Really Shines
+
+Most AI demos start with empty folders and perfect greenfield conditions.  
+Real developers know that’s fantasy.
+
+SDD’s true power appears in **5‑year‑old codebases**, where one wrong agent action can break modules nobody has touched since 2021.
+
+Spec‑Driven Development is how we prevent that chaos.
+
+<Image src={BrownfieldFirstImage} alt="Comparison of greenfield and brownfield work emphasizing why Spec-Driven Development matters most in older codebases." />
+
+---
+
+## The Friction of Structure (and Avoiding Over‑Engineering)
+But there’s a catch.
+
+Structure introduces friction.  
+And too much friction becomes **Verschlimmbesserung**—making things worse by trying to improve them.
+
+The rule of thumb:
+
+> Don’t write a 20‑page spec for a one‑line bug fix.
+
+SDD is a scalpel, not a sledgehammer.
+
+<Image src={FrictionStructureImage} alt="Balance illustration showing the tradeoff between agility and too much process structure." />
+
+---
+
+## Selecting Your Tool: Kiro, Spec‑Kit, or OpenSpec?
+Every team has its own complexity budget.
+
+- **Kiro** – Perfect for solo developers who want “Spec Mode” inline in their IDE.  
+
+- **Spec-Kit** – Best for open-source contributors or teams using diverse AI coding assistants who need 
+cross-agent standardization without vendor lock-in.  
+
+- **BMAD-METHOD** – Heavy-duty governance; best for enterprise planning, orchestrating 21+ specialized AI agents across a full SDLC with strict file-based handoffs and role boundaries.
+ 
+- **OpenSpec** – What we use in this blog. Designed for teams, repos, and long‑running brownfield projects.
+
+Choose based on scale, not hype.
+
+<Image src={ToolLandscapeImage} alt="Comparison table of Kiro, Spec-Kit, and OpenSpec by team fit, philosophy, and artifacts." />
+
+---
+
+## The Decision Framework
+This is the simplest rule in the entire presentation, and maybe the most important:
+
+> **If your plan spans multiple sessions, write a spec.**  
+> If it doesn’t, vibes are fine.
+
+Visage started as a vibe‑coded prototype. When development expanded into multi‑day Blazor Hybrid features, everything broke. Switching to SDD brought stability - because the AI could pick up exactly where we left off.
+
+<Image src={DecisionFrameworkImage} alt="Decision tree showing when to use vibe coding versus Spec-Driven Development based on task complexity and duration." />
+
+---
+
+## Conclusion: The Spec Is the New Source Code
+The future of software development isn’t just writing code. It’s architecting intent.
+
+SDD transforms developers from code typists into system designers, guiding AI agents with clarity, structure, and repeatability.
+
+If Vibe Coding is jazz, Spec‑Driven Development is classical music:  
+Both are beautiful. Both have their place.  
+But only one reliably scales to orchestras.
+
+And in 2026, we’re all conducting orchestras.
+
+<Image src={SpecSourceCodeImage} alt="Illustration reinforcing the idea that the spec becomes the new source code in AI-assisted development." />
+
+---
