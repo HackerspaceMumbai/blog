@@ -56,6 +56,8 @@ In our own blog repo, we saw this when working on Image Optimization tasks
 That slippage is Context Drift.  
 And the larger the project, the more expensive that drift becomes.
 
+> Context Drift: when small probabilistic deviations compound into architectural divergence.
+
 <Image src={ContextDriftImage} alt="Context Drift Illustration" />
 
 ---
@@ -72,7 +74,7 @@ We often speak about *prompting*, but prompting is not engineering.
 <Image src={SpecBridge} alt="Spec Bridge illustration" />
 
 
-This works because of a core architectural principle: Separation of Concerns. We keep the Functional Requirements (the "What") strictly separate from the Technical Implementation (the "How"). By doing this, we manage the Attention Budget of the AI agent, ensuring it focuses on the "signal" of our intent rather than the "noise" of the entire codebase.
+This works because of a core architectural principle: Separation of Concerns. We keep the Functional Requirements (the "What") strictly separate from the Technical Implementation (the "How"). By doing this, we manage the Attention Budget of the AI agent, ensuring it focuses on the "signal" of our intent rather than the "noise" of the entire codebase. You’ll see this separation pattern repeated throughout SDD. 
 
 <Image src={SeparationOfConcernsImage} alt="Illustration showing separation of functional requirements from technical implementation details." />
 
@@ -91,7 +93,7 @@ Here’s the truth nobody likes saying aloud:
 > Dumping your whole repo into the AI is not “providing context.”  
 > It’s **creating noise**.
 
-To an AI, a repo without structure is just a binary soup: too many tokens, no obvious critical path, and a sea of irrelevant details.
+To an AI, a repo without structure is just a **binary soup**: too many tokens, no obvious critical path, and a sea of irrelevant details.
 
 This is where **Global vs Local Context** shines:
 
@@ -112,7 +114,7 @@ In our blog’s Astro content system, colocating Markdown + images in their own 
 ## Spec Workflows: Thinking Before Doing
 
 Once teams adopt SDD, something interesting happens:  
-The pace doesn’t slow down—**the chaos slows down**.
+The pace doesn’t slow down - **the chaos slows down**.
 
 OpenSpec has a four‑stage spec workflow [which is almost followed by other tools like Kiro and Spec‑Kit](https://github.com/HackerspaceMumbai/OpenSpec):
 
@@ -121,9 +123,7 @@ OpenSpec has a four‑stage spec workflow [which is almost followed by other too
 3. **Task** – What exact steps must be executed?  
 4. **Apply** – Only now does the AI write code.
 
-With the recent OpenSpec 1.0 updates, this workflow is triggered via /opsx new commands and includes a strict verification step that checks the implementation for completeness, correctness, and coherence before archiving
-
-
+Recent OpenSpec updates reinforce this pattern by including a strict verification step that checks the implementation for completeness, correctness, and coherence before archiving
 
 It forces a small but powerful pause between intent and execution.
 
@@ -151,7 +151,13 @@ It is the **single source of truth**, and the implementation must align with it:
 
 Before writing Blazor Hybrid components in the Visage project, we always write natural language, behavior‑focused specs. That way, the human intention (left side) and binary representation (right side) remain perfectly aligned.
 
-To achieve this alignment, structure your specs like a professional Product Requirements Document (PRD) covering six core areas: Executable Commands, Testing expectations, Project structure, Code style snippets, Git workflows, and Boundaries. For boundaries, use a three-tier system to effectively govern the agent: Always do (e.g., run tests before commits), Ask first (e.g., before database schema changes), and Never do (e.g., never commit secrets)
+To achieve this alignment, structure your specs like a professional Product Requirements Document (PRD) covering six core areas: 
+1. Executable Commands
+2. Testing expectations 
+3. Project structure
+4. Code style snippets 
+5. Git workflows 
+6. Boundaries. For boundaries, use a three-tier system to effectively govern the agent: Always do (e.g., run tests before commits), Ask first (e.g., before database schema changes), and Never do (e.g., never commit secrets)
 
 <Image src={TacticalToStrategicImage} alt="Three maturity levels of Spec-Driven Development from tactical spec-first to spec-as-source." />
 
@@ -180,7 +186,7 @@ A typical Spec Delta in our workflow looks like this:
 ```
 
 > However, remember that OpenSpec's "spec deltas" remain static during the implementation phase
-. For large, multi-service initiatives where specs must self-update bidirectionally if the AI changes its approach mid-task, you may need to pair this with a living-spec platform like Intent
+. For large, multi-service initiatives where specs must self-update bidirectionally if the AI changes its approach mid-task, you may need to pair this with a living-spec platform like Intent (where specs evolve bidirectionally during execution).
 
 ---
 
@@ -197,6 +203,8 @@ Our audit stages:
 - **Coherence** – Does the output fit into the rest of the system?
 
 In our repo, `task8-verification-report.md` is a great example of this discipline: a manual checklist ensuring the AI doesn’t take “creative liberties.”
+
+> Auditing is where SDD turns from philosophy into discipline.
 
 <Image src={AutomatedVerificationImage} alt="Verification checklist illustrating completeness, correctness, and coherence when auditing AI output." />
 
@@ -216,10 +224,11 @@ Spec‑Driven Development is how we prevent that chaos.
 ---
 
 ## The Friction of Structure (and Avoiding Over‑Engineering)
+
 But there’s a catch.
 
 Structure introduces friction.  
-And too much friction becomes **Verschlimmbesserung**—making things worse by trying to improve them.
+And too much friction becomes **Verschlimmbesserung** - making things worse by trying to improve them.
 
 The rule of thumb:
 
@@ -232,24 +241,28 @@ SDD is a scalpel, not a sledgehammer.
 ---
 
 ## Selecting Your Tool: Kiro, Spec‑Kit, or OpenSpec?
+
 Every team has its own complexity budget.
 
 - **Kiro** – Perfect for solo developers who want “Spec Mode” inline in their IDE.  
 
 - **Spec-Kit** – Best for open-source contributors or teams using diverse AI coding assistants who need 
 cross-agent standardization without vendor lock-in.  
-
-- **BMAD-METHOD** – Heavy-duty governance; best for enterprise planning, orchestrating 21+ specialized AI agents across a full SDLC with strict file-based handoffs and role boundaries.
  
 - **OpenSpec** – What we use in this blog. Designed for teams, repos, and long‑running brownfield projects.
 
-Choose based on scale, not hype.
+At the far end of the spectrum,
+
+- **BMAD-METHOD** – Heavy-duty governance;  best for enterprise planning, orchestrating 21+ specialized AI agents across a full SDLC with strict file-based handoffs and role boundaries.
+
+> Choose based on scale, not hype.
 
 <Image src={ToolLandscapeImage} alt="Comparison table of Kiro, Spec-Kit, and OpenSpec by team fit, philosophy, and artifacts." />
 
 ---
 
 ## The Decision Framework
+
 This is the simplest rule in the entire presentation, and maybe the most important:
 
 > **If your plan spans multiple sessions, write a spec.**  
@@ -262,6 +275,7 @@ Visage started as a vibe‑coded prototype. When development expanded into multi
 ---
 
 ## Conclusion: The Spec Is the New Source Code
+
 The future of software development isn’t just writing code. It’s architecting intent.
 
 SDD transforms developers from code typists into system designers, guiding AI agents with clarity, structure, and repeatability.
