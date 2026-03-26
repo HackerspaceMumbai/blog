@@ -1,0 +1,303 @@
+---
+title: "When AI Agents Become Insiders: Security Lessons from FOSSASIA 2026"
+description: "Key security lessons from FOSSASIA 2026 on AI agents, insider-threat models, MCP authorization boundaries, and practical controls for open-source teams."
+date: 2026-03-25
+author: "Augustine Correa"
+slug: "ai-agents-insider-threat-fossasia-2026"
+tags: ["AI Agents", "Security", "Insider Threat", "FOSSASIA", "MCP", "Hackerspace Mumbai"]
+categories: ["AI Security", "Engineering Practices"]
+cover: "./hero-ai-agents_insider.png"
+---
+
+import { Image } from 'astro:assets';
+import HeroImage from './hero-ai-agents_insider.png';
+import IdentityShift from './identity-shift.png';
+import IdentityGap from './identity-gap.png';
+import AuthorizationGap from './authorization-gap.png';
+import MixedTrust from './mixed-trust.png';
+import MCP from './mcp.png';
+import DPoP from './dpop.png';
+import ABAC from './abac.png';
+import BethuaMCPConfig from './bethuya-mcp-config.png';
+import SequenceDiagram from './bethuya-sequence-diagram.png';
+import SecurityChecklist from './security-checklist.png'
+
+
+# When AI Agents Become Insiders: Security Lessons from FOSSASIA 2026
+
+At **FOSSASIA Summit 2026 in Bangkok**, my session was about a problem most of us haven’t fully named yet -> but are already experiencing.
+
+📺 **Watch the session**  
+YouTube: [https://www.youtube.com/watch?v=4dzzzfORqIk](https://www.youtube.com/watch?v=4dzzzfORqIk)  
+⏱ **Timestamp:** 2:46:00 – 2:58:00
+
+The talk asked a simple question with uncomfortable implications:
+
+> **What happens when the biggest insider in your open‑source project… isn’t human?**
+
+AI agents are no longer just tools.  
+They fetch data, join channels, commit code, moderate discussions, and act *on behalf of users*. That changes the security model at a fundamental level.
+
+***
+
+## Identity Has Shifted, and Our Assumptions Are Breaking
+
+<Image src={IdentityShift} alt="Diagram showing the shift from human identity to model identity in AI agents" />
+
+For years, identity evolved along a familiar arc:
+
+*   passwords → MFA → biometrics
+*   humans → services → devices
+
+But **2026 is the first time we’re asking the same identity questions of autonomous agents**.
+
+Agents don’t have fingerprints or FaceID.  
+Their **identity *is* the model** — and that immediately breaks long‑standing assumptions:
+
+*   Who actually performed an action?
+*   Who do we audit?
+*   Who do we revoke?
+
+The era of implicit trust is over. When an AI agent uses a human's credentials, your logs might say "Augustine did X," but in reality, Augustine was asleep while a bot acted. 
+
+That’s a massive  **Accountability Gap**.
+
+***
+
+## The Silent Killers: API Keys and Recursive Delegation
+
+<Image src={IdentityGap} alt="Diagram illustrating the accountability gap caused by static API keys and recursive delegation in AI agents" />
+
+In the talk, I called out two patterns that consistently show up as security failures:
+
+### 1. Static API Keys
+
+They’re convenient, and catastrophic.
+
+> Giving an agent a long‑lived API key is like leaving your house keys in the lock.
+
+They’re:
+
+*   easy to copy
+*   hard to rotate
+*   impossible to attribute cleanly
+
+### 2. Recursive Delegation
+
+Agents creating sub‑agents.
+
+What starts as one assistant quietly becomes a **chain of autonomous actors**, all operating under inherited privilege — with no natural boundary.
+
+Once delegation becomes recursive, *ownership disappears*.
+
+***
+
+## The Authorization Gap Nobody Talks About
+
+
+Identity problems are visible.  
+Authorization problems are **sneaky**.
+
+During work on **Project Bethuya** (our community management tooling), we discovered a failure mode that traditional security models don’t even consider:
+
+> **Requester ≠ Recipient**
+
+An organizer authorizes an agent to fetch sensitive registrant data.  
+✔️ That retrieval is valid.
+
+But the agent then posts that data into a **public community channel**.
+
+<Image src={AuthorizationGap} alt="Diagram illustrating the authorization gap caused by AI agents acting on behalf of users" />
+
+
+❌ Suddenly, authorization has failed - not at retrieval, but at **output**.
+
+Classic OAuth assumes:
+
+> The entity that requests data is the entity that consumes it.
+
+AI agents break this assumption every day.
+
+***
+
+## Why OAuth Alone Is No Longer Enough
+
+OAuth was designed for:
+
+*   one user
+*   one application
+*   one permission boundary
+
+Agents don’t work like that.
+
+They:
+
+*   retrieve data with high privilege
+*   emit output into mixed‑trust environments (Slack, Teams, GitHub discussions)
+*   act asynchronously
+*   operate without immediate human review
+
+<Image src={MixedTrust} alt="Diagram illustrating the mixed-trust environment in which AI agents operate" />
+
+There is **no automatic recomputation of the lowest common denominator of trust** before data leaves the agent.
+
+That’s how leaks happen — even when nobody is “doing anything wrong”.
+
+***
+
+## MCP: The New Control Plane (Whether We Like It or Not)
+
+The **Model Context Protocol (MCP)** is emerging as a standard way for models to interact with tools and resources — often described as the *“USB‑C for AI.”*
+
+
+<Image src={MCP} alt="Diagram illustrating the Model Context Protocol (MCP) as the new authorization checkpoint" />
+
+But the key insight from the talk was this:
+
+> **MCP is not just a protocol.  
+> It’s the *new authorization checkpoint*.**
+
+If enforcement doesn’t happen at the **model‑to‑tool boundary**, agents gain frictionless access to everything behind it.
+
+MCP gives us structure.  
+Security has to be layered *into that structure* - deliberately.
+
+
+***
+
+## The End of Bearer Tokens (Finally)
+
+Bearer tokens assume one thing:
+
+> Whoever has the token *is allowed* to use it.
+
+That assumption collapses in agentic systems.
+
+<Image src={DPoP} alt="Diagram illustrating how DPoP (Demonstrating Proof-of-Possession) binds tokens to cryptographic keys for enhanced security" />
+
+
+**DPoP (Demonstrating Proof‑of-Possession)** changes the game by:
+
+*   binding tokens to cryptographic keys
+*   ensuring stolen tokens can’t be replayed
+*   tying usage to a specific agent identity
+
+If we’re serious about secure agents, **static secrets have to die**.̥̥
+
+***
+
+## Why RBAC Fails and ABAC Becomes Necessary
+
+Roles like:
+
+*   admin
+*   moderator
+*   contributor
+
+…are far too coarse for autonomous systems.
+
+Agents need access that is:
+
+*   time‑bound
+*   intent‑aware
+*   context‑sensitive
+
+<Image src={ABAC} alt="Diagram illustrating the shift from Role-Based Access Control (RBAC) to Attribute-Based Access Control (ABAC) for AI agents" />
+
+This is where **ABAC (Attribute‑Based Access Control)** shines.
+
+Instead of asking:
+
+> “Is this agent an admin?”
+
+We ask:
+
+> “Should this agent perform *this action*, *right now*, *under these conditions*?”
+
+Precision beats hierarchy.
+
+***
+
+## Case Study: Securing Project Bethuya
+
+<Image src={BethuaMCPConfig} alt="Diagram illustrating the MCP configuration for Project Bethuya, showcasing the security measures implemented" />
+
+In **Project̥ Bethuya**, we applied these ideas concretely:
+
+*   MCP servers act as **authorized gateways**
+*   Agents never talk to community data directly
+*   Permissions are **just‑in‑time**, task‑scoped, and short‑lived
+*   Every action is auditable - including *intent*, not just execution
+
+<Image src={SequenceDiagram} alt="Sequence diagram illustrating the security measures applied in Project Bethuya" />
+
+
+The result:
+
+*   lower risk
+*   less ambient access
+*   clearer accountability
+*   quieter, safer automation
+
+***
+
+## The 2026 Agent Security Checklist
+
+<Image src={SecurityChecklist} alt="Diagram illustrating the security checklist for AI agents in 2026" />
+
+I closed the talk with a simple checklist - worth repeating here:
+
+1.  **Unique identities for every agent**  
+    Never let bots share accounts.
+
+2.  **Short‑lived, DPoP‑bound tokens**  
+    Kill static API secrets.
+
+3.  **Full audit trails**  
+    Capture intent *and* action.
+
+4.  **Human‑in‑the‑loop for critical paths**  
+    Oversight still matters.
+
+These are not enterprise luxuries.  
+They’re becoming **table stakes for open‑source ecosystems**.
+
+***
+
+## How This Connects to Spec‑Driven Development
+
+In our previous blog post —  
+**[From Vibes to Verification: Mastering Spec‑Driven Development for AI‑Assisted Coding](https://hackmum.in/blog/from-vibes-to-verification-spec-driven-development/)** — we focused on **governing *what* agents build**.
+
+This FOSSASIA talk focused on **governing *what agents are allowed to do***.
+
+Together, they point to the same conclusion:
+
+> **You can’t manage AI systems with vibes - not in code, and not in security.**
+
+Specs define *intent*.  
+Identity and authorization enforce *boundaries*.
+
+You need both.
+
+***
+
+## Closing Thoughts
+
+FOSSASIA 2026 made one thing clear:
+
+AI agents are now **first‑class actors** in open‑source projects.  
+And every first‑class actor needs:
+
+*   identity
+*   accountability
+*   constraints
+
+The good news?  
+All the tools, protocols, and standards shaping this future are open.
+
+The real work - as always - happens in communities.
+
+Let’s build secure agentic systems together.
+
+***
