@@ -17,8 +17,13 @@ export default defineConfig({
       entrypoint: 'astro/assets/services/sharp'
     },
     // Configure image formats and quality
-    domains: [],
-    remotePatterns: [],
+    domains: ['secure.meetupstatic.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'secure.meetupstatic.com'
+      }
+    ],
     // Default responsive layouts
     layout: 'constrained',
     responsiveStyles: true

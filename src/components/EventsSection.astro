@@ -90,7 +90,7 @@ const gridClasses = getGridClasses(validatedEvents.length);
     {/* Enhanced Responsive Grid with improved accessibility and dynamic layout */}
     {validatedEvents.length > 0 && (
       <div 
-        class={`grid ${gridClasses} gap-8 items-start mb-8`}
+        class={`grid ${gridClasses} gap-8 items-stretch mb-8`}
         role="list"
         aria-label={`${validatedEvents.length} upcoming event${validatedEvents.length === 1 ? '' : 's'} from Hackerspace Mumbai`}
         aria-live="polite"
@@ -99,7 +99,7 @@ const gridClasses = getGridClasses(validatedEvents.length);
         {validatedEvents.map((event, index) => (
           <div 
             role="listitem"
-            class="w-full max-w-3xl md:max-w-4xl mx-auto"
+            class="w-full max-w-3xl md:max-w-4xl mx-auto h-full"
             aria-setsize={validatedEvents.length}
             aria-posinset={index + 1}
           >
