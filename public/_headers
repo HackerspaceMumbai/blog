@@ -1,9 +1,11 @@
-# Security headers for static hosting (Netlify format)
+# Security headers (Cloudflare Pages format)
+# Works with both Netlify and Cloudflare Pages
+
 /*
-  # Content Security Policy - moved from meta tags to HTTP headers
+  # Content Security Policy
   Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://api.github.com https://www.google-analytics.com https://www.clarity.ms; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   
-  # X-Frame-Options - only works as HTTP header
+  # X-Frame-Options
   X-Frame-Options: DENY
   
   # Other security headers
@@ -19,3 +21,13 @@
   Cross-Origin-Embedder-Policy: require-corp
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+
+# API endpoints - specific headers for newsletter function
+/api/*
+  Access-Control-Allow-Origin: https://hackmum.in
+  Access-Control-Allow-Methods: POST, OPTIONS, GET
+  Access-Control-Allow-Headers: Content-Type
+  Access-Control-Max-Age: 86400
+  Cache-Control: no-store, no-cache, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY

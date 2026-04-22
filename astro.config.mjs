@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
+import cloudflare from '@astrojs/cloudflare';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -9,6 +10,12 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://hackmum.in',
   integrations: [mdx()],
+  output: 'server',
+  adapter: cloudflare({
+    platformProxy: {
+      enabled: true
+    }
+  }),
 
   // Image optimization
   image: {
@@ -31,9 +38,6 @@ export default defineConfig({
 
   // Prefetch configuration
   prefetch: true,
-
-  // Output configuration - hybrid mode for API endpoints
-  output: 'static',
   
   // Compression and optimization
   compressHTML: true,

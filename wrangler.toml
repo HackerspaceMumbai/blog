@@ -1,0 +1,46 @@
+# Cloudflare Pages Configuration for Hackerspace Mumbai Blog
+# Migrated from Netlify to Cloudflare Pages
+
+name = "hackmum-blog"
+compatibility_date = "2026-04-22"
+
+# Pages-specific configuration
+pages_build_output_dir = "dist"
+
+# Environment variables for local development
+[env.dev.vars]
+NODE_ENV = "development"
+CORS_ORIGIN = "*"
+LOG_LEVEL = "debug"
+KIT_API_URL = "https://api.kit.com/v4"
+
+# Production environment variables (set in Cloudflare dashboard)
+# These are placeholders - actual values should be set in Cloudflare dashboard
+[env.production.vars]
+NODE_ENV = "production"
+CORS_ORIGIN = "https://hackmum.in"
+LOG_LEVEL = "info"
+KIT_API_URL = "https://api.kit.com/v4"
+
+# KV namespace bindings (optional, for rate limiting)
+# Uncomment and configure if you want to use KV for rate limiting
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Routes configuration
+# Define custom routes for API endpoints
+[[routes]]
+pattern = "/api/newsletter"
+custom_domain = true
+
+[[routes]]
+pattern = "/api/newsletter-health"
+custom_domain = true
+
+[[routes]]
+pattern = "/subscribe"
+custom_domain = true
+
+# Redirect configuration (handled in _redirects file or Pages settings)

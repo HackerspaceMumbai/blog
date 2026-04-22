@@ -1,0 +1,12 @@
+# Cloudflare Pages Redirects and Rewrites
+
+# Newsletter API endpoints
+/api/newsletter /functions/newsletter 200
+/subscribe /functions/newsletter 200
+
+# Health check endpoint
+/api/newsletter-health /functions/newsletter-health 200
+/health/newsletter /functions/newsletter-health 200
+
+# Blog post redirects (for SEO)
+/posts/* /blog/:splat 301
