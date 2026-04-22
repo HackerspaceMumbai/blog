@@ -38,3 +38,5 @@ ci-reports/
 
 # Ignore Lighthouse reports
 **/lighthouse.*/
+# Cloudflare Wrangler build artifacts
+.wrangler/
