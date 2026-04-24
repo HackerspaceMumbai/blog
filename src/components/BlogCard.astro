@@ -104,12 +104,11 @@ const formattedDate = formatDate(post.data.date.toString());
     <div class="card-actions mt-auto">
       <a 
         href={href} 
-        class="btn btn-primary w-full transition-all duration-200 group-hover:btn-accent"
-        aria-label={`Read the full blog post: ${post.data.title}`}
+        class="btn btn-primary w-full transition-all duration-200 group-hover:btn-accent truncate"
         role="button"
         tabindex="0"
       >
-        Read More
+        <span class="truncate">Read More: {post.data.title}</span>
       </a>
     </div>
   </div>
