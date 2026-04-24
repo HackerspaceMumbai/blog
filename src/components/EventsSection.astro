@@ -133,7 +133,7 @@ const gridClasses = getGridClasses(validatedEvents.length);
     )}
 
     {/* CTA Section with enhanced accessibility */}
-    <footer class="text-center mt-12">
+    <footer class="text-center mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
       <CTAButton 
         href={ctaUrl} 
         variant="soft"
@@ -143,11 +143,26 @@ const gridClasses = getGridClasses(validatedEvents.length);
       >
         {ctaText}
       </CTAButton>
+      <div class="hidden sm:block text-base-content/40">|</div>
+      <CTAButton 
+        href="/past-events" 
+        variant="outline"
+        aria-describedby="view-past-events-desc"
+        aria-label="View past events and speaker resources"
+      >
+        Browse Past Events
+      </CTAButton>
       <p 
         id="view-all-events-desc" 
         class="sr-only"
       >
         Navigate to the complete events archive to explore all upcoming and past events from Hackerspace Mumbai
+      </p>
+      <p 
+        id="view-past-events-desc" 
+        class="sr-only"
+      >
+        Browse our archive of past events and access speaker resources, slides, videos, and recordings
       </p>
     </footer>
   </div>

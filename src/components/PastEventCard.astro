@@ -1,0 +1,137 @@
+---
+// PastEventCard.astro: Renders a single past event card with speaker resources
+import { Image } from 'astro:assets';
+import SpeakerResourceCard from './SpeakerResourceCard.astro';
+import { resolveResourceUrl, getEventSlug, isValidResourceUrl } from '../utils/resourceUrl';
+import type { ImageMetadata } from 'astro';
+
+export interface SpeakerResource {
+  speakerName: string;
+  resourceTitle: string;
+  resourceUrl: string;
+  resourceType: "slides" | "video" | "recording" | "documentation" | "blog" | "github" | "other";
+  description?: string;
+}
+
+export interface PastEventCardProps {
+  title: string;
+  date: Date;
+  location: string;
+  description: string;
+  speakerResources?: SpeakerResource[];
+  coverImage?: ImageMetadata;
+  eventId?: string;
+}
+
+const { title, date, location, description, speakerResources = [], coverImage, eventId = '' } = Astro.props;
+
+// Format date
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(date);
+
+// Sanitize title for valid HTML ID (only ASCII alphanumerics and hyphens)
+const sanitizedId = `event-${title
+  .toLowerCase()
+  .replace(/[^\w\s-]/g, '') // Remove special characters and emoji
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-') // Replace multiple hyphens with single
+  .replace(/^-|-$/g, '')}`;
+
+// Extract event slug and resolve resource URLs
+const eventSlug = getEventSlug(eventId);
+const resolvedResources = speakerResources
+  .filter(resource => isValidResourceUrl(resource.resourceUrl)) // Filter out invalid URLs
+  .map(resource => ({
+    ...resource,
+    resourceUrl: resolveResourceUrl(resource.resourceUrl, eventSlug)
+  }))
+  .filter(resource => resource.resourceUrl); // Filter out resources with empty resolved URLs
+---
+
+<article 
+  class="card bg-base-100 border border-base-300 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+  role="article"
+  aria-labelledby={sanitizedId}
+>
+  <!-- Event Header with Cover Image -->
+  {coverImage && (
+    <figure class="relative w-full h-64 overflow-hidden bg-base-200">
+      <Image 
+        src={coverImage} 
+        alt={title}
+        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        loading="lazy"
+        widths={[400, 600, 800]}
+        sizes="(max-width: 640px) 400px, (max-width: 1024px) 600px, 800px"
+        format="webp"
+        quality={80}
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+    </figure>
+  )}
+
+  <!-- Event Details -->
+  <div class="card-body">
+    <div class="mb-2">
+      <time 
+        dateTime={date.toISOString()}
+        class="text-sm font-semibold text-primary"
+      >
+        {formattedDate}
+      </time>
+    </div>
+    
+    <h3 
+      id={sanitizedId}
+      class="card-title text-2xl font-bold text-base-content mb-2 hover:text-primary transition-colors"
+    >
+      {title}
+    </h3>
+
+    <p class="text-sm text-base-content/70 mb-4 flex items-center gap-2">
+      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+      </svg>
+      <span>{location}</span>
+    </p>
+
+    <p class="text-base text-base-content/80 mb-6">
+      {description}
+    </p>
+
+    <!-- Speaker Resources Section -->
+    {resolvedResources && resolvedResources.length > 0 && (
+      <div class="mt-8">
+        <h4 class="font-bold text-lg text-base-content mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v4h8v-4zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+          </svg>
+          Speaker Resources
+        </h4>
+        
+        <div class="grid gap-3">
+          {resolvedResources.map((resource) => (
+            <SpeakerResourceCard 
+              speakerName={resource.speakerName}
+              resourceTitle={resource.resourceTitle}
+              resourceUrl={resource.resourceUrl}
+              resourceType={resource.resourceType}
+              description={resource.description}
+            />
+          ))}
+        </div>
+      </div>
+    )}
+
+    {!resolvedResources || resolvedResources.length === 0 && (
+      <div class="mt-8 p-4 rounded-lg bg-base-200/50 text-center">
+        <p class="text-sm text-base-content/60">
+          Speaker resources will be added soon.
+        </p>
+      </div>
+    )}
+  </div>
+</article>

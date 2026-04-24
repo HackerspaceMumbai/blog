@@ -9,7 +9,7 @@
 
 [build.environment]
   # Node.js version
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
   # Enable pnpm
   NPM_FLAGS = "--version"
 

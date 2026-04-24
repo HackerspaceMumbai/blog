@@ -185,6 +185,198 @@ Here's what your finished site will look like:
 Astro makes it easy to build fast, modern websites...
 ```
 
+### Creating Past Events with Speaker Resources
+
+Each past event can include speaker resources (slides, videos, documentation, recordings, etc.). Resources are stored in the `public/` folder and served statically, or linked remotely.
+
+#### Directory Structure
+
+Each past event is organized as follows:
+
+**Content** (in `src/content/pastEvents/`):
+```
+src/content/pastEvents/
+├── your-event-slug/
+│   └── index.md               # Event metadata and speaker resources
+```
+
+**Resources** (in `public/`):
+```
+public/content/past-events/
+└── your-event-slug/
+    └── resources/             # Speaker resource files
+        ├── speaker1-slides.pdf
+        ├── workshop-recording.zip
+        ├── agentic-workflows.md
+        └── github-repo-link.txt
+```
+
+#### Step-by-Step: Creating a New Past Event
+
+1. **Create the event content directory**
+   ```bash
+   mkdir src/content/pastEvents/your-event-slug
+   ```
+
+2. **Create the resources directory in public**
+   ```bash
+   mkdir -p public/content/past-events/your-event-slug/resources
+   ```
+
+3. **Create the index.md file**
+   ```bash
+   touch src/content/pastEvents/your-event-slug/index.md
+   ```
+
+4. **Add frontmatter and metadata** (see examples below)
+
+5. **Add speaker resources** (optional)
+   - PDFs, slides, recordings, etc. go in `public/content/past-events/{your-event-slug}/resources/`
+   - Update frontmatter with resource links using relative paths: `./resources/filename`
+
+#### Frontmatter Example
+
+```yaml
+---
+title: "Your Event Title"
+date: 2024-04-15
+location: "Hackerspace Mumbai"
+description: "A compelling description of your event"
+speakerResources:
+  - speakerName: "Speaker One"
+    resourceTitle: "Presentation Slides"
+    resourceUrl: "./resources/speaker1-slides.pdf"  # Local file
+    resourceType: "slides"
+    description: "Main presentation slides covering the key topics"
+  
+  - speakerName: "Speaker Two"
+    resourceTitle: "Workshop Recording"
+    resourceUrl: "./resources/workshop-recording.zip"  # Local file
+    resourceType: "recording"
+    description: "Complete recording of the live workshop session"
+  
+  - speakerName: "Speaker One"
+    resourceTitle: "GitHub Repository"
+    resourceUrl: "https://github.com/example/repo"  # Remote link
+    resourceType: "github"
+    description: "Code examples and sample projects from the talk"
+  
+  - speakerName: "Speaker Two"
+    resourceTitle: "Blog Post"
+    resourceUrl: "https://example.com/blog/article"  # Remote link
+    resourceType: "blog"
+    description: "Detailed write-up of the workshop concepts"
+---
+```
+
+#### Resource URL Formats
+
+**Local Resources:**
+- Use relative paths starting with `./resources/`
+- File is stored locally in the `resources/` folder
+- Example: `./resources/copilot-cli-mastery-slides.pdf`
+- Resolved to: `/content/past-events/your-event-slug/resources/copilot-cli-mastery-slides.pdf`
+
+**Remote Resources:**
+- Use full URLs with `http://` or `https://`
+- Link to external websites, docs, videos, etc.
+- Example: `https://youtube.com/watch?v=abc123`
+- Kept as-is in the output
+
+**Supported Resource Types:**
+- `slides` - Presentation slides
+- `video` - Video link or recording
+- `recording` - Audio/video recording
+- `documentation` - Written documentation
+- `blog` - Blog post or article
+- `github` - GitHub repository link
+- `other` - Any other type of resource
+
+#### Complete Example
+
+Here's a complete example of a past event:
+
+**Content structure:**
+```
+src/content/pastEvents/azure-conference-2024/
+└── index.md
+```
+
+**Resources structure:**
+```
+public/content/past-events/azure-conference-2024/
+└── resources/
+    ├── azure-ai-fundamentals-slides.pdf
+    ├── live-demo-recording.zip
+    └── devops-checklist.md
+```
+
+**index.md:**
+```markdown
+---
+title: "Azure Conference 2024 - AI & DevOps Track"
+date: 2024-04-15
+location: "Mumbai Convention Center"
+description: "Join us for an in-depth exploration of Azure's latest AI services and DevOps best practices"
+speakerResources:
+  - speakerName: "Dr. Rajesh Patel"
+    resourceTitle: "Azure AI Fundamentals"
+    resourceUrl: "./resources/azure-ai-fundamentals-slides.pdf"
+    resourceType: "slides"
+    description: "Comprehensive slides covering Azure AI services, pricing, and use cases"
+  
+  - speakerName: "Priya Sharma"
+    resourceTitle: "Live Demo Recording"
+    resourceUrl: "./resources/live-demo-recording.zip"
+    resourceType: "recording"
+    description: "Complete recording of the live DevOps demo with setup scripts"
+  
+  - speakerName: "Priya Sharma"
+    resourceTitle: "DevOps Checklist"
+    resourceUrl: "./resources/devops-checklist.md"
+    resourceType: "documentation"
+    description: "Step-by-step checklist for implementing Azure DevOps pipelines"
+  
+  - speakerName: "Dr. Rajesh Patel"
+    resourceTitle: "Official Azure Documentation"
+    resourceUrl: "https://learn.microsoft.com/en-us/azure/ai-services/"
+    resourceType: "documentation"
+    description: "Official Microsoft Azure AI Services documentation"
+---
+```
+
+#### Adding Resource Files
+
+1. **Create resource directory in public**
+   ```bash
+   mkdir -p public/content/past-events/your-event-slug/resources
+   ```
+
+2. **Copy resource files to public directory**
+   ```bash
+   cp slides.pdf public/content/past-events/your-event-slug/resources/
+   cp recording.zip public/content/past-events/your-event-slug/resources/
+   ```
+
+3. **Reference in frontmatter**
+   - Use relative paths: `./resources/filename.ext`
+   - Astro will serve these files automatically from the public folder
+
+4. **Test locally**
+   ```bash
+   pnpm dev
+   # Navigate to the event page and verify resource links work
+   ```
+
+5. **Build and test**
+   ```bash
+   pnpm build
+   pnpm preview
+   # Verify resource files are accessible in production build
+   ```
+
+
+
 ## 🔧 Development Workflow
 
 ### Setting Up Your Environment
