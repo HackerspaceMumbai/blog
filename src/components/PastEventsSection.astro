@@ -1,0 +1,96 @@
+---
+// PastEventsSection.astro: Container section displaying all past events
+import PastEventCard from './PastEventCard.astro';
+import SectionHeading from './SectionHeading.astro';
+import CTAButton from './CTAButton.astro';
+import { EmptyState } from './EmptyState.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  events: CollectionEntry<'pastEvents'>[];
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  events,
+  title = "Past Events & Meetups",
+  subtitle = "Explore resources and insights from our community events"
+} = Astro.props;
+
+// Sort events by date (most recent first)
+const sortedEvents = [...events].sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<section 
+  class="py-16 px-4 bg-base-100 text-base-content"
+  aria-labelledby="past-events"
+  role="region"
+>
+  <div class="max-w-5xl mx-auto">
+    <!-- Section Header -->
+    <header class="mb-12 text-center">
+      <SectionHeading 
+        id="past-events" 
+        level={2}
+        class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
+      >
+        {title}
+      </SectionHeading>
+      {subtitle && (
+        <p class="mt-4 text-base-content/70 max-w-2xl mx-auto text-lg">
+          {subtitle}
+        </p>
+      )}
+    </header>
+
+    <!-- Events Grid -->
+    {sortedEvents.length > 0 ? (
+      <div 
+        class="grid gap-8"
+        role="list"
+        aria-label={`${sortedEvents.length} past event${sortedEvents.length === 1 ? '' : 's'} with speaker resources`}
+      >
+        {sortedEvents.map((event, index) => (
+          <div 
+            role="listitem"
+            aria-setsize={sortedEvents.length}
+            aria-posinset={index + 1}
+          >
+            <PastEventCard
+              title={event.data.title}
+              date={event.data.date}
+              location={event.data.location}
+              description={event.data.description}
+              speakerResources={event.data.speakerResources}
+              coverImage={event.data.coverImage}
+              eventId={event.id}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div 
+        class="text-center py-16"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="mb-4">
+          <svg 
+            class="w-16 h-16 mx-auto text-base-content/40" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-base-content mb-2">No past events yet</h3>
+        <p class="text-base-content/70">Past event archives will be displayed here as they become available.</p>
+      </div>
+    )}
+  </div>
+</section>
