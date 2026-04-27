@@ -9,7 +9,7 @@ speakerResources:
     resourceUrl: "https://github.com/mistryhardik/community/tree/development/gab/mumbai%202026"
     resourceType: "github"
     description: "Complete GitHub repository containing presentation slides and demo code from the Global Azure Mumbai event"
-  - speakerName: "Security & Cloud Expert"
+  - speakerName: "Maninderjit Bindra"
     resourceTitle: "Container Security Best Practices"
     resourceUrl: "./resources/container-security-v1.0.pdf"
     resourceType: "slides"
