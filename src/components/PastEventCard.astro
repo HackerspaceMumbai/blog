@@ -21,9 +21,10 @@ export interface PastEventCardProps {
   speakerResources?: SpeakerResource[];
   coverImage?: ImageMetadata;
   eventId?: string;
+  slug?: string;
 }
 
-const { title, date, location, description, speakerResources = [], coverImage, eventId = '' } = Astro.props;
+const { title, date, location, description, speakerResources = [], coverImage, eventId = '', slug = '' } = Astro.props;
 
 // Format date
 const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -101,6 +102,22 @@ const resolvedResources = speakerResources
     <p class="text-base text-base-content/80 mb-6">
       {description}
     </p>
+
+    <!-- View Photos Link -->
+    {slug && (
+      <div class="mb-6">
+        <a
+          href={`/past-events/${slug}/gallery`}
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-primary-content transition-colors duration-300"
+          aria-label="View photos from this event"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+          </svg>
+          View Photos
+        </a>
+      </div>
+    )}
 
     <!-- Speaker Resources Section -->
     {resolvedResources && resolvedResources.length > 0 && (

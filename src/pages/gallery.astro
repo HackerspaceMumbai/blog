@@ -1,0 +1,136 @@
+---
+import Layout from "../components/Layout.astro";
+import { Image } from 'astro:assets';
+import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
+import pinnedpic2 from '../assets/images/gallery/pinnedpic-2.jpg';
+import pinnedpic3 from '../assets/images/gallery/pinnedpic-3.jpg';
+import pinnedpic4 from '../assets/images/gallery/pinnedpic-4.jpg';
+import pinnedpic5 from '../assets/images/gallery/pinnedpic-5.jpg';
+import pinnedpic6 from '../assets/images/gallery/pinnedpic-6.jpg';
+import pinnedpic7 from '../assets/images/gallery/pinnedpic-7.jpg';
+import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
+
+// SEO metadata
+export const title = "Media Gallery - Hackerspace Mumbai";
+export const description = "Explore photos from Hackerspace Mumbai events, workshops, and community gatherings.";
+export const tags = ["gallery", "photos", "events", "community"];
+export const canonical = "https://hackmum.in/gallery";
+
+const galleryImages = [
+  {
+    src: pinnedpic1,
+    alt: "Developers collaborating during open source workshop"
+  },
+  {
+    src: pinnedpic2,
+    alt: "Community workshop on web development fundamentals"
+  },
+  {
+    src: pinnedpic3,
+    alt: "Speaker presenting React fundamentals to engaged audience"
+  },
+  {
+    src: pinnedpic4,
+    alt: "Hackathon participants coding together at workstations"
+  },
+  {
+    src: pinnedpic5,
+    alt: "Workshop participants learning JavaScript debugging techniques"
+  },
+  {
+    src: pinnedpic6,
+    alt: "Community members discussing open source contributions"
+  },
+  {
+    src: pinnedpic7,
+    alt: "Lightning talks session with audience engagement"
+  },
+  {
+    src: pinnedpic8,
+    alt: "Hackerspace Mumbai organizers at annual community meetup"
+  }
+];
+---
+
+<Layout 
+  title={title} 
+  description={description}
+  tags={tags}
+  canonical={canonical}
+  type="website"
+>
+  <!-- Page heading for screen readers -->
+  <h1 class="sr-only">Media Gallery</h1>
+
+  <!-- Hero-like section with breadcrumb -->
+  <div class="bg-gradient-to-b from-primary/10 to-base-100 py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-sm">
+          <li>
+            <a href="/" class="text-primary hover:text-primary-focus hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded px-1">
+              Home
+            </a>
+          </li>
+          <li class="text-base-content/60">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li class="text-base-content font-medium" aria-current="page">
+            Gallery
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="py-12 sm:py-16 lg:py-20 px-4 bg-base-100">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-primary">
+          Media Gallery
+        </h2>
+        <p class="text-lg text-base-content/70 max-w-2xl mx-auto">
+          Explore photos and memories from Hackerspace Mumbai's events, workshops, and community gatherings.
+        </p>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {galleryImages.map((image) => (
+          <div class="group bg-base-200 border border-primary/20 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div class="aspect-square overflow-hidden">
+              <Image
+                src={image.src}
+                alt={image.alt}
+                widths={[300, 400, 500]}
+                sizes="(max-width: 640px) 300px, (max-width: 1024px) 400px, 500px"
+                width={500}
+                height={500}
+                format="webp"
+                quality={80}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Call to action -->
+      <div class="mt-16 text-center">
+        <p class="text-base-content/70 mb-6">
+          More photos coming soon! Follow us on social media for updates.
+        </p>
+        <a 
+          href="/" 
+          class="btn btn-primary"
+        >
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

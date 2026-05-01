@@ -10,31 +10,19 @@ import SponsorsSection from "../components/SponsorsSection.astro";
 import GallerySection from "../components/GallerySection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
 import { getCollection } from "astro:content";
+import { UPCOMING_EVENTS } from "../data/upcomingEvents.js";
 
 // Get the most recent blog posts
 const posts = (await getCollection("posts"))
-  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf())
+  .filter((post) => post.data.date != null)
+  .sort(
+    (a, b) =>
+      new Date(b.data.date).valueOf() -
+      new Date(a.data.date).valueOf()
+  )
   .slice(0, 3); // Display only the 3 most recent posts
 
-// Upcoming events from Mumbai Technology Meetup
-const upcomingEvents = [
-  {
-    title: "GitHub Copilot Dev Days – Mumbai 🚀",
-    date: "Saturday, Apr 18, 2026 · 9:00 AM IST",
-    location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai",
-    description: "A hands-on, community-led event focused on the next frontier of AI-assisted development, from Copilot CLI to agentic workflows in VS Code.",
-    rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/313852168/",
-    coverImage: "https://secure.meetupstatic.com/photos/event/e/1/3/7/highres_533277655.webp",
-  },
-  {
-    title: "🌍 Global Azure 2026 – Mumbai ☁️",
-    date: "Saturday, Apr 18, 2026 · 2:00 PM IST",
-    location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai",
-    description: "Mumbai’s premier cloud-native community summit featuring expert sessions, live demos, and practical insights across Azure AI, Data, DevOps, Security, and Cloud-Native technologies.",
-    rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/313865737/",
-    coverImage: "https://secure.meetupstatic.com/photos/event/1/f/d/a/highres_533288154.webp",
-  }
-];
+const upcomingEvents = UPCOMING_EVENTS;
 
 // Sample testimonials
 const testimonials = [

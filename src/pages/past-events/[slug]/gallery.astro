@@ -1,0 +1,121 @@
+---
+import Layout from "../../../components/Layout.astro";
+import EventGallery from "../../../components/EventGallery.astro";
+import { getCollection } from "astro:content";
+import { existsSync, readdirSync } from "node:fs";
+import { extname, join } from "node:path";
+
+// Fetch all past events
+const pastEventCollection = await getCollection("pastEvents");
+
+// Generate static paths for all past events
+export async function getStaticPaths() {
+  const pastEvents = await getCollection("pastEvents");
+  return pastEvents.map((event) => ({
+    params: { slug: event.slug },
+    props: { event },
+  }));
+}
+
+interface Props {
+  event: (typeof pastEventCollection)[0];
+}
+
+const { event } = Astro.props;
+const { slug } = Astro.params;
+
+// Map past event slugs to their image folder paths
+// Example: "april-2026-github-copilot-dev-days" -> "april-2026-github-copilot-dev-days"
+const imageFolderSlug = slug;
+const supportedExtensions = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".webp",
+  ".avif",
+]);
+
+// Dynamically import all images from the event's photos folder
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/images/events/*/photos/*.{[jJ][pP][gG],[jJ][pP][eE][gG],[pP][nN][gG],[gG][iI][fF],[wW][eE][bB][pP],[aA][vV][iI][fF]}",
+  { eager: true }
+);
+
+const imageEntries = Object.entries(images) as Array<[string, { default: ImageMetadata }]>;
+
+// Filter and organize images for this specific past event
+const eventImages = imageEntries
+  .filter(([path]) => path.includes(`/events/${imageFolderSlug}/photos/`))
+  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+  .map(([path, image]) => {
+    const filename = path.split("/").pop() || "Photo";
+    return {
+      src: image.default,
+      alt: `${event.data.title} - ${filename}`,
+    };
+  });
+
+const photosDirectory = join(
+  process.cwd(),
+  "src/assets/images/events",
+  imageFolderSlug,
+  "photos"
+);
+
+const skippedUnsupportedCount = existsSync(photosDirectory)
+  ? readdirSync(photosDirectory, { withFileTypes: true })
+      .filter((entry) => entry.isFile())
+      .map((entry) => entry.name)
+      .filter((fileName) => {
+        // Ignore Windows ADS sidecar metadata files (e.g. "photo.jpg:Zone.Identifier")
+        if (/:Zone\.Identifier$/i.test(fileName)) {
+          return false;
+        }
+
+        const normalizedName = fileName.replace(/:Zone\.Identifier$/i, "");
+        const extension = extname(normalizedName).toLowerCase();
+        return extension !== "" && !supportedExtensions.has(extension);
+      })
+      .length
+  : 0;
+
+// Create breadcrumb navigation
+const breadcrumb = [
+  { label: "Home", href: "/" },
+  { label: "Past Events", href: "/past-events" },
+  { label: event.data.title, href: `/past-events/${slug}` },
+];
+
+const title = `${event.data.title} - Photo Gallery`;
+const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
+---
+
+<Layout
+  title={title}
+  description={description}
+  tags={["event", "gallery", "photos", "past-event", event.slug]}
+  canonical={`https://hackmum.in/past-events/${slug}/gallery`}
+  type="website"
+>
+  <!-- Page heading for screen readers -->
+  <h1 class="sr-only">{event.data.title} Gallery</h1>
+
+  {skippedUnsupportedCount > 0 && (
+    <div class="max-w-6xl mx-auto px-4 pt-6">
+      <div class="alert alert-warning alert-soft" role="status" aria-live="polite">
+        <span>
+          {skippedUnsupportedCount} photo{skippedUnsupportedCount === 1 ? "" : "s"} in this folder use an unsupported web format (for example HEIC) and are not shown here yet. Convert them to JPG, PNG, WebP, or AVIF to display them in the gallery.
+        </span>
+      </div>
+    </div>
+  )}
+
+  <EventGallery
+    eventTitle={event.data.title}
+    eventSlug={slug}
+    images={eventImages}
+    breadcrumb={breadcrumb}
+    backLink={{ label: "Back to Event", href: `/past-events/${slug}` }}
+  />
+</Layout>
