@@ -1,6 +1,7 @@
 ---
 import Layout from "../components/Layout.astro";
 import { Image } from 'astro:assets';
+import { getCollection } from "astro:content";
 import pinnedpic1 from '../assets/images/gallery/pinnedpic-1.jpg';
 import pinnedpic2 from '../assets/images/gallery/pinnedpic-2.jpg';
 import pinnedpic3 from '../assets/images/gallery/pinnedpic-3.jpg';
@@ -15,6 +16,10 @@ export const title = "Media Gallery - Hackerspace Mumbai";
 export const description = "Explore photos from Hackerspace Mumbai events, workshops, and community gatherings.";
 export const tags = ["gallery", "photos", "events", "community"];
 export const canonical = "https://hackmum.in/gallery";
+
+const pastEvents = (await getCollection("pastEvents")).sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
 
 const galleryImages = [
   {
@@ -117,6 +122,52 @@ const galleryImages = [
             </div>
           </div>
         ))}
+      </div>
+
+      <!-- Past Event Albums -->
+      <div class="mt-16">
+        <h3 class="text-2xl sm:text-3xl font-bold text-primary mb-4 text-center">
+          Past Event Albums
+        </h3>
+        <p class="text-base-content/70 text-center max-w-2xl mx-auto mb-8">
+          Browse complete photo albums from our previous community meetups and workshops.
+        </p>
+
+        {pastEvents.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6" role="list" aria-label="Past event photo albums">
+            {pastEvents.map((event) => (
+              <article
+                class="card bg-base-200 border border-primary/20 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
+                role="listitem"
+              >
+                <div class="card-body">
+                  <h4 class="card-title text-lg text-base-content">{event.data.title}</h4>
+                  <p class="text-sm text-base-content/70">
+                    {new Intl.DateTimeFormat('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }).format(event.data.date)}
+                  </p>
+                  <p class="text-sm text-base-content/80">{event.data.description}</p>
+                  <div class="card-actions justify-end mt-2">
+                    <a
+                      href={`/past-events/${event.slug}/gallery/`}
+                      class="btn btn-outline btn-primary btn-sm"
+                      aria-label={`View photos from ${event.data.title}`}
+                    >
+                      View Event Photos
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-6">
+            <p class="text-base-content/70">No past event albums available yet.</p>
+          </div>
+        )}
       </div>
 
       <!-- Call to action -->
