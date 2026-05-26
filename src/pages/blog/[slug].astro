@@ -275,6 +275,12 @@ const coverImage = post.data.cover;
               class="cover-image"
               loading="eager"
               fetchpriority="high"
+              widths={[340, 600, 900, 1200]}
+              sizes="(max-width: 640px) 340px, (max-width: 768px) 600px, (max-width: 1024px) 900px, 1200px"
+              width={1200}
+              height={672}
+              format="webp"
+              quality={80}
             />
           )}
         </header>
@@ -348,7 +354,7 @@ const coverImage = post.data.cover;
         }
 
         const script = document.createElement('script');
-        script.src = 'https://unpkg.com/mermaid@11/dist/mermaid.min.js';
+        script.src = 'https://unpkg.com/mermaid@11.15.0/dist/mermaid.min.js';
         script.async = true;
         script.dataset.mermaidRuntime = 'true';
         script.onload = () => resolve(runtimeWindow.mermaid);
