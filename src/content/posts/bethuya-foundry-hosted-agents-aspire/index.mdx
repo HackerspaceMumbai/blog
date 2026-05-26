@@ -9,8 +9,12 @@ categories: ["Engineering", "AI"]
 cover: "./BethuyaHostedAgentsCoverPic.png"
 ---
 
-import { Image } from 'astro:assets';
-
+import { Image } from 'astro:assets';import AspireResourcesView from './aspire_resources_view.png';
+import AgentBefore from './agent_before.png';
+import AgentThinking from './agent_thinking.png';
+import AgentOutput from './agent_output.png';
+import BethuyaAspireLogs from './bethuya_aspire_logs.png';
+import BethuyaAspireTraces from './bethuya_aspire_traces.png';
 
 Most agent demos look impressive until you try putting them into production. Suddenly you’re drowning in containerization, auth, observability, versioning, and governance headaches.
 
@@ -265,12 +269,27 @@ JSON is the source of truth; Markdown is the rendering.
 
 ```json
 {
-  "eventMetadata": { "title": "...", "timezone": "Asia/Kolkata" },
-  "agendaBlocks": [
-    { "start": "10:00", "end": "11:00", "format": "Workshop" }
+  "AgendaVersion": "1.0",
+  "Event": {
+    "EventId": "019e63e8-f999-7978-88a0-33d97758df3c",
+    "Title": "Build //Localhost : Mumbai",
+    "Date": "2026-06-20",
+    "Timezone": "Asia/Kolkata",
+    "Location": "Microsoft Mumbai"
+  },
+  "Objectives": [
+    "Maximize attendance fit with venue/locality constraints.",
+    "Balance learning content with networking windows.",
+    "Provide explicit ownership for next actions."
   ],
-  "governance": { "rationale": "...", "identifiedRisks": [] }
-}
+  "Constraints": [],
+  "Agenda": {
+    "TotalDurationMinutes": 195,
+    "Blocks": [
+      {
+        "BlockId": "blk-01",
+        "Start": "09:30",
+        "End": "10:00",
 ```
 This makes the UI great today and keeps us ready for deeper automation tomorrow.
 
@@ -376,7 +395,7 @@ The highlighted resources represent the Hosted Agent infrastructure:
 - `planner-chat` → model deployment  
 - `planner-hosted` → running Hosted Agent  
 
-![Aspire Resources View](./aspire_resources_view.png) 
+<Image src={AspireResourcesView} alt="Aspire Resources View" />
 
 ---
 
@@ -415,7 +434,7 @@ The interaction begins with a single action in the Agent Console:
 
 > **Draft Schedule with AI**
 
-![Agent Before](./agent_before.png)
+<Image src={AgentBefore} alt="Agent Before" />
 
 At this stage:
 
@@ -428,7 +447,7 @@ At this stage:
 Once triggered, the Planner doesn’t immediately return a result.
 Instead, it surfaces intermediate reasoning steps:
 
-![Agent reasoning logs](./agent_thinking.png)
+<Image src={AgentThinking} alt="Agent reasoning logs" />
 
 “Analyzing constraints…”
 “Balancing session types…”
@@ -440,7 +459,7 @@ The goal is to make the agent’s process visible and legible, rather than a bla
 ### 🧩 Step 3: Structured schedule + reasoning
 
 The final output is not just a schedule - it is a reasoned timeline.
-![Agent Output](./agent_output.png)
+<Image src={AgentOutput} alt="Agent Output" />
 
 Each agenda block includes:
 
@@ -506,7 +525,7 @@ In Aspire’s Structured Logs view, we can see the exact invocation:
 - `Sending HTTP request http://planner-hosted/responses`  
 - `Received HTTP response 200`  
 
-![Structured Logs](./bethuya_aspire_logs.png)
+<Image src={BethuyaAspireLogs} alt="Structured Logs" />
 
 👉 This confirms:
 - The agent is invoked via `/responses`
@@ -525,7 +544,7 @@ The Traces view provides a complete picture:
 - Agent invocation (`POST /responses`)
 - Response propagation
 
-![Trace Timeline](./bethuya_aspire_traces.png)
+<Image src={BethuyaAspireTraces} alt="Trace Timeline" />
 
 ---
 
