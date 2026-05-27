@@ -77,6 +77,8 @@
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.12.2",
     "daisyui": "^5.0.46",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
     "sanitize-html": "^2.17.0",
     "sharp": "^0.34.1",
     "tailwindcss": "^4.1.4",

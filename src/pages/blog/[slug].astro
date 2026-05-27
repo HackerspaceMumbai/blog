@@ -201,6 +201,18 @@ const coverImage = post.data.cover;
     overflow-x: auto;
     margin-bottom: 1.5rem;
   }
+
+  .blog-content .mermaid-diagram {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .blog-content .mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
   
   .blog-content blockquote {
     border-left: 4px solid var(--primary, #F9C412);
@@ -263,6 +275,12 @@ const coverImage = post.data.cover;
               class="cover-image"
               loading="eager"
               fetchpriority="high"
+              widths={[340, 600, 900, 1200]}
+              sizes="(max-width: 640px) 340px, (max-width: 768px) 600px, (max-width: 1024px) 900px, 1200px"
+              width={1200}
+              height={672}
+              format="webp"
+              quality={80}
             />
           )}
         </header>
@@ -319,5 +337,168 @@ const coverImage = post.data.cover;
       const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
       bar.style.width = progress + '%';
     });
+
+    const loadMermaidRuntime = () => {
+      const runtimeWindow = window as Window & { mermaid?: any };
+
+      if (runtimeWindow.mermaid) {
+        return Promise.resolve(runtimeWindow.mermaid);
+      }
+
+      return new Promise((resolve, reject) => {
+        const existingScript = document.querySelector('script[data-mermaid-runtime="true"]');
+        if (existingScript) {
+          existingScript.addEventListener('load', () => resolve(runtimeWindow.mermaid), { once: true });
+          existingScript.addEventListener('error', () => reject(new Error('Failed to load Mermaid runtime.')), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/mermaid@11.15.0/dist/mermaid.min.js';
+        script.async = true;
+        script.dataset.mermaidRuntime = 'true';
+        script.onload = () => resolve(runtimeWindow.mermaid);
+        script.onerror = () => reject(new Error('Failed to load Mermaid runtime.'));
+        document.head.appendChild(script);
+      });
+    };
+
+    const renderMermaidDiagrams = async () => {
+      const mermaidBlocks = Array.from(document.querySelectorAll('pre[data-language="mermaid"]'));
+      if (!mermaidBlocks.length) return;
+
+      try {
+        const mermaid = await loadMermaidRuntime();
+
+        const resolveThemeColor = (cssVariableName: string, fallback: string) => {
+          const probe = document.createElement('span');
+          probe.style.color = `var(${cssVariableName}, ${fallback})`;
+          probe.style.display = 'none';
+          document.body.appendChild(probe);
+          const resolved = getComputedStyle(probe).color || fallback;
+          probe.remove();
+          return resolved;
+        };
+
+        const textColor = resolveThemeColor('--color-base-content', '#e5e7eb');
+        const primaryColor = resolveThemeColor('--color-primary', '#f9c412');
+        const primaryContentColor = resolveThemeColor('--color-primary-content', '#111827');
+        const surfaceColor = resolveThemeColor('--color-base-200', '#1f2937');
+        const neutralSurfaceColor = resolveThemeColor('--color-base-300', '#111827');
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const haloColor = isDarkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.85)';
+
+        const mermaidTextColor = isDarkMode ? '#e5e7eb' : '#1f2937';
+        const mermaidPrimaryColor = isDarkMode ? '#f9c412' : '#d97706';
+        const mermaidSurfaceColor = isDarkMode ? '#1f2937' : '#f3f4f6';
+        const mermaidNeutralSurfaceColor = isDarkMode ? '#111827' : '#e5e7eb';
+
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'strict',
+          theme: 'base',
+          themeVariables: {
+            background: 'transparent',
+            textColor: mermaidTextColor,
+            lineColor: mermaidTextColor,
+            actorBkg: mermaidSurfaceColor,
+            actorBorder: mermaidPrimaryColor,
+            actorTextColor: mermaidTextColor,
+            signalColor: mermaidTextColor,
+            signalTextColor: mermaidTextColor,
+            labelBoxBkg: mermaidNeutralSurfaceColor,
+            labelTextColor: mermaidTextColor,
+            labelBorder: mermaidPrimaryColor,
+            noteTextColor: mermaidTextColor,
+            noteBkgColor: mermaidSurfaceColor,
+            noteBorderColor: mermaidPrimaryColor,
+            loopTextColor: mermaidTextColor,
+            activationBorderColor: mermaidPrimaryColor,
+            activationBkgColor: mermaidSurfaceColor
+          }
+        });
+
+        for (const [index, block] of mermaidBlocks.entries()) {
+          const codeElement = block.querySelector('code');
+          const definition = codeElement?.textContent?.trim();
+
+          if (!definition) continue;
+
+          try {
+            const id = `mermaid-diagram-${index}-${Date.now()}`;
+            const { svg } = await mermaid.render(id, definition);
+
+            const figure = document.createElement('figure');
+            figure.className = 'mermaid-diagram';
+            figure.setAttribute('role', 'img');
+            figure.setAttribute('aria-label', 'Diagram');
+            figure.innerHTML = svg;
+
+            const renderedSvg = figure.querySelector('svg');
+            if (renderedSvg) {
+              const isCompactViewport = window.matchMedia('(max-width: 768px)').matches;
+              const messageFontSize = isCompactViewport ? '18px' : '16px';
+              const messageFontWeight = isCompactViewport ? '600' : '500';
+              const lineStrokeWidth = isCompactViewport ? '2.5' : '2';
+
+              renderedSvg.querySelectorAll('.actor').forEach((node) => {
+                const actorNode = node as SVGGraphicsElement;
+                actorNode.style.fill = surfaceColor;
+                actorNode.style.stroke = primaryColor;
+              });
+
+              renderedSvg.querySelectorAll('.actor-box, .labelText, .noteText, .loopText').forEach((node) => {
+                const textNode = node as SVGTextElement;
+                textNode.style.fill = textColor;
+                textNode.style.stroke = 'none';
+              });
+
+              renderedSvg.querySelectorAll('.messageText').forEach((node) => {
+                const textNode = node as SVGTextElement;
+                textNode.style.fontSize = messageFontSize;
+                textNode.style.fontWeight = messageFontWeight;
+                textNode.style.fill = textColor;
+                textNode.style.stroke = haloColor;
+                textNode.style.strokeWidth = isCompactViewport ? '1.6px' : '1.2px';
+                textNode.style.paintOrder = 'stroke fill';
+                textNode.style.strokeLinejoin = 'round';
+              });
+
+              renderedSvg.querySelectorAll('.messageLine0, .messageLine1').forEach((node) => {
+                const lineNode = node as SVGLineElement;
+                lineNode.setAttribute('stroke-width', lineStrokeWidth);
+                lineNode.style.strokeWidth = lineStrokeWidth;
+                lineNode.style.stroke = primaryColor;
+              });
+
+              renderedSvg.querySelectorAll('.marker path, [id$="-arrowhead"] path').forEach((node) => {
+                const arrowNode = node as SVGPathElement;
+                arrowNode.style.fill = primaryColor;
+                arrowNode.style.stroke = primaryColor;
+              });
+
+              renderedSvg.querySelectorAll('.sequenceNumber').forEach((node) => {
+                const sequenceNode = node as SVGTextElement;
+                sequenceNode.style.fill = primaryContentColor;
+              });
+            }
+
+            block.replaceWith(figure);
+          } catch (renderError) {
+            console.error('Failed to render Mermaid block:', renderError);
+          }
+        }
+      } catch (loadError) {
+        console.error('Failed to load Mermaid runtime:', loadError);
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        void renderMermaidDiagrams();
+      }, { once: true });
+    } else {
+      void renderMermaidDiagrams();
+    }
   </script>
 </Layout>

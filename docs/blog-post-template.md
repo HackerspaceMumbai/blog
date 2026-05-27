@@ -144,10 +144,34 @@ Adapt the template sections to match your content:
 - Include supporting arguments
 - Add counterpoints and responses
 
-## Quick Reference
+## Image Optimization Best Practices
+
+### Important: Image Optimization for Performance
+
+Blog cover images are **automatically optimized** by the build system:
+
+1. **Format Conversion**
+   - All images are converted to WebP (25-35% smaller than PNG)
+   - Fallback formats (PNG, JPEG) available for older browsers
+   - ~98-99% size reduction from source to optimized version
+
+2. **Responsive Sizing**
+   - Multiple versions created for different devices
+   - Mobile: ~18-44 KB
+   - Desktop: ~76-106 KB
+   - Ensures fast loading on all devices
+
+3. **What You Need to Do**
+   - Use any image format for source (PNG, JPG, WebP)
+   - Don't pre-optimize - let Astro handle it
+   - Ensure images are reasonably sized at source (under 10 MB ideal)
+   - Include descriptive alt text for accessibility
 
 ### Image Guidelines
-- **Cover:** 800x450px, under 500KB
+- **Cover:** 800x450px or higher (for quality), under 10MB
+- **Inline images:** Any size, they'll be optimized
+- **Recommended source formats:** PNG, JPG, WebP
+- **Don't worry about:** File size of source images (automatically optimized)
 - **Inline:** Descriptive filenames, meaningful alt text
 - **Format:** PNG for screenshots, JPG for photos
 
