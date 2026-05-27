@@ -2,13 +2,22 @@
 import { defineConfig } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://hackmum.in',
-  integrations: [mdx()],
+  integrations: [
+    mdx({
+      rehypePlugins: [
+        rehypeSlug,
+        [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+      ],
+    }),
+  ],
 
   // Image optimization
   image: {
