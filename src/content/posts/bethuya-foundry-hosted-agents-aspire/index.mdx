@@ -1,7 +1,7 @@
 ---
-title: "Bethuya + Foundry Hosted Agents: Shipping Real Agentic AI (with Humans Still in Charge)"
-description: "How we’re turning Bethuya into a production-grade showcase for the new era of Agentic AI: Planner as a Foundry Hosted Agent, Aspire as the cockpit, and governance that scales."
-date: 2026-05-20
+title: "From Demo to Production: Building Agentic AI with Aspire + Foundry (The Bethuya Journey)"
+description: "From a single button click to a fully observable agent runtime—this is what “production-ready AI” actually looks like."
+date: 2026-05-27
 author: "Augustine Correa"
 slug: "bethuya-foundry-hosted-agents-aspire"
 tags: ["Agentic AI", "Azure AI Foundry", "Hosted Agents", ".NET Aspire", "DX", "MLOps", "Governance"]
@@ -16,25 +16,34 @@ import AgentOutput from './agent_output.png';
 import BethuyaAspireLogs from './bethuya_aspire_logs.png';
 import BethuyaAspireTraces from './bethuya_aspire_traces.png';
 
-Most agent demos look impressive until you try putting them into production. Suddenly you’re drowning in containerization, auth, observability, versioning, and governance headaches.
+Most agent demos look impressive until you try to put them into production. Suddenly you’re dealing with containerization, auth, observability, versioning, and governance.
 
 
-At HackerspaceMumbai, we wanted something different for Bethuya which is our  **agent-first**, **Aspire-orchestrated** platform for planning, curating, running, and reporting community events - built with a simple principle: **AI drafts, humans approve, community owns**.  
-It’s demo-ready today and designed to become the backbone of our event ops tomorrow.
+At HackerspaceMumbai, we wanted something different.
 
-In this post, we’ll share how we’re evolving Bethuya into a **production-grade showcase** for the “new era” of agentic AI - starting by deploying the **Planner** as a **Microsoft Foundry Agent Service Hosted Agent**, while keeping Bethuya as the **central orchestrator**.
+**Bethuya** is our  **agent-first**, **Aspire-orchestrated** platform for planning, curating, running, and reporting community events - built on a simple principle: 
+
+> **AI drafts, humans approve, community owns**.  
+
+It’s demo-ready today and designed to become the backbone of our event operations.
+
+In this post, we show how we’re evolving Bethuya into a **production-grade agentic system** - starting by deploying the Planner as a **Microsoft Foundry Hosted Agent (right now in public preview)**, while keeping Bethuya as the central orchestrator.
 
 ---
 
-## Why “Hosted Agents” (and not just “calling an LLM”)?
+## Why Hosted Agents (and not just calling an LLM)?
 
-When you move agents past the prototype phase, 90% of the engineering isn't prompt tuning - it's **distributed systems plumbing**:
-*   **Infrastructure:** Containerization, web server scaffolding, and lifecycle management.
-*   **Security & Identity:** Managing API keys, token propagation, and secure boundaries.
-*   **State & Resilience:** Scaling, memory/file persistence, and zero-downtime rollouts.
-*   **Observability:** Distributed tracing across agent execution loops.
+Once you move beyond prototypes, most of the work isn’t prompt engineering-it’s systems engineering.
 
-**[Foundry Hosted Agents](https://learn.microsoft.com/en-us/azure/ai-services/azure-ai-foundry/overview-hosted-agents)** solve these cross-cutting concerns by providing a managed runtime. You bring your agent code (C#, Python, or your framework of choice), package it as a container image, and the platform handles the execution, lifecycle, and instrumentation at scale.
+* **Infrastructure** - containerization, service hosting, lifecycle management
+* **Security & Identity** - token flow, isolation boundaries, secure access
+* **State & Resilience** - scaling, persistence, rollout safety
+* **Observability** - tracing across distributed execution
+
+**[Foundry Hosted Agents](https://learn.microsoft.com/en-us/azure/ai-services/azure-ai-foundry/overview-hosted-agents)** handle these cross-cutting concerns.
+
+You bring your agent code (C#, Python, or otherwise).  
+The platform handles execution, lifecycle, identity, and instrumentation.
 
 ---
 
@@ -42,39 +51,43 @@ When you move agents past the prototype phase, 90% of the engineering isn't prom
 
 We are using both because they solve entirely different layers of the cloud-native agent stack:
 
-### 🎛️ Aspire = the cockpit (composition + provisioning + local loop)
-Aspire gives us a single, consistent way to define, compose, provision, and run our entire distributed application: both locally, and in the cloud.
+### 🎛️ Aspire = the cockpit
 
-### 🧠 Hosted Agents = the runtime (agent ops + lifecycle)
-Hosted Agents turn an agent into a first-class deployable unit with its own endpoint, identity, scaling, sessions, and versioning.
+Defines, composes, and runs the entire distributed system-locally and in Azure.
 
-| Dimension | App Host: Aspire | Runtime: Foundry Hosted Agents |
-| :--- | :--- | :--- |
-| **The Role** | **The Cockpit** (Composition & Provisioning) | **The Brain** (Agent Execution & Lifecycle) |
-| **Local Loop** | Orchestrates database, Redis, Keycloak, and local agent containers. | Simulates agent endpoints locally for rapid debugging. |
-| **Production** | Generates deployment manifests; wires service discovery. | Acts as a isolated, stateful, secure execution unit. |
+### 🧠 Hosted Agents = the runtime
 
-> Mental model: Aspire defines the **topology of the entire system**. Hosted Agents operate **each individual agent** like an independent, versioned microservice.
+Turn an agent into a **first-class execution unit** with its own endpoint, identity, and lifecycle.
 
+| Dimension  | Aspire                   | Hosted Agents             |
+| ---------- | ------------------------ | ------------------------- |
+| Role       | System composition       | Agent execution           |
+| Local      | Runs full app topology   | Simulates agent endpoints |
+| Production | Generates infra + wiring | Hosts agent runtime       |
+
+> Aspire defines the topology. Hosted Agents execute the brains.
 
 ---
 
-## Our current architecture: Bethuya as central orchestrator (Option A)
+## Architecture: Bethuya as the orchestrator
 
-### Option A (Now): Bethuya orchestrates agents
+### Option A (current): centralized orchestration
 
-For now, **Bethuya remains the central orchestrator**:
+Bethuya is the system of record:
 
-- It calls the Planner (and soon Curator, Facilitator, Reporter)
-- It stores audit trails, diffs, human approvals, and published artifacts
-- No plan is ever auto-published - human approval is mandatory
+* Calls Planner (and future agents: Curator, Facilitator, Reporter)
+* Stores drafts, approvals, and published artifacts
+* Enforces human approval before publishing
 
-This keeps governance clear, debuggable, and trustworthy.
+This keeps the system **governable and debuggable**.
 
+### Option B (future): agent-to-agent (A2A)
 
-### Option B (Later): agent delegation (A2A)
+We are designing for future delegation:
 
-We are designing the interfaces and audit envelope in such a way that we can later enable **agent delegation** (agent-to-agent), while preserving Bethuya’s governance boundaries.
+> *(A2A = one agent invoking another as part of a workflow)*
+
+The goal is to enable distributed intelligence without losing auditability.
 
 ---
 
@@ -84,6 +97,7 @@ The Planner is the ideal first Hosted Agent. Its job is well-scoped and naturall
 
 * Draft agendas, timings, speaker suggestions, and session formats
 * Never publishes anything without explicit human approval
+* Produces structured, reviewable output
 
 This makes it low-risk and high-value for our community events workflow.
 
@@ -91,17 +105,17 @@ This makes it low-risk and high-value for our community events workflow.
 
 ### 🚩 A real-world lesson from Mumbai
 
-There’s also a deeper reason this matters.
+Last year, event booking for Microsoft offices in India was centralized. 
 
-Last year, event booking for Microsoft offices in India was centralized. When the team was scheduling **[VS Code Dev Days for Mumbai](https://www.meetup.com/mumbai-technology-meetup/events/310498740/)**, folks sitting at the Microsoft office in Bengaluru picked a date that looked perfect on paper:
+When scheduling **[VS Code Dev Days for Mumbai](https://www.meetup.com/mumbai-technology-meetup/events/310498740/)**, a date was chosen that looked perfect:
 
 * ✅ Venue available
 * ✅ Not a public holiday
-* ✅ Everything aligned in the booking system
+* ✅ Calendar booking system aligned
 
 Unfortunately, it landed on the **10th day of Ganpati**.
 
-In Mumbai, that means
+In Mumbai, that means:
 
 * 🚧 City-wide processions
 * 🚦 Heavy traffic disruption
@@ -113,9 +127,9 @@ In Mumbai, that means
 
 ### ✅ What actually happened
 
-The issue was caught, and the event was **rescheduled** to align with Mumbai’s cultural calendar.
+The issue was caught, and the event was **rescheduled**.
 
-This is exactly the kind of **human-in-the-loop correction** Bethuya is designed to enforce.
+This is exactly the kind of **human-in-the-loop correction** Bethuya is designed for.
 
 ***
 
@@ -131,108 +145,79 @@ Optimization ≠ Real-world fit
 
 ***
 
-### 🧠 Why this matters for Bethuya
+### 🧠 Why this matters
 
-This is precisely why Bethuya enforces a **hard boundary**:
+Bethuya enforces a strict boundary:
 
-* The **Planner Agent handles the heavy lifting**  
-  (drafting agendas, proposing schedules, optimizing options)
+* The agent **proposes**
+* Humans **decide**
 
-* But it only emits **structured drafts - not decisions**
-
-The final call stays with:
-
-> **local organizers who actually understand their community**
+The system optimizes-but does not override local knowledge.
 
 ***
-
-### ✅ The outcome: AI that augments, not overrides
-
-With this model:
-
-* AI becomes a **context-aware advisor**
-  * can surface conflicts like festivals or local constraints
-  * can suggest better alternatives
-
-* Humans remain the **decision-makers**
-  * applying lived, cultural, and situational knowledge
-
-***
-
-💡 **In short:**
-
-> The Planner is our first step toward building AI systems that are not just intelligent   
-> but *situationally aware and locally grounded*.
 
 ---
 
-## The subtle production detail: Conversations ≠ Sessions
+## Conversations ≠ Sessions
 
-During implementation, we hit a critical architectural nuance within the Foundry Hosted Agents runtime. **Sessions** and **conversations** are fundamentally decoupled concepts:
+A critical nuance in Foundry:
 
-*   **A Session** = A stateful, isolated container sandbox with a persisted filesystem (`$HOME`, uploaded media, short-term scratchpads).
-*   **A Conversation** = The linear message, tool-call, and turn history that threads an interaction together.
+* **Session** → container runtime (filesystem, compute context)
+* **Conversation** → message/thread history
 
-For multi-turn agent execution, continuity relies on tracking the **Conversation ID** or `previous_response_id`. Reusing the same *Session ID* ensures the agent has access to the same files, but **it will completely forget prior chat history** if the conversation context isn't threaded explicitly. 
+Continuity depends on **conversation threading**  
+(e.g., `previous_response_id` in the Responses API)
 
-It is incredibly easy to build an agent that *looks* stateful because it reads from the same disk space, while it is actually suffering from total context amnesia.
-
-To move from concept to implementation, let’s look at how Bethuya actually models and executes a planning workflow.
-
+A system can look stateful-while silently forgetting everything.
 
 ---
 
 ## Architecture Deep Dive: State, Execution, and Agent Boundaries
 
-The key architectural choice in Bethuya is simple:
 
-> **Bethuya orchestrates. The Planner Hosted Agent drafts.**
+> **Bethuya orchestrates. Planner(Hosted Agent) drafts.**
 
 Everything else - PlanningCycles, conversation IDs, hybrid outputs - flows from this boundary.
 
 ---
 
-## 🧠 Part 1: State Model - One Conversation per Planning Cycle
+## 🧠 State Model - Planning Cycle
 
-Instead of maintaining a “forever thread” for an event, Bethuya introduces a first-class domain object: the `PlanningCycle`.
+Instead of a “forever thread,” we use a **PlanningCycle**.
 
-Why? Because in a production community app, three things evolve rapidly:
+Why?
 
-- **Schemas** → structured JSON payloads change  
-- **System Prompts** → agent behavior shifts over time  
-- **Orchestration Boundaries** → tasks move between services and agents  
+Because these evolve:
 
-Mixing old assumptions with new schemas in a single thread makes debugging, traceability, and reproducibility extremely difficult.
+* Schemas
+* Prompts
+* Orchestration boundaries
 
-### Lifecycle of a PlanningCycle
 
-- **Open**  
-  A cycle is created when drafting begins. All interactions share a **conversationId**, which acts as the durable thread for that planning window.
+***
 
-- **Lock on Publish**  
-  When the organizer publishes the schedule, the cycle is permanently sealed.
+#### Lifecycle
 
-- **Revisions**  
-  Any further updates create a **new PlanningCycle** with a fresh conversationId, referencing the previous version.
+* **Open** → cycle starts, conversationId assigned
+* **Lock** → publish seals the cycle
+* **Revise** → new cycle, new conversation
 
-👉 This gives us clean provenance:  
-we always know which **agent version, prompt set, and conversation** produced a published schedule.
+👉 Ensures full provenance of every schedule
 
 ---
 
-## ⚙️ Part 2: Execution Flow - How a Planner Request Actually Runs
+## ⚙️ Execution Flow
 
-The PlanningCycle defines *state*.  
-Now let’s look at *execution*.
+* Bethuya creates/reuses a PlanningCycle
+* Assigns a conversationId
+* Builds request payload
+* Calls Planner via `/responses`
 
-When an organizer clicks **Draft Schedule with AI**:
+This endpoint follows the **[OpenAI Responses API contract](https://platform.openai.com/docs/api-reference/responses)**, implemented by Foundry Hosted Agents:
 
-1. Bethuya creates or reuses a `PlanningCycle`  
-2. The cycle provides a **conversationId (scoped context for this planning window)**  
-3. Bethuya constructs a `PlannerInvocationInput` from event data  
-4. It calls the Planner Hosted Agent via its `/responses` endpoint  
-5. The agent returns a draft  
-6. Bethuya validates, persists, and surfaces it for human review  
+
+* Agent returns structured output
+* Bethuya validates, persists, and renders
 
 👉 At runtime, the orchestration boundary becomes explicit:
 
@@ -258,14 +243,14 @@ sequenceDiagram
 
 ---
 
-## 📦 Part 3: Hybrid Output - Designed for Humans and Machines
+## 📦 Hybrid Output
 
-The Planner Agent yields a dual-headed response payload:
+The Planner returns:
 
-1.  **Markdown Agenda:** Human-readable, and perfectly optimized for Git-style diffs in our front-end.
-2.  **JSON Sidecar:** Machine-readable data structures used for backend workflows, validation, and future Agent-to-Agent (A2A) delegation.
+* **Markdown** → human-readable
+* **JSON** → machine-verifiable
 
-JSON is the source of truth; Markdown is the rendering.
+JSON is the source of truth. Markdown is the UI.
 
 ```json
 {
@@ -291,24 +276,25 @@ JSON is the source of truth; Markdown is the rendering.
         "Start": "09:30",
         "End": "10:00",
 ```
-This makes the UI great today and keeps us ready for deeper automation tomorrow.
 
 ---
 
-## 🧩 Part 4: System Boundary - Governance vs Reasoning
-This architecture enforces a strict separation of concerns:
+## 🧩 System Boundary 
 
-* **Bethuya**
-  * System of record
-  * Owns workflows, approvals, publishing, and lifecycle
-  * Maintains audit trails and provenance
+**Bethuya**
 
-* **Planner Hosted Agent**
-  * Stateless (or session-scoped) reasoning runtime
-  * Generates structured drafts
-  * Has no authority to publish or mutate application state
+* System of record
+* Owns workflows, approvals, publishing
 
-This boundary is deliberate.
+**Planner Agent**
+
+* Session-scoped reasoning runtime
+* Generates proposals
+* Cannot mutate application state
+
+***
+
+> 💡 **The agent optimizes. The application decides.**
 
 It ensures that:
 
@@ -318,32 +304,14 @@ It ensures that:
 
 ***
 
-## ✅ The Outcome: Production-Grade Agentic Systems
-
-This separation gives us the best of both worlds:
-
-* Agents can evolve independently  
-  (better prompts, improved reasoning, richer outputs)
-
-* The application retains control  
-  (governance, lifecycle, auditability)
-
-***
-
-💡 **In short:**
-
-> The agent optimizes.  
-> The application decides.
 
 ---
 
-## 🚀 Aspire + Foundry Integration: From Code to Running Agents in Minutes
+## 🚀 Aspire + Foundry Integration
 
-Up to this point, we’ve focused on architecture.
+-The biggest surprise building Bethuya:
 
-But one of the biggest surprises while building Bethuya was this:
-
-> **How little effort it actually took to get a Hosted Agent running locally and in Azure.**
+> How easy it was to go from code to a running agent.
 
 ---
 
@@ -351,7 +319,7 @@ But one of the biggest surprises while building Bethuya was this:
 
 Once you’re authenticated (`az login`), the flow is almost frictionless.
 
-Using Aspire’s Azure AI Foundry integration:
+Using [Aspire’s Azure AI Foundry integration](https://aspire.dev/integrations/cloud/azure/azure-ai-foundry), you can go from zero to a running Hosted Agent in minutes.
 
 - You select or create:
   - an Azure subscription  
@@ -359,16 +327,13 @@ Using Aspire’s Azure AI Foundry integration:
   - a Foundry project  
 
 From there, Aspire handles the rest:
-- provisioning resources  
-- wiring dependencies  
-- configuring endpoints  
-
-👉 Canonical reference:  
-https://aspire.dev/integrations/cloud/azure/azure-ai-foundry/azure-ai-foundry-host/
+* resource provisioning
+* environment wiring
+* endpoint configuration
 
 ---
 
-### 🏗️ What Aspire sets up for you
+### 🏗️ What gets created
 
 With minimal setup, Aspire provisions and connects:
 
@@ -378,138 +343,51 @@ With minimal setup, Aspire provisions and connects:
 - ✅ Local + cloud configuration parity  
 - ✅ Identity and role bindings  
 
-👉 The experience feels like:
+> Run locally-and Azure appears behind the scenes.
 
-> “Run your app locally - and Azure just shows up behind the scenes.”
-
----
-
-### 🔍 What this looks like in practice
-
-Below is the Aspire AppHost resources view.
-
-The highlighted resources represent the Hosted Agent infrastructure:
-
-- `bethuya-project-acr` → container registry for agent images  
-- `bethuya-foundry`, `bethuya-project` → Foundry wiring  
-- `planner-chat` → model deployment  
-- `planner-hosted` → running Hosted Agent  
 
 <Image src={AspireResourcesView} alt="Aspire Resources View" />
 
 ---
 
-### 🟢 Agent-aware UI: “Send Message” capability
+### 🟢 Agent-aware UI
 
-Notice the small icon next to `planner-hosted`.
+Aspire surfaces agents differently.
 
-This icon appears only for **agent-capable endpoints** - specifically those exposing a `/responses` interface.
+The “Send Message” icon [highlighted in green box] appears **only for agent endpoints (`/responses`)**.
 
-Clicking it allows you to:
+* Send prompts directly
+* Inspect responses
+* Debug in isolation
 
-- Send prompts directly to the agent  
-- Inspect responses interactively  
-- Validate behavior without going through the app  
-
-👉 This is a subtle but powerful signal:
-
-> Aspire recognizes this as an **interactive AI endpoint**, not just a backend service.
+> If you can message it, it’s an agent.
 
 ---
 
-💡 **In short:**
-
-> If you can "Send Message" to a service, it’s not just a service - it’s an agent.
-
----
 ## 🧠 The Planner in Action: From Intent to Reasoned Output
 
-At this point, it’s worth looking at what the Planner actually feels like in the UI.
 
----
+The Planner shows:
 
-### 🖱️ Step 1: Initiating the draft
-
-The interaction begins with a single action in the Agent Console:
-
-> **Draft Schedule with AI**
+* Initial state → idle
+* Thinking → reasoning steps
+* Output → structured timeline + explanation
 
 <Image src={AgentBefore} alt="Agent Before" />
 
-At this stage:
-
-- No PlanningCycle exists yet  
-- The agent is idle  
-- The system is ready to initiate a new conversation  
-
-### 🔁 Step 2: The agent starts reasoning
-
-Once triggered, the Planner doesn’t immediately return a result.
-Instead, it surfaces intermediate reasoning steps:
-
 <Image src={AgentThinking} alt="Agent reasoning logs" />
 
-“Analyzing constraints…”
-“Balancing session types…”
-“Optimizing flow for engagement…”
-
-👉 This is intentional.
-The goal is to make the agent’s process visible and legible, rather than a black box.
-
-### 🧩 Step 3: Structured schedule + reasoning
-
-The final output is not just a schedule - it is a reasoned timeline.
 <Image src={AgentOutput} alt="Agent Output" />
 
-Each agenda block includes:
 
-* Structured metadata:
-  * type (`talk`, `workshop`, `break`)
-  * optimization tags (`balanced`, `optimized`, `new`)
+Each block includes:
 
-* And critically:
-  * **Agent reasoning**
+* Type (Talk, Workshop, Break)
+* Optimization tags
+* Explicit reasoning (“why here”)
 
-Example:
+> The Planner doesn’t just generate a schedule-it shows its work.
 
-> *“Placed here to balance pacing between adjacent formats and keep the agenda from feeling repetitive.”*
-
-***
-
-### 🧠 Why this matters
-
-Most scheduling tools generate a timeline.
-
-The Planner does something more:
-
-* It **constructs** the schedule
-* It **explains** its decisions
-* It allows those decisions to be **reviewed and challenged**
-
-***
-
-💡 **In short:**
-
-> The output is not just a schedule -  
-> it is a **defensible plan**.
----
-
-### 🔁 What happens behind the scenes
-
-From this single interaction:
-
-- A `PlanningCycle` is created or reused  
-- A `conversationId` scopes the context  
-- Bethuya constructs the Planner request  
-- The Hosted Agent is invoked via `/responses`  
-- A hybrid draft is generated  
-- The result is persisted and rendered  
-
----
-
-💡 **One button. One conversation. One bounded agent interaction.**
-
----
 
 ## 🔎 Observing the Agent in Action
 
@@ -517,99 +395,73 @@ One of the strongest aspects of this setup is **observability**.
 
 ---
 
-### 📜 Structured logs: Verifying the agent call
+### 📜 Structured logs
 
-In Aspire’s Structured Logs view, we can see the exact invocation:
 
-- `Start processing HTTP request POST /responses`  
-- `Sending HTTP request http://planner-hosted/responses`  
-- `Received HTTP response 200`  
+* `POST /responses`
+* Request → response cycle
+* Status = 200
 
 <Image src={BethuyaAspireLogs} alt="Structured Logs" />
 
-👉 This confirms:
-- The agent is invoked via `/responses`
-- The request/response cycle is successful
-- The interaction is visible at the HTTP layer
-
 ---
 
-### 🔁 Distributed traces: End-to-end execution flow
+### 🔁 Distributed traces
 
-The Traces view provides a complete picture:
+End-to-end:
 
-- UI interaction (`Event onclick`)
-- Backend orchestration
-- Database access
-- Agent invocation (`POST /responses`)
-- Response propagation
+UI → Backend → Agent → Response
+
+* Agent appears as its own span
+* Boundaries are explicit
+* Timing is visible
+
 
 <Image src={BethuyaAspireTraces} alt="Trace Timeline" />
 
----
 
-### 🧠 What’s important here
-
-- The agent appears as a **distinct span (`planner-hosted`)**
-- You can see exactly where time is spent  
-- The boundary between:
-  - application logic  
-  - agent reasoning is explicit  
-
----
-
-💡 **This is critical:**
-
-> You’re not guessing what the agent did.  
-> You can see exactly when, where, and how it was invoked.
+> 💡 You don’t guess what happened-you **see it**. 
 
 ---
 
 ## 🧩 Bringing it all together
 
-These views form a complete, observable pipeline:
+* UI → entry point
+* Logs → invocation
+* Traces → orchestration  
 
-- UI → where the interaction begins  
-- Logs → proof of the `/responses` call  
-- Traces → end-to-end orchestration flow  
-
----
-
-💡 **In short:**
-
-> With Aspire, agents are not just deployed -  
-> they are observable, testable, and interactive from day one.
+> 💡 **Agents are not just deployed-they are observable, testable, and governable.**
 
 ---
 
-## What Real production-grade "Agent Ops" Looks Like
+## What production-grade Agent Ops looks like
 
-### 🚀 Independent Shipability
-We can tune, iterate, and deploy the Planner's container image without touching or redeploying the core web app.
+### 🚀 Independent deployment
 
-### 🧠 Brain Versioning
-We can pinpoint exactly which version of the prompt/model generated a specific line-item artifact.
+Agents evolve independently of the app
 
+### 🧠 Brain versioning
 
-### 📊 Built-in End-to-End Observability
-We trace requests seamlessly from the Blazor UI -> Hosted Agent container -> LLM token completion, and we can correlate everything to a PlanningCycle/work item.
+Every output tied to agent + prompt version
+
+### 📊 Observability
+
+Trace across UI → agent → model
+
 
 ### 🛡️ Human-First Governance
-The system remains deterministic. AI proposes; humans control the state transition.
-
+AI proposes. Humans own state transitions.
 
 ---
 
 ## Getting involved
 
 
-We’re building all of this in the open and would love your help.
+We’re building Bethuya in the open.
 
 - **Code contributions**: [Bethuya repository](https://github.com/HackerspaceMumbai/bethuya)
 - **Blog / documentation**: [HackerspaceMumbai/blog](https://github.com/HackerspaceMumbai/blog)
 
-Whether you want to work on the Planner agent, improve orchestration, add new agents, or just hang out and brainstorm - you and your PRs are welcome.
+Come build with us.
 
-Let’s build the future of community events, one thoughtful agent at a time.
-
-
+> 💡 **Let’s design systems where intelligence is powerful-but accountability stays human.**
