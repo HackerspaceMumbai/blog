@@ -15,6 +15,12 @@ import AgentThinking from './agent_thinking.png';
 import AgentOutput from './agent_output.png';
 import BethuyaAspireLogs from './bethuya_aspire_logs.png';
 import BethuyaAspireTraces from './bethuya_aspire_traces.png';
+import { Image } from 'astro:assets';import AspireResourcesView from './aspire_resources_view.png';
+import AgentBefore from './agent_before.png';
+import AgentThinking from './agent_thinking.png';
+import AgentOutput from './agent_output.png';
+import BethuyaAspireLogs from './bethuya_aspire_logs.png';
+import BethuyaAspireTraces from './bethuya_aspire_traces.png';
 
 Most agent demos look impressive until you try to put them into production. Suddenly you’re dealing with containerization, auth, observability, versioning, and governance.
 
@@ -254,6 +260,18 @@ JSON is the source of truth. Markdown is the UI.
 
 ```json
 {
+  "AgendaVersion": "1.0",
+  "Event": {
+    "EventId": "019e63e8-f999-7978-88a0-33d97758df3c",
+    "Title": "Build //Localhost : Mumbai",
+    "Date": "2026-06-20",
+    "Timezone": "Asia/Kolkata",
+    "Location": "Microsoft Mumbai"
+  },
+  "Objectives": [
+    "Maximize attendance fit with venue/locality constraints.",
+    "Balance learning content with networking windows.",
+    "Provide explicit ownership for next actions."
   "AgendaVersion": "1.0",
   "Event": {
     "EventId": "019e63e8-f999-7978-88a0-33d97758df3c",
