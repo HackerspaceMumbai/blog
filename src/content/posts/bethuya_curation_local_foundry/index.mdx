@@ -1,0 +1,316 @@
+---
+title: "Building a Human-AI Curation System: The Bethuya Journey"
+description: "From 7x over-subscription to fairness-aware decision systems, how we built an AI-assisted, privacy-first curation platform using Foundry Local, Aspire and thoughtful UX design."
+date: 2026-06-05
+author: "Augustine Correa"
+slug: "bethuya-human-ai-curation-system"
+tags:
+  [
+    "Agentic AI",
+    "Human-AI Interaction",
+    "Azure AI Foundry",
+    "Curation Systems",
+    "Product Design",
+    "UX",
+    "Fairness",
+    "Explainable AI",
+    "Privacy",
+  ]
+categories: ["Engineering", "AI", "Product"]
+cover: "./bethuya_curation_coverpic.png"
+---
+
+import { Image } from 'astro:assets';
+import OverCapacityImage from './over_capacity_registrations.png';
+import OnboardingStep1 from './onboarding_step1.png'
+import EventRegistration from './event_registration.png'
+import SocialNetworkVerification from './social_network_verification.png'
+import FullCurationPortal from './full_curation_portal.png'
+import FairnessChipAfterSelection from './fairness_chips_after_selection.png'
+import QueueRegistrantCard from './curation_queue_registrant_card.png'
+import ProfilePanelInsight from './profile_panel_header.png'
+import ProfilePanelAssessment from './profile_panel_assessment.png'
+import SuggestStartingCohort from './suggest_start_cohort_model.png'
+
+***
+
+# 🚀 Why We Built This
+
+If you’ve ever helped organize events for a thriving technical community in India, you know the feeling. Registrations open and suddenly you’re staring at 5–7x applications of a venue capacity. We get students from multiple Mumbai colleges, working professionals, first-timers trying to break in, veterans, and sometimes entire teams applying together.
+
+The old ways stopped working:
+
+- First-come-first-served just rewarded whoever refreshed Twitter at the right second.  
+- Spreadsheet roulette turned real people into rows.  
+- Manual selection led to fatigue and unintentional bias.
+
+We realized the real problem wasn’t collecting more data - it was making fair, high-quality decisions at scale without burning out the curators.
+
+So we built a practical human-AI curation system. We’ve been testing it internally and it’s going live this month for our upcoming events.
+
+> ✅ **Design a system that helps humans make better decisions**
+
+<Image src={OverCapacityImage} alt="Over-subscription example or raw registrant list" />
+
+***
+
+# 🧩 How We Structured It
+
+We broke the flow into clear layers to keep friction low at the beginning and gather useful signals later:
+
+***
+
+### 📊 System Architecture
+
+```
+Onboarding → Trust → Event → Curation
+```
+
+***
+
+### 📌 Diagram
+
+```
+┌────────────────────────────┐
+│        ONBOARDING          │
+│  Identity (low friction)   │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│         TRUST LAYER         │
+│ GitHub / LinkedIn / Tenure  │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│    EVENT REGISTRATION       │
+│ Intent + Experience + ID    │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│        CURATION             │
+│ Fairness + Impact + Choice  │
+└────────────────────────────┘
+```
+
+***
+
+***
+
+# 🪪 Step 1: Onboarding (Low Friction)
+
+Just name, email, phone, student/professional status, and organization. No long essays or government IDs upfront. The goal is a wide-open front door.
+
+***
+
+<Image src={OnboardingStep1} alt="Registration form" />
+
+***
+
+***
+
+# 🔗 Step 2: Trust via Verification
+
+We let people connect GitHub (great for spotting student builders) or LinkedIn. This gives us credibility signals without forcing them to write paragraphs about themselves.
+
+***
+
+<Image src={SocialNetworkVerification} alt="A registration form with LinkedIn and GitHub connect button" />
+
+***
+
+# 🎯 Step 3: Event Registration (Where Signal Lives)
+
+Only when applying for a specific high-value event do we ask deeper questions: Why do you want to attend? What do you hope to learn and contribute? Government ID is requested only if the venue actually needs it.
+
+<Image src={EventRegistration} alt="Registration for the event" />
+
+
+
+***
+
+# 🧱 The Decision Cockpit
+
+This is the part we’re most proud of. Instead of drowning in spreadsheets, curators now work in a live interface with four main pieces
+
+***
+
+## 🧩 Core Components
+
+### 📊 Decision Cockpit Diagram
+
+```
+Fairness Budget
+      ↓
+Queue → Profile
+      ↓
+   Impact
+      ↓
+   Decision
+```
+
+***
+
+<Image src={FullCurationPortal} alt="Screenshot of the entire Curation Intelligence Portal" />
+
+***
+
+***
+
+## 1. ⚖️ Fairness Budget (State Layer)
+
+A live dashboard that works like a budget. As you select people, it instantly shows how the cohort is shaping up:
+
+- Geographic spread across Mumbai zones  
+- Organization concentration  
+- Mix of students vs professionals  
+- Other balance signals
+
+It doesn’t block choices - it just makes the consequences visible in real time so humans can adjust.
+
+> “What does my cohort look like?”
+
+***
+
+### Example:
+
+```
+LANG 40% ↑ +2.1%
+ORG 18% ⚠️
+```
+
+
+📷 <Image src={FairnessChipAfterSelection} alt="Screenshot of Curation with the Gender and Language highlighted within the red box" />
+
+***
+
+***
+
+## 2. 📋 Registrant Queue - Triage
+
+The queue is where curation begins. Instead of sorting by timestamp, the queue compresses complex applications into clear, scannable signals. Local AI surfaces high-intent candidates or highlights underrepresented profiles who might otherwise be lost at the bottom of a spreadsheet. The queue handles the heavy cognitive lifting of attention guidance, not final selection.
+
+> “Who should I look at first?”
+
+
+📷 <Image src={QueueRegistrantCard} alt="Registrant Card within the Registrant Queue highlighted within a red box" />
+
+***
+
+***
+
+## 3. 👤 Profile Panel - Understanding
+
+Instead of giving people a single score, the AI extracts insights from their answers - intent quality, genuine technical interest vs generic fluff - and presents them clearly. Explanation always beats score.
+
+> “What do I know about this person?”
+
+
+📷 <Image src={ProfilePanelInsight} alt='Above the fold view of the Profile Panel highlighted in red' />
+
+***
+
+***
+
+## 4. ⚡ Impact Panel - Simulation
+
+Before inviting someone, you can see how it affects overall cohort balance. It acts as a sandbox for cohort configuration and provides real-time simulation of trade-offs. 
+
+> “What happens to the room if we add this person?”
+
+### Example:
+
+```
+Improvements:
++ Geo +3.8%
++ Language +2.1%
+
+Risks:
+- Org concentration
+```
+
+📷 <Image src={ProfilePanelAssessment} alt="Profile Panel Assessment along with Fairness delta" />
+
+***
+
+***
+
+## 5. 🤖 Suggest Starting Cohort
+
+This feature changed everything.
+
+The AI can propose a solid initial list based on all signals and fairness targets. Curators then review, edit, and make the final calls. Human judgment stays in the driver’s seat.
+
+### Flow:
+
+```
+Configure → Generate → Review → Edit → Finalize
+```
+
+***
+
+📷 <Image src={SuggestStartingCohort} alt="Modal depicting the various options when choosing the starting cohort" />
+
+***
+
+## 🤖 Where AI Actually Works
+
+We intentionally avoided using AI as a gimmicky layer. It is embedded directly into three specific execution pipelines:
+
+1. **Intent Understanding:** Parsing unstructured long-text answers to extract genuine technical interest.
+2. **Candidate Reasoning:** Generating clear, explainable summaries of *why* an applicant fits the event criteria.
+3. **Cohort Optimization:** Solving the complex multi-variable puzzle of balancing geographic distribution, gender diversity, role balance, and community tenure.
+
+
+## 📊 AI Flow Diagram
+
+```
+User Data
+   ↓
+Local AI (Foundry)
+   ↓
+Queue → Profile → Impact → Action
+   ↓
+Human Decision ✅
+```
+
+***
+
+## 🔐 Privacy First: Why We Used Foundry Local
+
+When designing an enterprise-grade community tool that handles sensitive personal identifiers and professional data, privacy isn't a feature - it's a hard prerequisite. We had to answer a non-negotiable question: *Where does user data go when an LLM processes it?*
+
+> 🔒 **Our Privacy Guardrail:** When we started implementing this, Hosted Agents were not available in India, so we orchestrated our AI workload using Foundry Local via Aspire. By running model serving and orchestration inside our own secure environment, personally identifiable information (PII) and government IDs never leave our boundary.
+
+This gives us the full reasoning power of advanced language models while guaranteeing absolute compliance with Indian data residency standards and zero exposure to external public API training loops.
+
+> Since then, Hosted Agents have launched in Azure's [South India region](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents), and we are evaluating them for future iterations. However, our core principle remains the same: **AI should assist human decisions without compromising user privacy.**
+
+## 🧠 Final System Model
+
+```
+Trust        → GitHub / LinkedIn
+Reliability  → Attendance likelihood
+Intent       → Motivation
+Impact       → Fairness + Cohort effect
+```
+
+# 🔥 Key Lessons
+
+Building Bethuya taught us a few fundamental lessons about the intersection of product design, engineering, and community building:
+
+* **Don’t collect data - collect signals:** More fields create drop-off. Better verification creates high-fidelity signals.
+* **Separate system layers:** Isolate identity verification from event-specific intent.
+* **AI should assist, not decide:** Keep a human expert at the center of the selection loop. AI is for sorting, summarization, and simulation.
+* **Fairness must be visible:** If curators can't see the systemic impact of their choices in real time, they will unintentionally build monocultures. 
+
+In our pilots, this approach cut curation time significantly (from ~75–90 hours down to under 10) while improving geographic and experience diversity in the selected groups. We also caught a few strong candidates who would have been lost in a traditional spreadsheet.
+
+That said, this is still version 1. We expect edge cases, and we know AI can introduce its own biases if we’re not careful. That’s why community feedback is essential.
+
+## 🚀 Invitation to the Community
+
+This system debuts this month for our upcoming [Build //localhost event](https://www.meetup.com/mumbai-technology-meetup/events/314975810/). If you apply, you’ll see the new registration flow. If you’d like to help curate or give feedback on the cockpit, reach out - we want experienced community members involved in the process.
+
+Our goal is simple: make it easier to build genuinely high-quality, diverse, and high-energy cohorts while keeping the process transparent and fair.
+
+What started as “how do we fix registration hell” became a more thoughtful way to grow our community. Excited to ship it and hear what you all think.
