@@ -1,7 +1,7 @@
 ---
 title: "Building a Human-AI Curation System: The Bethuya Journey"
-description: "From 7x over-subscription to fairness-aware decision systems-how we built an AI-assisted, privacy-first curation platform using Azure AI Foundry and thoughtful UX design."
-date: 2026-06-03
+description: "From 7x over-subscription to fairness-aware decision systems, how we built an AI-assisted, privacy-first curation platform using Foundry Local, Aspire and thoughtful UX design."
+date: 2026-06-05
 author: "Augustine Correa"
 slug: "bethuya-human-ai-curation-system"
 tags:
@@ -22,11 +22,11 @@ cover: "./bethuya_curation_coverpic.png"
 
 import { Image } from 'astro:assets';
 import OverCapacityImage from './over_capacity_registrations.png';
-import Onboarding_Step1 from './onboarding_step1.png'
+import OnboardingStep1 from './onboarding_step1.png'
 import EventRegistration from './event_registration.png'
 import SocialNetworkVerification from './social_network_verification.png'
 import FullCurationPortal from './full_curation_portal.png'
-import FairnessChipAfterSellection from './fairness_chips_after_selection.png'
+import FairnessChipAfterSelection from './fairness_chips_after_selection.png'
 import QueueRegistrantCard from './curation_queue_registrant_card.png'
 import ProfilePanelInsight from './profile_panel_header.png'
 import ProfilePanelAssessment from './profile_panel_assessment.png'
@@ -102,7 +102,7 @@ Just name, email, phone, student/professional status, and organization. No long 
 
 ***
 
-<Image src={Onboarding_Step1} alt="Registration form" />
+<Image src={OnboardingStep1} alt="Registration form" />
 
 ***
 
@@ -114,7 +114,7 @@ We let people connect GitHub (great for spotting student builders) or LinkedIn. 
 
 ***
 
-<Image src={SocialNetworkVerification} alt="A registration form with Linked and GitHub connect button" />
+<Image src={SocialNetworkVerification} alt="A registration form with LinkedIn and GitHub connect button" />
 
 ***
 
@@ -179,7 +179,7 @@ ORG 18% ⚠️
 ```
 
 
-📷 <Image src={FairnessChipAfterSellection} alt="Screenshot of Curation with the Gender and Langauage highlighted within the red box" />
+📷 <Image src={FairnessChipAfterSelection} alt="Screenshot of Curation with the Gender and Language highlighted within the red box" />
 
 ***
 
@@ -228,7 +228,7 @@ Risks:
 - Org concentration
 ```
 
-📷 <Image src={ProfilePanelAssessment} alt="Profile Panel Assessment along wiith Fainness delta" />
+📷 <Image src={ProfilePanelAssessment} alt="Profile Panel Assessment along with Fairness delta" />
 
 ***
 
@@ -277,7 +277,7 @@ Human Decision ✅
 
 ## 🔐 Privacy First: Why We Used Foundry Local
 
-When designing an enterprise-grade community tool that handles sensitive personal identifiers and professional data, privacy isn't a feature-it's a hard prerequisite. We had to answer a non-negotiable question: *Where does user data go when an LLM processes it?*
+When designing an enterprise-grade community tool that handles sensitive personal identifiers and professional data, privacy isn't a feature - it's a hard prerequisite. We had to answer a non-negotiable question: *Where does user data go when an LLM processes it?*
 
 > 🔒 **Our Privacy Guardrail:** When we started implementing this, Hosted Agents were not available in India, so we orchestrated our AI workload using Foundry Local via Aspire. By running model serving and orchestration inside our own secure environment, personally identifiable information (PII) and government IDs never leave our boundary.
 
@@ -298,7 +298,7 @@ Impact       → Fairness + Cohort effect
 
 Building Bethuya taught us a few fundamental lessons about the intersection of product design, engineering, and community building:
 
-* **Don’t collect data-collect signals:** More fields create drop-off. Better verification creates high-fidelity signals.
+* **Don’t collect data - collect signals:** More fields create drop-off. Better verification creates high-fidelity signals.
 * **Separate system layers:** Isolate identity verification from event-specific intent.
 * **AI should assist, not decide:** Keep a human expert at the center of the selection loop. AI is for sorting, summarization, and simulation.
 * **Fairness must be visible:** If curators can't see the systemic impact of their choices in real time, they will unintentionally build monocultures. 
@@ -309,7 +309,7 @@ That said, this is still version 1. We expect edge cases, and we know AI can int
 
 ## 🚀 Invitation to the Community
 
-This system debuts this month for our upcoming Build //localhost event. If you apply, you’ll see the new registration flow. If you’d like to help curate or give feedback on the cockpit, reach out - we want experienced community members involved in the process.
+This system debuts this month for our upcoming [Build //localhost event](https://www.meetup.com/mumbai-technology-meetup/events/314975810/). If you apply, you’ll see the new registration flow. If you’d like to help curate or give feedback on the cockpit, reach out - we want experienced community members involved in the process.
 
 Our goal is simple: make it easier to build genuinely high-quality, diverse, and high-energy cohorts while keeping the process transparent and fair.
 
