@@ -29,7 +29,7 @@ import FullCurationPortal from './full_curation_portal_1.png'
 import FairnessChipAfterSelection from './fairness_chips_after_selection_1.png'
 import QueueRegistrantCard from './curation_queue_registrant_card_1.png'
 import ProfilePanelInsight from './profile_panel_header_1.png'
-import ProfilePanelAssessment from './profile_panel_assessment.png'
+import ProfilePanelAssessment from './profile_panel_assessment_1.png'
 import SuggestStartingCohort from './suggest_start_cohort_model.png'
 
 ***
@@ -176,7 +176,7 @@ We intentionally avoided using AI as a gimmicky layer. It is embedded directly i
 ```
 User Data
    ↓
-Local AI (Foundry)
+Local Foundry (workstation 💻)/Hosted Agents (Azure ☁️ - South India)
    ↓
 Queue → Profile → Impact → Action
    ↓
@@ -235,80 +235,6 @@ So we built a practical human-AI curation system. We’ve been testing it intern
 > ✅ **Design a system that helps humans make better decisions**
 
 <Image src={OverCapacityImage} alt="Over-subscription example or raw registrant list" />
-
-***
-
-# 🧩 How We Structured It
-
-We broke the flow into clear layers to keep friction low at the beginning and gather useful signals later:
-
-***
-
-### 📊 System Architecture
-
-```
-Onboarding → Trust → Event → Curation
-```
-
-***
-
-### 📌 Diagram
-
-```
-┌────────────────────────────┐
-│        ONBOARDING          │
-│  Identity (low friction)   │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│         TRUST LAYER         │
-│ GitHub / LinkedIn / Tenure  │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│    EVENT REGISTRATION       │
-│ Intent + Experience + ID    │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│        CURATION             │
-│ Fairness + Impact + Choice  │
-└────────────────────────────┘
-```
-
-***
-
-***
-
-# 🪪 Step 1: Onboarding (Low Friction)
-
-Just name, email, phone, student/professional status, and organization. No long essays or government IDs upfront. The goal is a wide-open front door.
-
-***
-
-<Image src={OnboardingStep1} alt="Registration form" />
-
-***
-
-***
-
-# 🔗 Step 2: Trust via Verification
-
-We let people connect GitHub (great for spotting student builders) or LinkedIn. This gives us credibility signals without forcing them to write paragraphs about themselves.
-
-***
-
-<Image src={SocialNetworkVerification} alt="A registration form with LinkedIn and GitHub connect button" />
-
-***
-
-# 🎯 Step 3: Event Registration (Where Signal Lives)
-
-Only when applying for a specific high-value event do we ask deeper questions: Why do you want to attend? What do you hope to learn and contribute? Government ID is requested only if the venue actually needs it.
-
-<Image src={EventRegistration} alt="Registration for the event" />
-
-
 
 ***
 
