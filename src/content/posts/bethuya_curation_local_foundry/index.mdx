@@ -34,120 +34,30 @@ import SuggestStartingCohort from './suggest_start_cohort_model.png'
 
 ***
 
-# 🚀 Why We Built This
+🧩 What is Bethuya?
 
-If you’ve ever helped organize events for a thriving technical community in India, you know the feeling. Registrations open and suddenly you’re staring at 5–7x applications of a venue capacity. We get students from multiple Mumbai colleges, working professionals, first-timers trying to break in, veterans, and sometimes entire teams applying together.
+Bethuya is an [open-source](https://github.com/HackerspaceMumbai/bethuya), human-in-the-loop community event management system designed specifically for tech community organizers, developer relations (DevRel) teams, and workshop leaders.
 
-The old ways stopped working:
+Unlike traditional event management platforms that rely on randomized lotteries or first-come-first-served chaos, Bethuya uses local AI orchestration to help human organizers curate high-engagement, balanced, and diverse attendee cohorts from massive application pools.
 
-- First-come-first-served just rewarded whoever refreshed Twitter at the right second.  
-- Spreadsheet roulette turned real people into rows.  
-- Manual selection led to fatigue and unintentional bias.
+## 🧱 The Decision Cockpit
 
-We realized the real problem wasn’t collecting more data - it was making fair, high-quality decisions at scale without burning out the curators.
+Now that we’ve defined Bethuya as a platform built for intelligent cohort curation, how does it actually look and feel for an organizer?
 
-So we built a practical human-AI curation system. We’ve been testing it internally and it’s going live this month for our upcoming events.
+We stopped thinking in traditional data-entry pages and started thinking in composable, Blazor-style decision components. To fulfill Bethuya's core promise-helping humans make better, faster decisions -> we built the Decision Cockpit.
 
-> ✅ **Design a system that helps humans make better decisions**
-
-<Image src={OverCapacityImage} alt="Over-subscription example or raw registrant list" />
-
-***
-
-# 🧩 How We Structured It
-
-We broke the flow into clear layers to keep friction low at the beginning and gather useful signals later:
-
-***
-
-### 📊 System Architecture
+The Cockpit isn't just a dashboard; it is an active feedback loop composed of five core layers:
 
 ```
-Onboarding → Trust → Event → Curation
-```
-
-***
-
-### 📌 Diagram
-
-```
-┌────────────────────────────┐
-│        ONBOARDING          │
-│  Identity (low friction)   │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│         TRUST LAYER         │
-│ GitHub / LinkedIn / Tenure  │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│    EVENT REGISTRATION       │
-│ Intent + Experience + ID    │
-└────────────┬───────────────┘
-             ↓
-┌────────────────────────────┐
-│        CURATION             │
-│ Fairness + Impact + Choice  │
-└────────────────────────────┘
-```
-
-***
-
-***
-
-# 🪪 Step 1: Onboarding (Low Friction)
-
-Just name, email, phone, student/professional status, and organization. No long essays or government IDs upfront. The goal is a wide-open front door.
-
-***
-
-<Image src={OnboardingStep1} alt="Registration form" />
-
-***
-
-***
-
-# 🔗 Step 2: Trust via Verification
-
-We let people connect GitHub (great for spotting student builders) or LinkedIn. This gives us credibility signals without forcing them to write paragraphs about themselves.
-
-***
-
-<Image src={SocialNetworkVerification} alt="A registration form with LinkedIn and GitHub connect button" />
-
-***
-
-# 🎯 Step 3: Event Registration (Where Signal Lives)
-
-Only when applying for a specific high-value event do we ask deeper questions: Why do you want to attend? What do you hope to learn and contribute? Government ID is requested only if the venue actually needs it.
-
-<Image src={EventRegistration} alt="Registration for the event" />
-
-
-
-***
-
-# 🧱 The Decision Cockpit
-
-This is the part we’re most proud of. Instead of drowning in spreadsheets, curators now work in a live interface with four main pieces
-
-***
-
-## 🧩 Core Components
-
-### 📊 Decision Cockpit Diagram
+Fairness Budget (State Layer)
+        │
+        ▼
+Registrant Queue (Triage) ──> Profile Panel (Understanding) ──> Impact Panel (Simulation)
+        │
+        ▼
+Suggested Action (Decision Loop)
 
 ```
-Fairness Budget
-      ↓
-Queue → Profile
-      ↓
-   Impact
-      ↓
-   Decision
-```
-
 ***
 
 <Image src={FullCurationPortal} alt="Screenshot of the entire Curation Intelligence Portal" />
@@ -306,6 +216,101 @@ Building Bethuya taught us a few fundamental lessons about the intersection of p
 In our pilots, this approach cut curation time significantly (from ~75–90 hours down to under 10) while improving geographic and experience diversity in the selected groups. We also caught a few strong candidates who would have been lost in a traditional spreadsheet.
 
 That said, this is still version 1. We expect edge cases, and we know AI can introduce its own biases if we’re not careful. That’s why community feedback is essential.
+
+---
+# 🚀 Why We Built This
+
+If you’ve ever helped organize events for a thriving technical community in India, you know the feeling. Registrations open and suddenly you’re staring at 5–7x applications of a venue capacity. We get students from multiple Mumbai colleges, working professionals, first-timers trying to break in, veterans, and sometimes entire teams applying together.
+
+The old ways stopped working:
+
+- First-come-first-served just rewarded whoever refreshed Twitter at the right second.  
+- Spreadsheet roulette turned real people into rows.  
+- Manual selection led to fatigue and unintentional bias.
+
+We realized the real problem wasn’t collecting more data - it was making fair, high-quality decisions at scale without burning out the curators.
+
+So we built a practical human-AI curation system. We’ve been testing it internally and it’s going live this month for our upcoming events.
+
+> ✅ **Design a system that helps humans make better decisions**
+
+<Image src={OverCapacityImage} alt="Over-subscription example or raw registrant list" />
+
+***
+
+# 🧩 How We Structured It
+
+We broke the flow into clear layers to keep friction low at the beginning and gather useful signals later:
+
+***
+
+### 📊 System Architecture
+
+```
+Onboarding → Trust → Event → Curation
+```
+
+***
+
+### 📌 Diagram
+
+```
+┌────────────────────────────┐
+│        ONBOARDING          │
+│  Identity (low friction)   │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│         TRUST LAYER         │
+│ GitHub / LinkedIn / Tenure  │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│    EVENT REGISTRATION       │
+│ Intent + Experience + ID    │
+└────────────┬───────────────┘
+             ↓
+┌────────────────────────────┐
+│        CURATION             │
+│ Fairness + Impact + Choice  │
+└────────────────────────────┘
+```
+
+***
+
+***
+
+# 🪪 Step 1: Onboarding (Low Friction)
+
+Just name, email, phone, student/professional status, and organization. No long essays or government IDs upfront. The goal is a wide-open front door.
+
+***
+
+<Image src={OnboardingStep1} alt="Registration form" />
+
+***
+
+***
+
+# 🔗 Step 2: Trust via Verification
+
+We let people connect GitHub (great for spotting student builders) or LinkedIn. This gives us credibility signals without forcing them to write paragraphs about themselves.
+
+***
+
+<Image src={SocialNetworkVerification} alt="A registration form with LinkedIn and GitHub connect button" />
+
+***
+
+# 🎯 Step 3: Event Registration (Where Signal Lives)
+
+Only when applying for a specific high-value event do we ask deeper questions: Why do you want to attend? What do you hope to learn and contribute? Government ID is requested only if the venue actually needs it.
+
+<Image src={EventRegistration} alt="Registration for the event" />
+
+
+
+***
 
 ## 🚀 Invitation to the Community
 
