@@ -50,6 +50,10 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      // Allow Node.js built-in modules for packages like sanitize-html
+      external: ['path', 'fs', 'crypto', 'stream', 'util', 'buffer']
+    },
     build: {
       // Inline CSS for files smaller than 8KB to reduce HTTP requests
       assetsInlineLimit: 8192,

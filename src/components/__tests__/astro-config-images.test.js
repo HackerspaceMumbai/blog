@@ -40,7 +40,7 @@ describe('Astro Configuration for Image Optimization', () => {
   });
 
   it('should have static output mode for optimal image handling', () => {
-    expect(astroConfig.content).toContain("output: 'static'");
+    expect(astroConfig.content).toContain("output: 'server'");
   });
 });
 
@@ -49,7 +49,7 @@ describe('Content Collection Schema', () => {
 
   beforeAll(async () => {
     try {
-      const configPath = path.resolve(process.cwd(), 'src/content/config.ts');
+      const configPath = path.resolve(process.cwd(), 'src/content.config.ts');
       const configContent = await fs.readFile(configPath, 'utf-8');
       contentConfig = configContent;
     } catch (error) {

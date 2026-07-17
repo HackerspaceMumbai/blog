@@ -1,0 +1,49 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hackmum-blog",
+	"compatibility_date": "2026-04-22",
+	"assets": {
+		"directory": "./dist"
+	},
+	"env": {
+		"dev": {
+			"vars": {
+				"NODE_ENV": "development",
+				"CORS_ORIGIN": "*",
+				"LOG_LEVEL": "debug",
+				"KIT_API_URL": "https://api.kit.com/v4"
+			}
+		},
+		"production": {
+			"vars": {
+				"NODE_ENV": "production",
+				"CORS_ORIGIN": "https://hackmum.in",
+				"LOG_LEVEL": "info",
+				"KIT_API_URL": "https://api.kit.com/v4"
+			}
+		}
+	}
+	/*
+  // Production Route Configuration
+  // Uncomment this block when you are ready to point the live domain to Cloudflare
+
+  "routes": [
+    {
+      "pattern": "/api/newsletter",
+      "custom_domain": true
+    },
+    {
+      "pattern": "/api/newsletter/health",
+      "custom_domain": true
+    },
+    {
+      "pattern": "/subscribe",
+      "custom_domain": true
+    },
+    {
+      "pattern": "/health/newsletter",
+      "custom_domain": true
+    }
+  ]
+    */
+}

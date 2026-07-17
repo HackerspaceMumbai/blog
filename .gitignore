@@ -30,7 +30,7 @@ pnpm-debug.log*
 # Local Netlify folder
 .netlify
 
-# Backup files
+# Backup filesICC WS. 
 *.backup
 
 # CI test reports
