@@ -1,0 +1,70 @@
+---
+import Layout from "../../../components/Layout.astro";
+import EventGallery from "../../../components/EventGallery.astro";
+import { UPCOMING_EVENTS } from "../../../data/upcomingEvents.js";
+import type { UpcomingEvent } from "../../../data/upcomingEvents.js";
+
+// Generate static paths for all upcoming events
+export function getStaticPaths() {
+  return UPCOMING_EVENTS.map((event: UpcomingEvent) => ({
+    params: { slug: event.slug },
+    props: { event },
+  }));
+}
+
+interface Props {
+  event: UpcomingEvent;
+}
+
+const { event } = Astro.props;
+const { slug } = Astro.params;
+
+// Dynamically import all images from the event's photos folder
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/images/events/*/photos/*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP,avif,AVIF}",
+  { eager: true }
+);
+
+const imageEntries = Object.entries(images) as Array<[string, { default: ImageMetadata }]>;
+
+// Filter and organize images for this specific event
+const eventImages = imageEntries
+  .filter(([path]) => path.includes(`/events/${slug}/photos/`))
+  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+  .map(([path, image]) => {
+    const filename = path.split("/").pop() || "Photo";
+    return {
+      src: image.default,
+      alt: `${event.title} - ${filename}`,
+    };
+  });
+
+// Create breadcrumb navigation
+const breadcrumb = [
+  { label: "Home", href: "/" },
+  { label: "Events", href: "/#events" },
+  { label: event.title, href: "#" },
+];
+
+const title = `${event.title} - Photo Gallery`;
+const description = `Photos from ${event.title} at Hackerspace Mumbai`;
+---
+
+<Layout
+  title={title}
+  description={description}
+  tags={["event", "gallery", "photos", event.slug]}
+  canonical={`https://hackmum.in/events/${slug}/gallery`}
+  type="website"
+>
+  <!-- Page heading for screen readers -->
+  <h1 class="sr-only">{event.title} Gallery</h1>
+
+  <EventGallery
+    eventTitle={event.title}
+    eventSlug={slug}
+    images={eventImages}
+    breadcrumb={breadcrumb}
+    backLink={{ label: "Back to Events", href: "/#events" }}
+  />
+</Layout>

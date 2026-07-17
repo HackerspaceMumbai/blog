@@ -1109,3 +1109,24 @@ body {
   margin-top: var(--space-xs);
 }
 
+/* =============================================================================
+   HEADING ANCHOR LINKS
+   ============================================================================= */
+
+.prose :is(h1, h2, h3, h4, h5, h6) > a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) > a::after {
+  content: ' #';
+  opacity: 0;
+  color: var(--color-primary);
+  font-weight: 400;
+  transition: opacity 0.15s ease;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6):hover > a::after {
+  opacity: 1;
+}
+

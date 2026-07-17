@@ -25,7 +25,8 @@ export const CSP_CONFIG = {
       "'self'",
       "'unsafe-inline'",
       'https://unpkg.com/web-vitals@3',
-      'https://unpkg.com/axe-core@4.8.4'
+      'https://unpkg.com/axe-core@4.8.4',
+      'https://unpkg.com/mermaid@11.15.0/dist/mermaid.min.js'
     ],
     'style-src': [
       "'self'",

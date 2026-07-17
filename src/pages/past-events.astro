@@ -1,0 +1,51 @@
+---
+import Layout from "../components/Layout.astro";
+import PastEventsSection from "../components/PastEventsSection.astro";
+import { getCollection } from "astro:content";
+
+// Fetch all past events
+const pastEvents = await getCollection('pastEvents');
+
+// SEO metadata
+export const title = "Past Events & Meetups - Hackerspace Mumbai";
+export const description = "Explore past events and meetups from Hackerspace Mumbai. Access speaker resources, slides, videos, and more from our community events.";
+export const tags = ["events", "meetups", "past events", "speaker resources", "slides", "videos"];
+export const canonical = "https://hackmum.in/past-events";
+---
+
+<Layout 
+  title={title} 
+  description={description}
+  tags={tags}
+  canonical={canonical}
+  type="website"
+>
+  <!-- Page heading for screen readers -->
+  <h1 class="sr-only">Past Events and Meetups</h1>
+
+  <!-- Hero-like section with breadcrumb -->
+  <div class="bg-gradient-to-b from-primary/10 to-base-100 py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-sm">
+          <li>
+            <a href="/" class="text-primary hover:text-primary-focus hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded px-1">
+              Home
+            </a>
+          </li>
+          <li class="text-base-content/60">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li class="text-base-content font-medium" aria-current="page">
+            Past Events
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <PastEventsSection events={pastEvents} />
+</Layout>

@@ -10,8 +10,9 @@ export interface EventCardProps {
   description: string;
   rsvpLink: string;
   coverImage?: string | ImageMetadata;
+  galleryPath?: string;
 }
-const { title, date, location, description, rsvpLink, coverImage } = Astro.props;
+const { title, date, location, description, rsvpLink, coverImage, galleryPath } = Astro.props;
 ---
 <div
   class="card bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary hover:scale-[1.02] hover:-translate-y-1 group cursor-pointer transition-all duration-300 ease-out overflow-hidden h-full flex flex-col min-h-[480px] md:min-h-[520px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
@@ -40,8 +41,11 @@ const { title, date, location, description, rsvpLink, coverImage } = Astro.props
   <h3 class="card-title text-primary text-2xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
     <p class="text-base-content/70 text-base mb-3">{date} | {location}</p>
     <p class="mb-6 text-base-content line-clamp-3 text-base md:text-lg">{description}</p>
-    <div class="card-actions mt-auto">
+    <div class="card-actions mt-auto gap-3 flex flex-col sm:flex-row">
       <CTAButton href={rsvpLink} variant="primary" extraClass="w-full flex justify-center group-focus-within:ring-2 group-focus-within:ring-primary group-focus-within:ring-offset-2" target="_blank" aria-label="RSVP for this event (opens in new window)">RSVP Now</CTAButton>
+      {galleryPath && (
+        <CTAButton href={galleryPath} variant="outline" extraClass="w-full flex justify-center" aria-label="View photos from this event">View Photos</CTAButton>
+      )}
     </div>
   </div>
 </div>
