@@ -19,7 +19,7 @@ const posts = defineCollection({
 });
 
 const pastEvents = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: "**/*.md", base: "./src/content/pastEvents" }),
   schema: ({ image }) => z.object({
     title: z.string().describe("Event title"),
     date: z.coerce.date().describe("Event date"),

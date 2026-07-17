@@ -2,22 +2,15 @@
 import Layout from "../../../components/Layout.astro";
 import EventGallery from "../../../components/EventGallery.astro";
 import { UPCOMING_EVENTS } from "../../../data/upcomingEvents.js";
-import type { UpcomingEvent } from "../../../data/upcomingEvents.js";
-
-// Generate static paths for all upcoming events
-export function getStaticPaths() {
-  return UPCOMING_EVENTS.map((event: UpcomingEvent) => ({
-    params: { slug: event.slug },
-    props: { event },
-  }));
-}
-
-interface Props {
-  event: UpcomingEvent;
-}
-
-const { event } = Astro.props;
 const { slug } = Astro.params;
+
+const event = typeof slug === 'string'
+  ? UPCOMING_EVENTS.find((entry) => entry.slug === slug)
+  : undefined;
+
+if (!event || typeof slug !== 'string') {
+  return Astro.redirect('/#events');
+}
 
 // Dynamically import all images from the event's photos folder
 const images = import.meta.glob<{ default: ImageMetadata }>(

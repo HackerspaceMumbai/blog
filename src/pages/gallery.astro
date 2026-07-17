@@ -21,6 +21,8 @@ const pastEvents = (await getCollection("pastEvents")).sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
 );
 
+const getPastEventSlug = (event: (typeof pastEvents)[0]) => event.id.replace(/\/index$/, '');
+
 const galleryImages = [
   {
     src: pinnedpic1,
@@ -152,7 +154,7 @@ const galleryImages = [
                   <p class="text-sm text-base-content/80">{event.data.description}</p>
                   <div class="card-actions justify-end mt-2">
                     <a
-                      href={`/past-events/${event.slug}/gallery/`}
+                      href={`/past-events/${getPastEventSlug(event)}/gallery/`}
                       class="btn btn-outline btn-primary btn-sm"
                       aria-label={`View photos from ${event.data.title}`}
                     >

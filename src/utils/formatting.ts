@@ -2,8 +2,6 @@
 // DATE FORMATTING UTILITIES
 // =============================================================================
 
-import { extractTextFromHtml } from '../config/security.js';
-
 /**
  * Formats a date string to a readable format
  */

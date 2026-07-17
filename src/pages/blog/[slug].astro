@@ -1,5 +1,5 @@
 ---
-import { getEntry, type CollectionEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import { Image } from 'astro:assets'; 
 import Layout from "../../components/Layout.astro";
 // Removed custom Prose.astro component
@@ -11,7 +11,14 @@ import Layout from "../../components/Layout.astro";
 export async function getStaticPaths() {
   const { getCollection } = await import("astro:content");
   const posts = await getCollection("posts");
-  return posts.map(post => ({ params: { slug: post.slug } }));
+
+  return posts.map(post => {
+    const slug = typeof post.data.slug === 'string' && post.data.slug.trim().length > 0
+      ? post.data.slug.trim()
+      : post.id.replace(/\/index$/, '');
+
+    return { params: { slug } };
+  });
 }
 
 const { slug } = Astro.params;
@@ -26,11 +33,15 @@ if (!post) {
   throw new Error(`Post not found: ${slug}`);
 }
 
+if (!post.data.date) {
+  throw new Error(`Post is missing a publication date: ${slug}`);
+}
+
 // Render the post content
-const { Content, headings, remarkPluginFrontmatter } = await post.render();
+const { Content } = await render(post);
 
 // --- Reading time estimate ---
-function calculateReadingTime(text) {
+function calculateReadingTime(text: string) {
   // Average reading speed: 200 words per minute
   const wordsPerMinute = 200;
   const words = text.split(/\s+/).length;
@@ -52,6 +63,7 @@ try {
 // The cover image is now handled by Astro's image() helper
 // post.data.cover is already an ImageMetadata object when present
 const coverImage = post.data.cover;
+const publishedTime = post.data.date.toISOString();
 ---
 
 <style>
@@ -243,8 +255,7 @@ const coverImage = post.data.cover;
   title={`${post.data.title} | Hackerspace Mumbai Blog`}
   description={post.data.description}
   type="article"
-  publishedTime={post.data.date.toISOString()}
-  modifiedTime={post.data.modifiedDate?.toISOString()}
+  publishedTime={publishedTime}
   author={post.data.author}
   tags={post.data.tags || []}
   image={coverImage?.src}
@@ -258,7 +269,7 @@ const coverImage = post.data.cover;
           <div class="blog-meta">
             <span>By {post.data.author}</span>
             <span class="dot">•</span>
-            <span>{new Date(post.data.date).toLocaleDateString('en-in', {
+            <span>{new Date(publishedTime).toLocaleDateString('en-in', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -305,8 +316,8 @@ const coverImage = post.data.cover;
             <div class="mt-4">
               <h3 class="text-xl font-semibold mb-2">Categories</h3>
               <div class="tag-list">
-                {post.data.categories.map((category: string, index: number) => (
-                  <a key={index} href={`/categories/${encodeURIComponent(category.toLowerCase())}`}>{category}</a>
+                {post.data.categories.map((category: string) => (
+                  <a href={`/categories/${encodeURIComponent(category.toLowerCase())}`}>{category}</a>
                 ))}
               </div>
             </div>

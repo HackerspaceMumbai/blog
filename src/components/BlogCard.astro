@@ -1,12 +1,23 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { formatDate } from '../utils/formatting';
+import { formatDate } from '../utils/formatting.js';
 import placeholderImage from '../assets/images/gallery/pinnedpic-1.jpg';
 
 const { post, featured = false } = Astro.props;
 
+const getBlogSlug = (post: CollectionEntry<'posts'>) => {
+  const frontmatterSlug = post?.data?.slug;
+
+  if (typeof frontmatterSlug === 'string' && frontmatterSlug.trim().length > 0) {
+    return frontmatterSlug.trim();
+  }
+
+  return post.id.replace(/\/index$/, '');
+};
+
 // Robust image resolution function
-const getBlogCoverImage = (post) => {
+const getBlogCoverImage = (post: CollectionEntry<'posts'>) => {
   try {
     // Handle the case where post.data.cover might be ImageMetadata or undefined
     const cover = post?.data?.cover;
@@ -20,11 +31,6 @@ const getBlogCoverImage = (post) => {
       return cover;
     }
     
-    // If it's a string path (legacy), return it
-    if (typeof cover === 'string' && cover.length > 0) {
-      return cover;
-    }
-    
     // Fallback to placeholder
     return placeholderImage;
   } catch (error) {
@@ -34,14 +40,14 @@ const getBlogCoverImage = (post) => {
 };
 
 // Generate appropriate alt text based on image type
-const getImageAltText = (post, coverImage) => {
+const getImageAltText = (post: CollectionEntry<'posts'>, coverImage: typeof placeholderImage | string) => {
   if (coverImage === placeholderImage) {
     return ''; // Empty alt for decorative placeholder image
   }
   return `Cover image for article: ${post.data.title}`;
 };
 
-const href = `/blog/${post.slug}/`;
+const href = `/blog/${getBlogSlug(post)}/`;
 const coverImage = getBlogCoverImage(post);
 const imageAltText = getImageAltText(post, coverImage);
 const formattedDate = formatDate(post.data.date.toString());
@@ -92,7 +98,7 @@ const formattedDate = formatDate(post.data.date.toString());
     
     {post.data.tags && post.data.tags.length > 0 && (
       <div class="flex flex-wrap gap-2 mb-4">
-        {post.data.tags.slice(0, 3).map((tag) => (
+        {post.data.tags.slice(0, 3).map((tag: string) => (
           <span class="badge badge-outline badge-sm">{tag}</span>
         ))}
         {post.data.tags.length > 3 && (

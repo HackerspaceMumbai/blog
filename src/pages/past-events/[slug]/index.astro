@@ -6,20 +6,16 @@ import { getCollection } from "astro:content";
 // Fetch all past events for static route generation
 const pastEventCollection = await getCollection("pastEvents");
 
-export async function getStaticPaths() {
-  const pastEvents = await getCollection("pastEvents");
-  return pastEvents.map((event) => ({
-    params: { slug: event.slug },
-    props: { event },
-  }));
-}
-
-interface Props {
-  event: (typeof pastEventCollection)[0];
-}
-
-const { event } = Astro.props;
+const getPastEventSlug = (event: (typeof pastEventCollection)[0]) => event.id.replace(/\/index$/, '');
 const { slug } = Astro.params;
+
+const event = typeof slug === 'string'
+  ? pastEventCollection.find((entry) => getPastEventSlug(entry) === slug)
+  : undefined;
+
+if (!event || typeof slug !== 'string') {
+  return Astro.redirect('/past-events');
+}
 
 const title = `${event.data.title} - Past Event - Hackerspace Mumbai`;
 const description = event.data.description;
@@ -78,7 +74,7 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
         speakerResources={event.data.speakerResources}
         coverImage={event.data.coverImage}
         eventId={event.id}
-        slug={event.slug}
+        slug={getPastEventSlug(event)}
       />
 
       <div class="text-center mt-10">
