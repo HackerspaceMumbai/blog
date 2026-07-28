@@ -43,7 +43,7 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
     >
       <div class="premiere-pill premiere-pill-upcoming mb-6 mx-auto inline-flex">
         <span aria-hidden="true">📡</span>
-        <span>PREMIERING IN</span>
+        <span>{upcomingBadgeText}</span>
       </div>
       <p
         class="premiere-countdown"
@@ -161,10 +161,17 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
       });
     };
 
+    let countdownIntervalId = null;
+
     const tick = () => {
       const nowMs = Date.now();
       const state = resolveState(nowMs);
       applyState(state);
+
+      if (state === 'post' && countdownIntervalId !== null) {
+        window.clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+      }
 
       if (countdownEl && state === 'upcoming') {
         const remainingMs = startMs - nowMs;
@@ -177,7 +184,9 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
     };
 
     tick();
-    window.setInterval(tick, 1000);
+    if (resolveState(Date.now()) !== 'post') {
+      countdownIntervalId = window.setInterval(tick, 1000);
+    }
   })();
 </script>
 
