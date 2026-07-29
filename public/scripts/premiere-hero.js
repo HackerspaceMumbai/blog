@@ -56,10 +56,11 @@
           countdownA11yEl.textContent = `Premiere starts in ${formattedCountdown.replace(/ : /g, ', ')}`;
         }
       }
+      return state;
     };
 
-    tick();
-    if (resolveState(Date.now()) !== 'post') {
+    const initialState = tick();
+    if (initialState !== 'post') {
       countdownIntervalId = window.setInterval(tick, 1000);
     }
   })();
