@@ -10,7 +10,7 @@ import SponsorsSection from "../components/SponsorsSection.astro";
 import GallerySection from "../components/GallerySection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
 import { getCollection } from "astro:content";
-import { UPCOMING_EVENTS } from "../data/upcomingEvents.js";
+import { FEATURED_PREMIERE } from "../data/featuredPremiere.js";
 import buildlocalhostmum from '../assets/images/build_localhost_mumbai.png';
 
 
@@ -146,7 +146,7 @@ export const canonical = "https://hackmum.in/";
   <!-- Main page heading for screen readers - removed duplicate H1 -->
   <!-- H1 is now in HeroSection component -->
 
-  <HeroSection heroImage={heroBackground} />
+  <HeroSection heroImage={heroBackground} featuredPremiere={FEATURED_PREMIERE} />
 
   <EventsSection events={upcomingEvents} />
 
