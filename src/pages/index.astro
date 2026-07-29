@@ -11,7 +11,6 @@ import GallerySection from "../components/GallerySection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
 import { getCollection } from "astro:content";
 import { UPCOMING_EVENTS } from "../data/upcomingEvents.js";
-import buildlocalhostmum from '../assets/images/build_localhost_mumbai.png';
 
 
 // Get the most recent blog posts
@@ -23,19 +22,6 @@ const posts = (await getCollection("posts"))
       new Date(a.data.date).valueOf()
   )
   .slice(0, 3); // Display only the 3 most recent posts
-
-const upcomingEvents = [{
-  
-  slug: 'build-localhost-mumbai-2026',
-  title: 'Build //localhost Mumbai 2026',
-  date: '2026-06-20',
-  location: 'Mumbai, India',
-  description: 'Join us for Build //localhost Mumbai 2026, where we explore the latest in technology and innovation.',
-  rsvpLink: 'https://www.meetup.com/mumbai-technology-meetup/events/314975810/',
-  coverImage: buildlocalhostmum,
-  
-
-}];
 
 // Sample testimonials
 const testimonials = [
@@ -148,7 +134,7 @@ export const canonical = "https://hackmum.in/";
 
   <HeroSection heroImage={heroBackground} />
 
-  <EventsSection events={upcomingEvents} />
+  <EventsSection events={UPCOMING_EVENTS} />
 
   <BlogSection posts={posts} />
 
