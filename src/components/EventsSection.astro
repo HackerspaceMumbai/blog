@@ -1,7 +1,10 @@
 ---
 import CTAButton from './CTAButton.astro';
 import EventCard from './EventCard.astro';
+import RecentEventCard from './RecentEventCard.astro';
 import SectionHeading from './SectionHeading.astro';
+import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 
 export interface Event {
   title: string;
@@ -15,6 +18,10 @@ export interface Event {
 
 interface Props {
   events: Event[];
+  /** Recent past events to show when no upcoming events exist */
+  recentEvents?: CollectionEntry<'pastEvents'>[];
+  /** Total events hosted count for the stat badge */
+  totalEventsHosted?: number;
   /** Optional title override */
   title?: string;
   /** Optional CTA button text */
@@ -25,10 +32,16 @@ interface Props {
 
 const {
   events,
+  recentEvents = [],
+  totalEventsHosted,
   title = "Upcoming Events",
   ctaText = "View All Events",
   ctaUrl = "https://www.meetup.com/mumbai-technology-meetup/events/",
 } = Astro.props;
+
+const statLabel = totalEventsHosted != null
+  ? `${totalEventsHosted}+ events hosted`
+  : null;
 
 // Validate and sanitize events array
 const validateEvents = (events: Event[]): Event[] => {
@@ -66,7 +79,12 @@ const getGridClasses = (eventCount: number): string => {
   return 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 max-w-7xl mx-auto';
 };
 
-const gridClasses = getGridClasses(validatedEvents.length);
+// Sort and limit recent events to 3 most recent
+const sortedRecentEvents = [...recentEvents]
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+const showRecentFallback = validatedEvents.length === 0 && sortedRecentEvents.length > 0;
 ---
 <section 
   class="pt-8 pb-16 px-4 bg-base-100 text-base-content"
@@ -75,20 +93,33 @@ const gridClasses = getGridClasses(validatedEvents.length);
 >
   <div class="max-w-7xl mx-auto">
     <!-- Section Header -->
-    <header class="mb-16 text-center">
+    <header class="mb-12 text-center">
       <SectionHeading 
         id="events" 
         level={2}
         class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
       >
-        {title}
+        {showRecentFallback ? "Recent Events" : title}
       </SectionHeading>
+
+      {/* 100+ events stat badge — always visible */}
+      {statLabel && (
+        <p class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary/80 bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+          </svg>
+          {statLabel}
+        </p>
+      )}
+
       <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">
-        Join us for upcoming meetups, workshops, and community events in Mumbai
+        {showRecentFallback
+          ? "Catch up on what happened at our recent meetups and workshops"
+          : "Join us for upcoming meetups, workshops, and community events in Mumbai"}
       </p>
     </header>
 
-    {/* Enhanced Responsive Grid with improved accessibility and dynamic layout */}
+    {/* Upcoming events grid */}
     {validatedEvents.length > 0 && (
       <div 
         class={`grid ${gridClasses} gap-8 items-stretch mb-8`}
@@ -110,8 +141,30 @@ const gridClasses = getGridClasses(validatedEvents.length);
       </div>
     )}
 
-    {/* Empty state for when no events are available */}
-    {validatedEvents.length === 0 && (
+    {/* Recent events fallback — shown when no upcoming events */}
+    {showRecentFallback && (
+      <div 
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8"
+        role="list"
+        aria-label="Recent past events from Hackerspace Mumbai"
+      >
+        {sortedRecentEvents.map((event) => (
+          <div role="listitem">
+            <RecentEventCard
+              title={event.data.title}
+              date={event.data.date}
+              location={event.data.location}
+              slug={event.slug}
+              coverImage={event.data.coverImage as any}
+              eventType={event.data.eventType}
+            />
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Empty state — only when no upcoming and no recent events */}
+    {validatedEvents.length === 0 && sortedRecentEvents.length === 0 && (
       <div 
         class="text-center py-16"
         role="status"
@@ -133,7 +186,7 @@ const gridClasses = getGridClasses(validatedEvents.length);
       </div>
     )}
 
-    {/* CTA Section with enhanced accessibility */}
+    {/* CTA Section */}
     <footer class="text-center mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
       <CTAButton 
         href={ctaUrl} 

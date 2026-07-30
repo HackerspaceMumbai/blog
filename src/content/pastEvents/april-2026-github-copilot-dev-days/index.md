@@ -1,6 +1,7 @@
 ---
 title: "GitHub Copilot Dev Days – Mumbai 🚀"
 date: "2026-04-18"
+eventType: "workshop"
 location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai"
 description: "A hands-on, community-led event focused on the next frontier of AI-assisted development, from Copilot CLI to agentic workflows in VS Code. Featuring expert presentations, live coding demos, and breakout sessions."
 speakerResources:

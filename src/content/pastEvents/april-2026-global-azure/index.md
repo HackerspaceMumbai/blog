@@ -1,6 +1,7 @@
 ---
 title: "🌍 Global Azure 2026 – Mumbai ☁️"
 date: "2026-04-18"
+eventType: "conference"
 location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai"
 description: "Mumbai's premier cloud-native community summit featuring expert sessions, live demos, and practical insights across Azure AI, Data, DevOps, Security, and Cloud-Native technologies. Learn from industry experts and connect with fellow cloud enthusiasts."
 speakerResources:

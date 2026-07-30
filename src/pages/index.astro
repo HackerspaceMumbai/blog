@@ -24,6 +24,11 @@ const posts = (await getCollection("posts"))
   )
   .slice(0, 3); // Display only the 3 most recent posts
 
+// Fetch recent past events for fallback when no upcoming events
+const recentPastEvents = (await getCollection("pastEvents"))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
 // Sample testimonials
 const testimonials = [
   {
@@ -135,7 +140,7 @@ export const canonical = "https://hackmum.in/";
 
   <HeroSection heroImage={heroBackground} featuredPremiere={FEATURED_PREMIERE} />
 
-  <EventsSection events={UPCOMING_EVENTS} />
+  <EventsSection events={UPCOMING_EVENTS} recentEvents={recentPastEvents} totalEventsHosted={stats.meetupsHosted} />
 
   <BlogSection posts={posts} />
 

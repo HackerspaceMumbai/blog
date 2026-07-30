@@ -1,6 +1,7 @@
 ---
 title: "🚀 Build //localhost : Mumbai"
 date: "2026-06-20"
+eventType: "conference"
 location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai"
 description: "A builder-first, high-engagement deep dive into cloud architecture, container security, open-source orchestration, and agentic engineering workflows—bringing the best of Microsoft Build to the Mumbai developer community."
 coverImage: "../../../assets/images/build_localhost_mumbai.png"
