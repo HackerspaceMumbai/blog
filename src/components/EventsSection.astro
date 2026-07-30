@@ -5,6 +5,13 @@ import RecentEventCard from './RecentEventCard.astro';
 import SectionHeading from './SectionHeading.astro';
 import type { CollectionEntry } from 'astro:content';
 import type { ImageMetadata } from 'astro';
+import {
+  formatHostedEventsStat,
+  getGridClasses,
+  getSortedRecentEvents,
+  shouldShowRecentFallback,
+  validateUpcomingEvents,
+} from '../utils/eventsSection';
 
 export interface Event {
   title: string;
@@ -39,56 +46,17 @@ const {
   ctaUrl = "https://www.meetup.com/mumbai-technology-meetup/events/",
 } = Astro.props;
 
-const statLabel = totalEventsHosted != null
-  ? `${totalEventsHosted}+ events hosted`
-  : null;
-
-// Validate and sanitize events array
-const validateEvents = (events: Event[]): Event[] => {
-  try {
-    if (!Array.isArray(events)) {
-      console.warn('Events is not an array, using empty array');
-      return [];
-    }
-    // Filter out invalid events and limit to reasonable number
-    const validEvents = events
-      .filter(event => {
-        if (!event || typeof event !== 'object') return false;
-        if (!event.title || typeof event.title !== 'string') return false;
-        if (!event.date || typeof event.date !== 'string') return false;
-        if (!event.location || typeof event.location !== 'string') return false;
-        if (!event.description || typeof event.description !== 'string') return false;
-        if (!event.rsvpLink || typeof event.rsvpLink !== 'string') return false;
-        return true;
-      })
-      .slice(0, 8); // Limit to 8 events for performance
-    return validEvents;
-  } catch (error) {
-    console.error('Error validating events:', error);
-    return [];
-  }
-};
-
-const validatedEvents = validateEvents(events);
-
-// Determine grid layout based on number of events
-const getGridClasses = (eventCount: number): string => {
-  if (eventCount === 0) return '';
-  if (eventCount === 1) return 'grid-cols-1 max-w-4xl mx-auto';
-  if (eventCount === 2) return 'grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto';
-  return 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 max-w-7xl mx-auto';
-};
+const statLabel = formatHostedEventsStat(totalEventsHosted);
+const validatedEvents = validateUpcomingEvents<Event>(events);
+const gridClasses = getGridClasses(validatedEvents.length);
 
 // Sort and limit recent events to 3 most recent
-const sortedRecentEvents = [...recentEvents]
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 3);
-
-const showRecentFallback = validatedEvents.length === 0 && sortedRecentEvents.length > 0;
+const sortedRecentEvents = getSortedRecentEvents(recentEvents);
+const showRecentFallback = shouldShowRecentFallback(validatedEvents.length, sortedRecentEvents.length);
 ---
 <section 
   class="pt-8 pb-16 px-4 bg-base-100 text-base-content"
-  aria-labelledby="events-section-title"
+  aria-labelledby="events"
   role="region"
 >
   <div class="max-w-7xl mx-auto">
@@ -155,7 +123,7 @@ const showRecentFallback = validatedEvents.length === 0 && sortedRecentEvents.le
               date={event.data.date}
               location={event.data.location}
               slug={event.slug}
-              coverImage={event.data.coverImage as any}
+              coverImage={event.data.coverImage}
               eventType={event.data.eventType}
             />
           </div>
