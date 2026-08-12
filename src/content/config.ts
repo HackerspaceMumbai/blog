@@ -24,6 +24,7 @@ const pastEvents = defineCollection({
     date: z.coerce.date().describe("Event date"),
     location: z.string().describe("Event location"),
     description: z.string().describe("Event description"),
+    eventType: z.enum(["meetup", "workshop", "conference", "discussion", "hackathon", "other"]).optional().describe("Type of event"),
     coverImage: image().optional().describe("Event cover image"),
     speakerResources: z.array(z.object({
       speakerName: z.string().describe("Speaker's name"),

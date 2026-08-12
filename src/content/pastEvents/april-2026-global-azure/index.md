@@ -1,8 +1,10 @@
 ---
 title: "🌍 Global Azure 2026 – Mumbai ☁️"
 date: "2026-04-18"
+eventType: "conference"
 location: "Microsoft Corporation India Private Limited, Central Salsette Tramway Road, Mumbai"
 description: "Mumbai's premier cloud-native community summit featuring expert sessions, live demos, and practical insights across Azure AI, Data, DevOps, Security, and Cloud-Native technologies. Learn from industry experts and connect with fellow cloud enthusiasts."
+coverImage: "../../../assets/images/events/april-2026-global-azure/GAB2026.png"
 speakerResources:
   - speakerName: "Hardik Mistry"
     resourceTitle: "Global Azure 2026 Mumbai - PPT & Demo Code"
@@ -15,4 +17,3 @@ speakerResources:
     resourceType: "slides"
     description: "Comprehensive guide to container security, vulnerability scanning, and hardening techniques"
 ---
-

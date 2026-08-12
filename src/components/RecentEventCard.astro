@@ -1,0 +1,91 @@
+---
+// RecentEventCard.astro: Compact card used on the homepage "Recent Events" fallback grid
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export type EventType = "meetup" | "workshop" | "conference" | "discussion" | "hackathon" | "other";
+
+interface Props {
+  title: string;
+  date: Date;
+  location: string;
+  slug: string;
+  coverImage?: ImageMetadata;
+  eventType?: EventType;
+}
+
+const { title, date, location, slug, coverImage, eventType } = Astro.props;
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(date);
+
+const typeLabel: Record<EventType, string> = {
+  meetup: 'MEETUP',
+  workshop: 'WORKSHOP',
+  conference: 'CONFERENCE',
+  discussion: 'DISCUSSION',
+  hackathon: 'HACKATHON',
+  other: 'EVENT',
+};
+
+const label = eventType ? typeLabel[eventType] : 'EVENT';
+---
+
+<article
+  class="card bg-base-200 border border-base-300 rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
+  aria-label={title}
+>
+  <!-- Cover Image -->
+  <figure class="relative h-48 w-full overflow-hidden bg-base-300 flex-shrink-0">
+    {coverImage ? (
+      <Image
+        src={coverImage}
+        alt={title}
+        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        loading="lazy"
+        widths={[400, 600]}
+        sizes="(max-width: 640px) 400px, 600px"
+        format="webp"
+        quality={80}
+      />
+    ) : (
+      <div class="w-full h-full flex flex-col items-center justify-center bg-base-300 gap-2">
+        <svg class="w-10 h-10 text-base-content/20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="text-xs text-base-content/30 font-medium uppercase tracking-wide">{label}</span>
+      </div>
+    )}
+  </figure>
+
+  <!-- Card Body -->
+  <div class="card-body p-5 flex flex-col flex-grow">
+    <!-- Event type badge -->
+    <p class="text-xs font-bold tracking-widest text-primary mb-2 uppercase">{label}</p>
+
+    <!-- Title -->
+    <h3 class="font-bold text-lg text-base-content leading-snug mb-2 hover:text-primary transition-colors">
+      {title}
+    </h3>
+
+    <!-- Date + Location -->
+    <div class="text-sm text-base-content/60 mb-4 space-y-0.5">
+      <time datetime={date.toISOString()} class="block font-medium">{formattedDate}</time>
+      {location && <p class="truncate" title={location}>{location}</p>}
+    </div>
+
+    <!-- View Recap CTA -->
+    <div class="mt-auto">
+      <a
+        href={`/past-events/${slug}/`}
+        class="btn btn-sm btn-outline btn-primary w-full uppercase tracking-wide"
+        aria-label={`View recap for ${title}`}
+      >
+        View Recap
+      </a>
+    </div>
+  </div>
+</article>
