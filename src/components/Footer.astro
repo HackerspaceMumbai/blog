@@ -1,15 +1,180 @@
 ---
-// Footer component with consistent styling and typography
+const explore = [
+  { label: 'About community', href: '/about/' },
+  { label: 'Events', href: '/events/' },
+  { label: 'Projects', href: 'https://github.com/HackerspaceMumbai', external: true },
+];
+
+const involved = [
+  { label: 'Volunteer', href: '/volunteer', note: 'Releasing on Dev Days' },
+  { label: 'Mentorship', href: '/#join', note: 'Releasing on Dev Days' },
+  { label: 'Email us', href: 'mailto:community@hackmum.in' },
+];
+
+const follow = [
+  { label: 'Twitter / X', href: 'https://x.com/hackmum', external: true },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/hackerspace-mumbai/', external: true },
+  { label: 'YouTube', href: 'https://www.youtube.com/c/hackerspacemumbai', external: true },
+];
 ---
-<footer class="py-4 px-8 bg-primary text-primary-content font-bold mt-auto">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-      <p class="text-lg md:text-xl">&copy; {new Date().getFullYear()} Hackerspace Mumbai</p>
-      <div class="flex space-x-8">
-        <a href="https://github.com/HackerspaceMumbai" class="hover:text-accent transition-colors" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in new window)</span></a>
-        <a href="/blog" class="hover:text-accent transition-colors">Blog</a>
-        <a href="/privacy" class="hover:text-accent transition-colors">Privacy Policy</a>
-      </div>
+
+<div class="site-footer home-gutter">
+  <div class="site-footer-grid home-column">
+    <div class="site-footer-brand">
+      <a href="/" class="site-footer-logo">
+        <img src="/logo.svg" alt="" width="40" height="40" />
+        <span>Hackerspace Mumbai</span>
+      </a>
+      <p class="site-footer-tagline">
+        A community for people who believe technology is better when shared.
+      </p>
     </div>
+
+    <nav aria-label="Explore">
+      <p class="site-footer-heading">Explore</p>
+      <ul>
+        {explore.map((item) => (
+          <li>
+            <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Get involved">
+      <p class="site-footer-heading">Get involved</p>
+      <ul>
+        {involved.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+            {item.note && <p class="site-footer-note">{item.note}</p>}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Follow along">
+      <p class="site-footer-heading">Follow along</p>
+      <ul>
+        {follow.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              {item.label}
+              {item.external && <span aria-hidden="true"> ↗</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   </div>
-</footer>
+</div>
+
+<style>
+  .site-footer {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin-top: auto;
+    background: var(--color-base-100);
+    color: var(--color-base-content);
+  }
+
+  .site-footer-grid {
+    display: grid;
+    gap: 2.25rem 3rem;
+    align-items: start;
+    justify-items: start;
+  }
+
+  .site-footer-brand,
+  .site-footer nav {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .site-footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+    color: var(--color-base-content);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .site-footer-logo img {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+  }
+
+  .site-footer-tagline {
+    margin: 0;
+    max-width: 18rem;
+    color: var(--color-base-content);
+    opacity: 0.55;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .site-footer-heading {
+    margin: 0 0 0.85rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .site-footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer li + li {
+    margin-top: 0.55rem;
+  }
+
+  .site-footer-note {
+    margin: 0.2rem 0 0;
+    color: var(--color-base-content);
+    opacity: 0.45;
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  .site-footer nav a {
+    display: inline-block;
+    color: var(--color-base-content);
+    opacity: 0.7;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer nav a:hover {
+    color: var(--color-primary);
+    opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    .site-footer-grid {
+      grid-template-columns: minmax(14rem, 1.5fr) repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .site-footer {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+import Layout from "../../components/Layout.astro";
+import EventsSection from "../../components/EventsSection.astro";
+import GallerySection from "../../components/GallerySection.astro";
+import FeaturedEventBanner from "../../components/FeaturedEventBanner.astro";
+import { getCollection } from "astro:content";
+import { FEATURED_HOME_EVENT, UPCOMING_EVENTS } from "../../data/upcomingEvents.js";
+import featuredEventImage from "../../assets/images/events/dev-days-mumbai-2026.png";
+
+const recentPastEvents = (await getCollection("pastEvents"))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+const additionalUpcoming = UPCOMING_EVENTS.filter(
+  (event) => event.slug !== FEATURED_HOME_EVENT.slug
+);
+
+const FOUNDED_YEAR = 2011;
+const meetupsHosted = 110;
+
+export const title = "Events - Hackerspace Mumbai";
+export const description =
+  "Upcoming meetups, recent events, and photos from Hackerspace Mumbai — Mumbai's longest-running open-source community.";
+export const tags = ["events", "meetups", "gallery", "mumbai", "open source", "workshops"];
+export const canonical = "https://hackmum.in/events";
+---
+
+<Layout
+  title={title}
+  description={description}
+  tags={tags}
+  canonical={canonical}
+  type="website"
+>
+  <section class="events-page-intro home-gutter" aria-labelledby="events-heading">
+    <div class="home-column">
+      <nav class="events-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Events</li>
+        </ol>
+      </nav>
+      <p class="events-kicker">Show up</p>
+      <h1 id="events-heading" class="events-page-heading">
+        <span class="events-page-heading-plain">Meetups, workshops,</span>
+        <span class="events-page-heading-accent">and the photos after.</span>
+      </h1>
+      <p class="events-lede">
+        One Saturday, almost every month, since {FOUNDED_YEAR}. Find the next gathering, catch up on recent meetups, and browse the room as it actually looked.
+      </p>
+    </div>
+  </section>
+
+  <FeaturedEventBanner
+    sectionId="upcoming"
+    title={FEATURED_HOME_EVENT.title}
+    date={FEATURED_HOME_EVENT.date}
+    location={FEATURED_HOME_EVENT.location}
+    description={FEATURED_HOME_EVENT.description}
+    rsvpLink={FEATURED_HOME_EVENT.rsvpLink}
+    image={featuredEventImage}
+    kicker="Upcoming event"
+  />
+
+  <EventsSection
+    events={additionalUpcoming}
+    recentEvents={recentPastEvents}
+    totalEventsHosted={meetupsHosted}
+    showRecentAlways={true}
+  />
+
+  <GallerySection />
+</Layout>
+
+<style>
+  @font-face {
+    font-family: 'Playfair Display';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://fonts.gstatic.com/s/playfairdisplay/v37/nuFrD-vYSZviVYUb_rj3ij__anPXDTlhI4VlFdGjZQ.woff2') format('woff2');
+  }
+
+  .events-page-intro {
+    padding-top: 2.5rem;
+    padding-bottom: 2rem;
+    background: var(--color-base-100);
+    color: var(--color-base-content);
+  }
+
+  .events-breadcrumb {
+    margin-bottom: 1.25rem;
+  }
+
+  .events-breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+  }
+
+  .events-breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.5rem;
+    color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  }
+
+  .events-breadcrumb a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .events-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .events-kicker {
+    margin: 0 0 1rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .events-page-heading {
+    margin: 0 0 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    line-height: 1.08;
+  }
+
+  .events-page-heading-plain {
+    color: var(--color-base-content);
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .events-page-heading-accent {
+    color: var(--color-primary);
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.4vw, 3.15rem);
+    letter-spacing: -0.02em;
+  }
+
+  .events-lede {
+    margin: 0;
+    max-width: 38rem;
+    color: var(--color-base-content);
+    opacity: 0.72;
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+</style>

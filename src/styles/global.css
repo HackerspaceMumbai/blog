@@ -446,6 +446,24 @@ body {
   font-family: var(--font-family);
 }
 
+/* Shared home-page column — matches the hero split width and gutters */
+.home-gutter {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.home-column {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+
+@media (min-width: 900px) {
+  .home-gutter {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
 /* Critical CSS for above-the-fold content */
 .hero-section {
   min-height: 100vh;

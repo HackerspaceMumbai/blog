@@ -2,125 +2,29 @@
 import Layout from "../components/Layout.astro";
 import HeroSection from "../components/HeroSection.astro";
 import heroBackground from '../assets/images/hero_background.jpg';
-import EventsSection from "../components/EventsSection.astro";
-import BlogSection from "../components/BlogSection.astro";
 import AboutSection from "../components/AboutSection.astro";
-import JoinSection from "../components/JoinSection.astro";
-import SponsorsSection from "../components/SponsorsSection.astro";
-import GallerySection from "../components/GallerySection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
-import { getCollection } from "astro:content";
+import CommunityIntro from "../components/CommunityIntro.astro";
+import FeaturedEventBanner from "../components/FeaturedEventBanner.astro";
+import CommunityMetrics from "../components/CommunityMetrics.astro";
+import IdeaSection from "../components/IdeaSection.astro";
+import PathSection from "../components/PathSection.astro";
+import WaysInSection from "../components/WaysInSection.astro";
+import QuoteSection from "../components/QuoteSection.astro";
+import CloseCtaSection from "../components/CloseCtaSection.astro";
+import SupportedBy from "../components/SupportedBy.astro";
 import { FEATURED_PREMIERE } from "../data/featuredPremiere.js";
-import { UPCOMING_EVENTS } from "../data/upcomingEvents.js";
+import { FEATURED_HOME_EVENT } from "../data/upcomingEvents.js";
+import featuredEventImage from "../assets/images/events/dev-days-mumbai-2026.png";
 
-
-// Get the most recent blog posts
-const posts = (await getCollection("posts"))
-  .filter((post) => post.data.date != null)
-  .sort(
-    (a, b) =>
-      new Date(b.data.date).valueOf() -
-      new Date(a.data.date).valueOf()
-  )
-  .slice(0, 3); // Display only the 3 most recent posts
-
-// Fetch recent past events for fallback when no upcoming events
-const recentPastEvents = (await getCollection("pastEvents"))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 3);
-
-// Sample testimonials
-const testimonials = [
-  {
-    quote: "Hackerspace Mumbai helped me grow as a developer and connect with like-minded tech enthusiasts.",
-    author: "Priya S., Software Engineer",
-  },
-  {
-    quote: "The meetups are incredibly informative and welcoming to developers of all skill levels.",
-    author: "Raj M., Full Stack Developer",
-  }
-];
-
-// Sample stats
+const FOUNDED_YEAR = 2011;
 const stats = {
-  yearsRunning: 14,
+  yearsRunning: new Date().getFullYear() - FOUNDED_YEAR,
   meetupsHosted: 110,
-  membersCount: "2,500+",
-  projectsSupported: 35,
+  membersCount: "5,000+",
+  projectsSupported: 60,
 };
 
-// Sample sponsors - Enhanced for future features
-const sponsors = [
-  { 
-    name: "Microsoft", 
-    logo: "/images/microsoft_logo.svg",
-    url: "https://microsoft.com",
-    tier: "platinum" as const,
-    description: "Global leader in software, cloud computing, and developer tools including Azure, GitHub, and Visual Studio.",
-    featured: true
-  },
-  { 
-    name: "Google", 
-    logo: "/images/google_logo.svg",
-    url: "https://google.com",
-    tier: "bronze" as const,
-    description: "Innovator in search, advertising, Android, and cloud services powering billions worldwide.",
-    featured: false
-  },
-  { 
-    name: "BookMyShow", 
-    logo: "/images/bookmyshow_logo.svg",
-    url: "https://bookmyshow.com",
-    tier: "platinum" as const,
-    description: "India's largest online ticketing platform for movies, events, and live experiences.",
-    featured: true
-  },
-  { 
-    name: "Directi", 
-    logo: "/images/directi_logo.svg",
-    url: "https://directi.com",
-    tier: "platinum" as const,
-    description: "Global internet products company building scalable web infrastructure and communication tools.",
-    featured: true
-  },
-  //Add codebrabbit as silver sponsor
-  { 
-    name: "CodeRabbit",
-    logo: "/images/coderabbit_logo.svg",
-    url: "https://coderabbit.com",
-    tier: "silver" as const,
-    description: "Innovative software development company specializing in web and mobile solutions.",
-    featured: true
-  },
-  { 
-    name: "WeWork",
-    url: "https://wework.co.in",
-    tier: "community" as const,
-    description: "Flexible workspace provider offering coworking spaces and business solutions globally.",
-    featured: false
-  },
-
-  // Add neo4j as community sponsor
-  { 
-    name: "Neo4j",
-    url: "https://neo4j.com",
-    tier: "community" as const,
-    description: "World's leading graph database platform for connected data and analytics.",
-    featured: false
-  },
-
-  // Add langdb.ai as community sponsor
-  { 
-    name: "langdb.ai",
-    logo: "/images/langdbai_logo.svg",
-    url: "https://langdb.ai",
-    tier: "community" as const,
-    description: "Enterprise AI gateway enabling fast, secure, and scalable language data solutions.",
-    featured: false
-  }
-];
-
-// SEO and social sharing metadata
 export const title = "Hackerspace Mumbai - Mumbai's Largest Open Source Community";
 export const description = "Mumbai's largest open-source community in Mumbai, hosting the city's longest-running tech meetup. Join us for events, workshops, and collaborative learning!";
 export const tags = ["open source", "mumbai", "tech meetup", "developers", "community", "programming", "hackathon", "workshops"];
@@ -135,22 +39,35 @@ export const canonical = "https://hackmum.in/";
   type="website"
   preloadImage={heroBackground.src}
 >
-  <!-- Main page heading for screen readers - removed duplicate H1 -->
-  <!-- H1 is now in HeroSection component -->
-
   <HeroSection heroImage={heroBackground} featuredPremiere={FEATURED_PREMIERE} />
 
-  <EventsSection events={UPCOMING_EVENTS} recentEvents={recentPastEvents} totalEventsHosted={stats.meetupsHosted} />
+  <FeaturedEventBanner
+    title={FEATURED_HOME_EVENT.title}
+    date={FEATURED_HOME_EVENT.date}
+    location={FEATURED_HOME_EVENT.location}
+    description={FEATURED_HOME_EVENT.description}
+    rsvpLink={FEATURED_HOME_EVENT.rsvpLink}
+    image={featuredEventImage}
+    kicker="Upcoming event"
+  />
 
-  <BlogSection posts={posts} />
+  <CommunityIntro />
 
-  <AboutSection stats={stats} testimonials={testimonials} />
+  <CommunityMetrics stats={stats} />
 
-  <JoinSection />
+  <IdeaSection />
 
-  <SponsorsSection sponsors={sponsors} />
+  <PathSection />
 
-  <GallerySection />
+  <AboutSection />
+
+  <WaysInSection />
+
+  <QuoteSection />
+
+  <CloseCtaSection />
 
   <NewsletterSection />
+
+  <SupportedBy />
 </Layout>

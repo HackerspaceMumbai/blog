@@ -9,126 +9,48 @@ import pinnedpic5 from '../assets/images/gallery/pinnedpic-5.jpg';
 import pinnedpic6 from '../assets/images/gallery/pinnedpic-6.jpg';
 import pinnedpic7 from '../assets/images/gallery/pinnedpic-7.jpg';
 import pinnedpic8 from '../assets/images/gallery/pinnedpic-8.jpg';
+
+const galleryImages = [
+  { src: pinnedpic1, alt: 'Developers collaborating during open source workshop' },
+  { src: pinnedpic2, alt: 'Community workshop on web development fundamentals' },
+  { src: pinnedpic3, alt: 'Speaker presenting React fundamentals to engaged audience' },
+  { src: pinnedpic4, alt: 'Hackathon participants coding together at workstations' },
+  { src: pinnedpic5, alt: 'Workshop participants learning JavaScript debugging techniques' },
+  { src: pinnedpic6, alt: 'Community members discussing open source contributions' },
+  { src: pinnedpic7, alt: 'Lightning talks session with audience engagement' },
+  { src: pinnedpic8, alt: 'Hackerspace Mumbai organizers at annual community meetup' },
+];
 ---
-<section class="py-16 px-4 bg-base-100 text-base-content">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 text-center text-primary">Media Gallery</h2>
+<section id="gallery" class="gallery-section home-gutter bg-base-100 text-base-content" aria-labelledby="gallery-heading">
+  <div class="home-column">
+    <h2 id="gallery-heading" class="text-3xl font-bold mb-12 text-center text-primary">Media Gallery</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic1}
-          alt="Developers collaborating during open source workshop"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic2}
-          alt="Community workshop on web development fundamentals"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic3}
-          alt="Speaker presenting React fundamentals to engaged audience"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic4}
-          alt="Hackathon participants coding together at workstations"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic5}
-          alt="Workshop participants learning JavaScript debugging techniques"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic6}
-          alt="Community members discussing open source contributions"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic7}
-          alt="Lightning talks session with audience engagement"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
-        <Image
-          src={pinnedpic8}
-          alt="Hackerspace Mumbai organizers at annual community meetup"
-          widths={[200, 300, 400]}
-          sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
-          width={400}
-          height={400}
-          format="webp"
-          quality={80}
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
+      {galleryImages.map((image) => (
+        <div class="aspect-square bg-base-200 border border-primary rounded-md overflow-hidden flex items-center justify-center">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            widths={[200, 300, 400]}
+            sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 400px"
+            width={400}
+            height={400}
+            format="webp"
+            quality={80}
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      ))}
     </div>
     <div class="text-center mt-10">
-  <CTAButton href="/gallery/" variant="soft">View Full Gallery</CTAButton>
+      <CTAButton href="/gallery/" variant="soft">View Full Gallery</CTAButton>
     </div>
   </div>
 </section>
+
+<style>
+  .gallery-section {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
+</style>

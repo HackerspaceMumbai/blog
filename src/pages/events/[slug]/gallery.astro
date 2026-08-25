@@ -42,7 +42,7 @@ const eventImages = imageEntries
 // Create breadcrumb navigation
 const breadcrumb = [
   { label: "Home", href: "/" },
-  { label: "Events", href: "/#events" },
+  { label: "Events", href: "/events/" },
   { label: event.title, href: "#" },
 ];
 
@@ -65,6 +65,6 @@ const description = `Photos from ${event.title} at Hackerspace Mumbai`;
     eventSlug={slug}
     images={eventImages}
     breadcrumb={breadcrumb}
-    backLink={{ label: "Back to Events", href: "/#events" }}
+    backLink={{ label: "Back to Events", href: "/events/" }}
   />
 </Layout>

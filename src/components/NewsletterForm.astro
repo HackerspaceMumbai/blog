@@ -6,31 +6,35 @@ export interface Props {
   placeholder?: string;
   buttonText?: string;
   className?: string;
+  variant?: 'default' | 'minimal';
 }
 
 const { 
   formId = 'newsletter-form',
   placeholder = 'Enter your email address',
   buttonText = 'Subscribe',
-  className = ''
+  className = '',
+  variant = 'default',
 } = Astro.props;
+
+const isMinimal = variant === 'minimal';
 ---
 
 <form 
   id={formId}
-  class={`newsletter-form flex flex-col gap-4 justify-center max-w-2xl mx-auto ${className}`}
+  class={`newsletter-form flex flex-col gap-4 justify-center ${isMinimal ? 'newsletter-form-minimal w-full' : 'max-w-2xl mx-auto'} ${className}`}
   novalidate
   aria-label="Newsletter subscription form"
 >
   <!-- Form Fields Container -->
-  <div class="flex flex-col md:flex-row gap-4 mb-4">
+  <div class={`flex flex-col gap-4 mb-4 ${isMinimal ? '' : 'md:flex-row'}`}>
     <!-- First Name Input Container (Optional) -->
     <div class="form-control flex-1 relative">
-      <label for="newsletter-first-name" class="sr-only">
+      <label for="newsletter-first-name" class={isMinimal ? 'minimal-label' : 'sr-only'}>
         First name (optional)
       </label>
       <div class="relative">
-        <!-- Name Icon -->
+        {!isMinimal && (
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg 
             class="h-5 w-5 text-base-content/60" 
@@ -47,6 +51,7 @@ const {
             />
           </svg>
         </div>
+        )}
         
         <!-- First Name Input -->
         <input 
@@ -54,7 +59,7 @@ const {
           id="newsletter-first-name"
           name="firstName"
           placeholder="First name (optional)"
-          class="input input-bordered w-full pl-10 pr-4 py-3 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class={isMinimal ? 'minimal-input' : 'input input-bordered w-full pl-10 pr-4 py-3 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary'}
           aria-describedby="name-help"
           autocomplete="given-name"
           spellcheck="false"
@@ -66,11 +71,11 @@ const {
 
     <!-- Email Input Container -->
     <div class="form-control flex-1 relative">
-      <label for="newsletter-email" class="sr-only">
-        Email address (required)
+      <label for="newsletter-email" class={isMinimal ? 'minimal-label' : 'sr-only'}>
+        Email
       </label>
       <div class="relative">
-        <!-- Email Icon -->
+        {!isMinimal && (
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg 
             class="h-5 w-5 text-base-content/60" 
@@ -87,6 +92,7 @@ const {
             />
           </svg>
         </div>
+        )}
         
         <!-- Email Input -->
         <input 
@@ -94,7 +100,7 @@ const {
           id="newsletter-email"
           name="email"
           placeholder={placeholder}
-          class="input input-bordered input-primary w-full pl-10 pr-4 py-3 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class={isMinimal ? 'minimal-input' : 'input input-bordered input-primary w-full pl-10 pr-4 py-3 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary'}
           required
           aria-required="true"
           aria-describedby="email-error email-help"
@@ -106,16 +112,11 @@ const {
     </div>
   </div>
 
-  <!-- Help Text -->
-  <div class="flex flex-col sm:flex-row gap-2 text-sm text-base-content/70 mb-2 px-1">
-    <div id="name-help">
-      First name helps us personalize your emails.
-    </div>
-    <div class="hidden sm:block">•</div>
-    <div id="email-help">
-      We'll never share your information with anyone else.
-    </div>
-  </div>
+  <p class={`form-assurance ${isMinimal ? 'form-assurance-minimal' : 'flex flex-col sm:flex-row gap-2 text-sm text-base-content/70 mb-2 px-1'}`}>
+    <span id="name-help">First name is optional — it helps us personalize your emails.</span>
+    <span class={isMinimal ? 'assurance-sep' : 'hidden sm:block'} aria-hidden="true">•</span>
+    <span id="email-help">We’ll never share your information with anyone else.</span>
+  </p>
   
   <!-- Error Message Container -->
   <div 
@@ -134,6 +135,7 @@ const {
       type="submit" 
       variant="primary" 
       size="lg"
+      fullWidth={isMinimal}
       loading={false}
       disabled={false}
       aria-describedby="submit-status"
@@ -153,6 +155,12 @@ const {
       <!-- Status updates will be announced here -->
     </div>
   </div>
+
+  <p class="trust-row" aria-label="Newsletter promises">
+    <span>No spam, ever</span>
+    <span class="assurance-sep" aria-hidden="true">•</span>
+    <span>Unsubscribe anytime</span>
+  </p>
 
   <!-- Success Message Container -->
   <div 
@@ -794,6 +802,72 @@ const {
   /* Loading state enhancements */
   .newsletter-form .btn.loading {
     pointer-events: none;
+  }
+
+  .newsletter-form-minimal {
+    gap: 1.35rem;
+  }
+
+  .newsletter-form-minimal .mb-4 {
+    margin-bottom: 0.5rem;
+  }
+
+  .form-assurance-minimal {
+    margin: 0;
+    color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .assurance-sep {
+    margin: 0 0.4em;
+  }
+
+  .trust-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.15rem 0;
+    margin: 0.1rem 0 0;
+    color: color-mix(in oklab, var(--color-base-content) 48%, transparent);
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .newsletter-form:not(.newsletter-form-minimal) .trust-row {
+    justify-content: center;
+  }
+
+  .minimal-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .minimal-input {
+    width: 100%;
+    padding: 0.45rem 0 0.7rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--color-base-content) 22%, transparent);
+    border-radius: 0;
+    color: var(--color-base-content);
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .minimal-input::placeholder {
+    color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  }
+
+  .minimal-input:focus {
+    border-bottom-color: var(--color-primary);
+    box-shadow: none;
+    transform: none;
   }
 
   .newsletter-form .btn.loading .submit-text {

@@ -35,6 +35,8 @@ interface Props {
   ctaText?: string;
   /** Optional CTA button URL */
   ctaUrl?: string;
+  /** Show recent events even when upcoming events exist */
+  showRecentAlways?: boolean;
 }
 
 const {
@@ -44,6 +46,7 @@ const {
   title = "Upcoming Events",
   ctaText = "View All Events",
   ctaUrl = "https://www.meetup.com/mumbai-technology-meetup/events/",
+  showRecentAlways = false,
 } = Astro.props;
 
 const statLabel = formatHostedEventsStat(totalEventsHosted);
@@ -53,17 +56,21 @@ const gridClasses = getGridClasses(validatedEvents.length);
 // Sort and limit recent events to 3 most recent
 const sortedRecentEvents = getSortedRecentEvents(recentEvents);
 const showRecentFallback = shouldShowRecentFallback(validatedEvents.length, sortedRecentEvents.length);
+const showRecentEvents = showRecentAlways
+  ? sortedRecentEvents.length > 0
+  : showRecentFallback;
+const headingId = validatedEvents.length > 0 ? "upcoming-events" : "recent-events";
 ---
 <section 
-  class="pt-8 pb-16 px-4 bg-base-100 text-base-content"
-  aria-labelledby="events"
+  class="events-listing home-gutter bg-base-100 text-base-content"
+  aria-labelledby={headingId}
   role="region"
 >
-  <div class="max-w-7xl mx-auto">
+  <div class="home-column">
     <!-- Section Header -->
     <header class="mb-12 text-center">
       <SectionHeading 
-        id="events" 
+        id={headingId} 
         level={2}
         class="text-3xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md"
       >
@@ -109,8 +116,12 @@ const showRecentFallback = shouldShowRecentFallback(validatedEvents.length, sort
       </div>
     )}
 
-    {/* Recent events fallback — shown when no upcoming events */}
-    {showRecentFallback && (
+    {showRecentEvents && validatedEvents.length > 0 && (
+      <h3 id="recent-events" class="text-2xl font-bold text-primary mb-8 text-center">Recent Events</h3>
+    )}
+
+    {/* Recent events — fallback when none upcoming, or always on the events page */}
+    {showRecentEvents && (
       <div 
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8"
         role="list"
@@ -189,3 +200,10 @@ const showRecentFallback = shouldShowRecentFallback(validatedEvents.length, sort
     </footer>
   </div>
 </section>
+
+<style>
+  .events-listing {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+  }
+</style>

@@ -1,0 +1,193 @@
+---
+const steps = [
+  {
+    number: '01',
+    title: 'Discover',
+    description: 'Find a question that makes you curious.',
+  },
+  {
+    number: '02',
+    title: 'Participate',
+    description: 'Show up with your questions, skills, and stories.',
+  },
+  {
+    number: '03',
+    title: 'Contribute',
+    description: 'Make something useful with people you trust.',
+  },
+  {
+    number: '04',
+    title: 'Lead',
+    description: 'Create the conditions for someone else to grow.',
+  },
+];
+---
+
+<section class="path-section home-gutter" aria-labelledby="path-heading">
+  <div class="home-column">
+    <p class="path-marker">02 / Your path</p>
+    <div class="path-header">
+      <h2 id="path-heading" class="path-heading">
+        <span class="path-heading-plain">There is no right way</span>
+        <span class="path-heading-plain">
+          to <span class="path-heading-accent">be here.</span>
+        </span>
+      </h2>
+      <p class="path-aside">Come to learn. Stay to make an impact.</p>
+    </div>
+    <ol class="path-steps">
+      {steps.map((step) => (
+        <li class="path-step">
+          <span class="path-step-number">{step.number}</span>
+          <h3 class="path-step-title">{step.title}</h3>
+          <p class="path-step-copy">{step.description}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  @font-face {
+    font-family: 'Playfair Display';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://fonts.gstatic.com/s/playfairdisplay/v37/nuFrD-vYSZviVYUb_rj3ij__anPXDTlhI4VlFdGjZQ.woff2') format('woff2');
+  }
+
+  .path-section {
+    padding-top: 3rem;
+    padding-bottom: 3.5rem;
+    background: var(--color-base-100);
+    color: var(--color-base-content);
+  }
+
+  .path-marker {
+    margin: 0 0 1.25rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .path-header {
+    display: grid;
+    gap: 1rem 3rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .path-heading {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    line-height: 1.08;
+  }
+
+  .path-heading-plain {
+    color: var(--color-base-content);
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .path-heading-accent {
+    color: var(--color-primary);
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .path-aside {
+    margin: 0;
+    max-width: 14rem;
+    color: var(--color-base-content);
+    opacity: 0.55;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .path-steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .path-step-number {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .path-step-title {
+    margin: 0 0 0.6rem;
+    color: var(--color-base-content);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .path-step-copy {
+    margin: 0;
+    color: var(--color-base-content);
+    opacity: 0.55;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 700px) {
+    .path-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem 0;
+    }
+
+    .path-step {
+      padding: 0 1.5rem;
+      border-left: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+    }
+
+    .path-step:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .path-section {
+      padding-top: 4.5rem;
+      padding-bottom: 5rem;
+    }
+
+    .path-header {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      margin-bottom: 3.25rem;
+    }
+
+    .path-aside {
+      padding-bottom: 0.35rem;
+    }
+
+    .path-steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .path-step {
+      padding: 0 1.75rem;
+      border-left: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+    }
+
+    .path-step:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>
