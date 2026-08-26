@@ -1,0 +1,240 @@
+---
+import CTAButton from './CTAButton.astro';
+
+export interface Props {
+  title: string;
+  titleAccent?: string;
+  launchDate: string;
+  description: string;
+  featuresHeading: string;
+  features: string[];
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  breadcrumbCurrent: string;
+  headingId?: string;
+}
+
+const {
+  title,
+  titleAccent,
+  launchDate,
+  description,
+  featuresHeading,
+  features,
+  primaryCta,
+  secondaryCta,
+  breadcrumbCurrent,
+  headingId = 'coming-soon-heading',
+} = Astro.props;
+---
+
+<section class="coming-soon home-gutter" aria-labelledby={headingId}>
+  <div class="coming-soon-inner home-column">
+    <nav class="coming-soon-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">{breadcrumbCurrent}</li>
+      </ol>
+    </nav>
+
+    <p class="coming-soon-kicker">
+      <span aria-hidden="true">🚀 </span>{launchDate}
+    </p>
+
+    <h1 id={headingId} class="coming-soon-heading">
+      <span class="coming-soon-heading-plain">{title}</span>
+      {titleAccent && (
+        <span class="coming-soon-heading-accent">{titleAccent}</span>
+      )}
+    </h1>
+
+    <p class="coming-soon-lede">{description}</p>
+
+    <div class="coming-soon-actions">
+      <CTAButton href={primaryCta.href} variant="primary">{primaryCta.label}</CTAButton>
+      <CTAButton href={secondaryCta.href} variant="link">{secondaryCta.label}</CTAButton>
+    </div>
+
+    <div class="coming-soon-features">
+      <h2 class="coming-soon-features-heading">{featuresHeading}</h2>
+      <ul class="coming-soon-feature-list">
+        {features.map((feature, index) => (
+          <li>
+            <span class="coming-soon-feature-number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span class="coming-soon-feature-label">{feature}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  @font-face {
+    font-family: 'Playfair Display';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://fonts.gstatic.com/s/playfairdisplay/v37/nuFrD-vYSZviVYUb_rj3ij__anPXDTlhI4VlFdGjZQ.woff2') format('woff2');
+  }
+
+  .coming-soon {
+    padding-top: 2.5rem;
+    padding-bottom: 3.5rem;
+    background: var(--color-base-100);
+    color: var(--color-base-content);
+  }
+
+  .coming-soon-breadcrumb {
+    margin-bottom: 1.25rem;
+  }
+
+  .coming-soon-breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+  }
+
+  .coming-soon-breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.5rem;
+    color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  }
+
+  .coming-soon-breadcrumb a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .coming-soon-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .coming-soon-kicker {
+    margin: 0 0 1rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .coming-soon-heading {
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-width: 42rem;
+    line-height: 1.12;
+  }
+
+  .coming-soon-heading-plain {
+    color: var(--color-base-content);
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .coming-soon-heading-accent {
+    color: var(--color-primary);
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.85rem, 4vw, 2.85rem);
+    letter-spacing: -0.02em;
+  }
+
+  .coming-soon-lede {
+    margin: 0;
+    max-width: 40rem;
+    color: var(--color-base-content);
+    opacity: 0.78;
+    font-size: 1.08rem;
+    line-height: 1.7;
+  }
+
+  .coming-soon-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .coming-soon-features {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  }
+
+  .coming-soon-features-heading {
+    margin: 0 0 1.5rem;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .coming-soon-feature-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .coming-soon-feature-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+  }
+
+  .coming-soon-feature-number {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+
+  .coming-soon-feature-label {
+    color: var(--color-base-content);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  @media (min-width: 640px) {
+    .coming-soon-feature-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .coming-soon {
+      padding-top: 3rem;
+      padding-bottom: 4.5rem;
+    }
+
+    .coming-soon-features {
+      margin-top: 4rem;
+      padding-top: 3rem;
+    }
+
+    .coming-soon-feature-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem 2.5rem;
+    }
+  }
+</style>

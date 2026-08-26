@@ -6,8 +6,8 @@ const explore = [
 ];
 
 const involved = [
-  { label: 'Volunteer', href: '/volunteer', note: 'Releasing on Dev Days' },
-  { label: 'Mentorship', href: '/#join', note: 'Releasing on Dev Days' },
+  { label: 'Volunteer', href: '/volunteer' },
+  { label: 'Mentorship', href: '/mentorship' },
   { label: 'Email us', href: 'mailto:community@hackmum.in' },
 ];
 
@@ -49,7 +49,6 @@ const follow = [
         {involved.map((item) => (
           <li>
             <a href={item.href}>{item.label}</a>
-            {item.note && <p class="site-footer-note">{item.note}</p>}
           </li>
         ))}
       </ul>
@@ -140,14 +139,6 @@ const follow = [
 
   .site-footer li + li {
     margin-top: 0.55rem;
-  }
-
-  .site-footer-note {
-    margin: 0.2rem 0 0;
-    color: var(--color-base-content);
-    opacity: 0.45;
-    font-size: 0.72rem;
-    line-height: 1.35;
   }
 
   .site-footer nav a {

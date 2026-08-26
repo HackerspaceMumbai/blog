@@ -1,0 +1,48 @@
+---
+import Layout from '../components/Layout.astro';
+import ComingSoonHero from '../components/ComingSoonHero.astro';
+import NewsletterSection from '../components/NewsletterSection.astro';
+
+export const title = 'Volunteer | Hackerspace Mumbai';
+export const description =
+  "Learn how to contribute and volunteer with Mumbai's largest open source community. Launching September 5, 2026.";
+export const tags = [
+  'volunteer',
+  'community',
+  'open source',
+  'mumbai',
+  'hackerspace',
+  'events',
+];
+export const canonical = 'https://hackmum.in/volunteer';
+---
+
+<Layout
+  title={title}
+  description={description}
+  tags={tags}
+  canonical={canonical}
+  type="website"
+>
+  <ComingSoonHero
+    breadcrumbCurrent="Volunteer"
+    headingId="volunteer-heading"
+    launchDate="Coming September 5, 2026"
+    title="Volunteer with"
+    titleAccent="Hackerspace Mumbai"
+    description="Help organize events, welcome attendees, support speakers, contribute to open source initiatives, and strengthen Mumbai's technology community."
+    featuresHeading="Highlighted opportunities"
+    features={[
+      'Event Operations',
+      'Registration Desk',
+      'Speaker Support',
+      'Community Host',
+      'Photography & Media',
+      'Technical Support',
+    ]}
+    primaryCta={{ label: 'Join the Community →', href: '#newsletter' }}
+    secondaryCta={{ label: 'Explore Events', href: '/events/' }}
+  />
+
+  <NewsletterSection />
+</Layout>
