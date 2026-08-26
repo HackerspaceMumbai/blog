@@ -108,10 +108,10 @@ const pageSchema = type === 'article' && publishedTime ? {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     
-  <!-- Resource hints for better performance - defer loading Google Fonts CSS until after load; only prefetch font asset origin -->
-  <link rel="dns-prefetch" href="//fonts.gstatic.com" crossorigin />
+  <!-- Self-hosted Playfair for italic headings (same-origin, no fonts.gstatic chain) -->
+  <link rel="preload" href="/fonts/playfair-display-italic-500-latin.woff2" as="font" type="font/woff2" crossorigin />
     
-    <!-- Preload critical images for LCP improvement -->
+    <!-- Optional LCP image preload (only when caller passes a URL that is actually used) -->
     {preloadImage && (
       <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
     )}
@@ -170,49 +170,14 @@ const pageSchema = type === 'article' && publishedTime ? {
       }
     </style>
     
-    <!-- Progressive font enhancement - load Inter after page is ready -->
-    <script is:inline>
-      // Load Inter font progressively after page load to avoid blocking LCP
-      window.addEventListener('load', function() {
-        // Only load if not already present and user hasn't opted out of web fonts
-        if (!document.querySelector('link[href*="fonts.googleapis.com"]') && 
-            !window.matchMedia('(prefers-reduced-data: reduce)').matches) {
-          
-          // Preconnect for faster font loading
-          const preconnect1 = document.createElement('link');
-          preconnect1.rel = 'preconnect';
-          preconnect1.href = 'https://fonts.googleapis.com';
-          document.head.appendChild(preconnect1);
-          
-          const preconnect2 = document.createElement('link');
-          preconnect2.rel = 'preconnect';
-          preconnect2.href = 'https://fonts.gstatic.com';
-          preconnect2.crossOrigin = 'anonymous';
-          document.head.appendChild(preconnect2);
-          
-          // Load font CSS after a small delay to ensure page is rendered
-          setTimeout(function() {
-            const fontLink = document.createElement('link');
-            fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap';
-            fontLink.rel = 'stylesheet';
-            
-            // Apply Inter font family when loaded
-            fontLink.addEventListener('load', function() {
-              document.documentElement.style.setProperty('--font-family', "'Inter', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif");
-              document.body.style.fontFamily = "var(--font-family)";
-            });
-            
-            document.head.appendChild(fontLink);
-          }, 100);
-        }
-      });
-    </script>
+    <!-- Progressive font enhancement - external so CSP script-src 'self' covers it -->
+    <script src="/scripts/load-fonts.js" defer></script>
     
     <!-- Fallback for no-JS users -->
     <noscript>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
       <style>
         html { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important; }
       </style>

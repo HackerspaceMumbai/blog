@@ -107,12 +107,12 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        widths={[480, 640, 800, 1200]}
-        sizes="(max-width: 768px) 100vw, 50vw"
-        width={960}
-        height={720}
+        widths={[400, 640, 800]}
+        sizes="(max-width: 768px) 100vw, min(50vw, 32rem)"
+        width={800}
+        height={600}
         formats={['avif', 'webp', 'jpeg']}
-        quality={80}
+        quality={65}
       />
     </figure>
   </div>
@@ -121,14 +121,6 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
 <script src="/scripts/premiere-hero.js" defer></script>
 
 <style>
-  @font-face {
-    font-family: 'Playfair Display';
-    font-style: italic;
-    font-weight: 500;
-    font-display: swap;
-    src: url('https://fonts.gstatic.com/s/playfairdisplay/v37/nuFrD-vYSZviVYUb_rj3ij__anPXDTlhI4VlFdGjZQ.woff2') format('woff2');
-  }
-
   .premiere-hero {
     min-height: min(38rem, calc(100vh - 4.5rem));
     display: flex;

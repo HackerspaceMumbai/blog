@@ -35,8 +35,8 @@ describe('Astro Configuration for Image Optimization', () => {
     expect(astroConfig.hasCompression).toBe(true);
   });
 
-  it('should have prefetch enabled for performance', () => {
-    expect(astroConfig.hasPrefetch).toBe(true);
+  it('should document prefetch setting (disabled to shorten critical request chain)', () => {
+    expect(astroConfig.content).toMatch(/prefetch:\s*false/);
   });
 
   it('should have static output mode for optimal image handling', () => {

@@ -38,8 +38,9 @@ export default defineConfig({
     responsiveStyles: true
   },
 
-  // Prefetch configuration
-  prefetch: true,
+  // Prefetch disabled: no data-astro-prefetch usage, and the client script
+  // was showing up on Lighthouse's critical request chain for little benefit.
+  prefetch: false,
 
   // Output configuration - hybrid mode for API endpoints
   output: 'static',
