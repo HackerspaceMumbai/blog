@@ -87,22 +87,27 @@ const BLOCKED_DOMAINS = [
 const getKitApiKey = () => process.env.KIT_API_KEY;
 const getKitFormId = () => process.env.KIT_FORM_ID;
 const KIT_API_URL = process.env.KIT_API_URL || 'https://api.kit.com/v4';
-const CORS_ORIGIN = (process.env.CORS_ORIGIN || '*').trim() || '*';
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const CORS_ORIGIN = (
+  process.env.CORS_ORIGIN ||
+  (NODE_ENV === 'production' ? 'https://hackmum.in,https://www.hackmum.in' : '*')
+).trim() || '*';
 
 function resolveCorsOrigin(requestOrigin?: string): string {
-  const allowedOrigin = CORS_ORIGIN;
-
-  if (allowedOrigin === '*' || !requestOrigin) {
-    return allowedOrigin;
+  if (CORS_ORIGIN === '*') {
+    return '*';
   }
 
-  const normalizedRequestOrigin = requestOrigin.trim();
-  const allowedOrigins = allowedOrigin
+  const allowedOrigins = CORS_ORIGIN
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+  if (!requestOrigin) {
+    return allowedOrigins[0] || '*';
+  }
+
+  const normalizedRequestOrigin = requestOrigin.trim();
   return allowedOrigins.includes(normalizedRequestOrigin)
     ? normalizedRequestOrigin
     : allowedOrigins[0] || '*';
@@ -656,7 +661,7 @@ function logSubscriptionEvent(subscription: NewsletterSubscription): void {
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   const startTime = Date.now();
   const requestId = context.awsRequestId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const requestOrigin = event.headers.origin;
+  const requestOrigin = event.headers.origin || event.headers.Origin;
   
   // Set CORS headers
   const corsHeaders = {

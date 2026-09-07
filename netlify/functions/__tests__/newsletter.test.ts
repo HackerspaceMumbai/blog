@@ -118,14 +118,13 @@ describe('Newsletter Function', () => {
 
     it('should allow the www production origin for newsletter requests', async () => {
       mockEvent.headers.origin = 'https://www.hackmum.in';
-      process.env.CORS_ORIGIN = '*';
+      process.env.CORS_ORIGIN = 'https://hackmum.in,https://www.hackmum.in';
       vi.resetModules();
 
       const imported = await import('../newsletter');
-      const handlerWithWildcardCors = imported.handler;
-      const response = await handlerWithWildcardCors(mockEvent, mockContext) as any;
+      const response = await imported.handler(mockEvent, mockContext) as any;
 
-      expect(response.headers['Access-Control-Allow-Origin']).toBe('*');
+      expect(response.headers['Access-Control-Allow-Origin']).toBe('https://www.hackmum.in');
       expect(response.headers['Vary']).toBe('Origin');
     });
   });

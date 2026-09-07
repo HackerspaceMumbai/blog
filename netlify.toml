@@ -80,7 +80,7 @@
   [headers.values]
     # API-specific headers. Allow all public origins for newsletter signup requests while keeping the function response authoritative.
     Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
     Access-Control-Max-Age = "86400"
     Vary = "Origin"

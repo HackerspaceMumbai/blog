@@ -24,16 +24,23 @@ const startTime = Date.now();
 const KIT_API_KEY = process.env.KIT_API_KEY;
 const KIT_API_URL = process.env.KIT_API_URL || 'https://api.kit.com/v4';
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const CORS_ORIGIN = (process.env.CORS_ORIGIN || '*').trim() || '*';
+const CORS_ORIGIN = (
+  process.env.CORS_ORIGIN ||
+  (NODE_ENV === 'production' ? 'https://hackmum.in,https://www.hackmum.in' : '*')
+).trim() || '*';
 
 function resolveCorsOrigin(requestOrigin?: string): string {
-  if (CORS_ORIGIN === '*' || !requestOrigin) {
-    return CORS_ORIGIN;
+  if (CORS_ORIGIN === '*') {
+    return '*';
   }
 
   const allowedOrigins = CORS_ORIGIN.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+
+  if (!requestOrigin) {
+    return allowedOrigins[0] || '*';
+  }
 
   return allowedOrigins.includes(requestOrigin.trim())
     ? requestOrigin.trim()
@@ -137,7 +144,7 @@ function checkMemory(): { status: 'healthy' | 'degraded' | 'unhealthy'; usage?: 
  * Health check handler
  */
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-  const requestOrigin = event.headers.origin;
+  const requestOrigin = event.headers.origin || event.headers.Origin;
   const corsHeaders = {
     'Access-Control-Allow-Origin': resolveCorsOrigin(requestOrigin),
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
