@@ -24,6 +24,21 @@ const startTime = Date.now();
 const KIT_API_KEY = process.env.KIT_API_KEY;
 const KIT_API_URL = process.env.KIT_API_URL || 'https://api.kit.com/v4';
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const CORS_ORIGIN = (process.env.CORS_ORIGIN || '*').trim() || '*';
+
+function resolveCorsOrigin(requestOrigin?: string): string {
+  if (CORS_ORIGIN === '*' || !requestOrigin) {
+    return CORS_ORIGIN;
+  }
+
+  const allowedOrigins = CORS_ORIGIN.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return allowedOrigins.includes(requestOrigin.trim())
+    ? requestOrigin.trim()
+    : allowedOrigins[0] || '*';
+}
 
 /**
  * Check Kit API connectivity
@@ -122,11 +137,13 @@ function checkMemory(): { status: 'healthy' | 'degraded' | 'unhealthy'; usage?: 
  * Health check handler
  */
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+  const requestOrigin = event.headers.origin;
   const corsHeaders = {
-    'Access-Control-Allow-Origin': NODE_ENV === 'production' ? 'https://hackmum.in' : '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': resolveCorsOrigin(requestOrigin),
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
   };
 
   try {

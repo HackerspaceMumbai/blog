@@ -78,11 +78,12 @@
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
-    # API-specific headers
-    Access-Control-Allow-Origin = "https://hackmum.in"
+    # API-specific headers. Allow all public origins for newsletter signup requests while keeping the function response authoritative.
+    Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
     Access-Control-Max-Age = "86400"
+    Vary = "Origin"
     # Prevent caching of dynamic API responses
     Cache-Control = "no-store"
     
@@ -103,11 +104,12 @@
 [[headers]]
   for = "/.netlify/functions/newsletter"
   [headers.values]
-    # Newsletter-specific CORS
-    Access-Control-Allow-Origin = "https://hackmum.in"
+    # Newsletter-specific CORS. Use a wildcard so valid apex and www origins both work reliably.
+    Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
     Access-Control-Max-Age = "86400"
+    Vary = "Origin"
     
     # Enhanced security
     X-Content-Type-Options = "nosniff"
@@ -128,7 +130,7 @@
 [context.production]
   [context.production.environment]
     NODE_ENV = "production"
-    CORS_ORIGIN = "https://hackmum.in"
+    CORS_ORIGIN = "*"
     LOG_LEVEL = "info"
     # Enable enhanced monitoring in production
     ENABLE_MONITORING = "true"
