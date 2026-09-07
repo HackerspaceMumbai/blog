@@ -322,6 +322,9 @@ describe('Newsletter Function Integration Tests', () => {
 
     it('should set proper CORS headers for production', async () => {
       process.env.NODE_ENV = 'production';
+      process.env.CORS_ORIGIN = 'https://hackmum.in,https://www.hackmum.in';
+      vi.resetModules();
+      ({ handler } = await import('../newsletter'));
       
       const event: HandlerEvent = {
         httpMethod: 'OPTIONS',
