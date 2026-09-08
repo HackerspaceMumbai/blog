@@ -134,13 +134,26 @@ export async function getGitHubArchivePhotoImages(
     return [];
   }
 
-  const items = await response.json();
+  let items: unknown;
+  try {
+    items = await response.json();
+  } catch (error) {
+    console.warn(`Unable to parse canonical archive photos from ${apiUrl}`, error);
+    return [];
+  }
+
   if (!Array.isArray(items)) {
     console.warn(`Unexpected canonical archive photos response from ${apiUrl}`);
     return [];
   }
 
-  return (items as GitHubContentItem[])
+  return items
+    .filter((item): item is GitHubContentItem => (
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as GitHubContentItem).name === 'string' &&
+      typeof (item as GitHubContentItem).type === 'string'
+    ))
     .filter((item) => item.type === 'file')
     .filter((item) => isSupportedPhotoFile(item.name))
     .filter((item) => isSafeRawArchiveUrl(item.download_url))

@@ -128,4 +128,43 @@ describe('pastEventArchive', () => {
       getGitHubArchivePhotoImages(`${archiveUrl}/media/photos`, 'Dev Days', fetchImpl)
     ).resolves.toEqual([]);
   });
+
+  it('falls back to an empty gallery when the archive response has invalid JSON', async () => {
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
+    });
+
+    await expect(
+      getGitHubArchivePhotoImages(`${archiveUrl}/media/photos`, 'Dev Days', fetchImpl)
+    ).resolves.toEqual([]);
+  });
+
+  it('ignores malformed entries in a successful archive response', async () => {
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => [
+        null,
+        { name: 'missing-type.jpg', download_url: 'https://example.com/photo.jpg' },
+        { type: 'file', download_url: 'https://example.com/photo.jpg' },
+        {
+          name: 'valid.jpg',
+          type: 'file',
+          download_url:
+            'https://raw.githubusercontent.com/HackerspaceMumbai/events/main/events/2026/valid.jpg',
+        },
+      ],
+    });
+
+    await expect(
+      getGitHubArchivePhotoImages(`${archiveUrl}/media/photos`, 'Dev Days', fetchImpl)
+    ).resolves.toEqual([
+      {
+        src: 'https://raw.githubusercontent.com/HackerspaceMumbai/events/main/events/2026/valid.jpg',
+        alt: 'Dev Days - valid.jpg',
+      },
+    ]);
+  });
 });
