@@ -2,7 +2,7 @@
 // PastEventCard.astro: Renders a single past event card with speaker resources
 import { Image } from 'astro:assets';
 import SpeakerResourceCard from './SpeakerResourceCard.astro';
-import { getArchiveLinks, type PastEventArchiveLinks } from '../utils/pastEventArchive';
+import { getArchiveLinks, isSafeArchiveUrl, type PastEventArchiveLinks } from '../utils/pastEventArchive';
 import { resolveResourceUrl, getEventSlug, isValidResourceUrl } from '../utils/resourceUrl';
 import type { ImageMetadata } from 'astro';
 
@@ -54,7 +54,9 @@ const resolvedResources = speakerResources
   .filter(resource => resource.resourceUrl); // Filter out resources with empty resolved URLs
 
 const canonicalArchiveLinks = getArchiveLinks(archiveLinks);
-const canonicalArchiveUrl = canonicalArchiveLinks.find((link) => link.label === 'Canonical Archive')?.href;
+const canonicalArchiveUrl = isSafeArchiveUrl(archiveLinks?.archiveUrl)
+  ? archiveLinks.archiveUrl
+  : undefined;
 ---
 
 <article 

@@ -15,7 +15,7 @@ export interface ArchiveLink {
 }
 
 export interface GalleryImage {
-  src: string | unknown;
+  src: string;
   alt: string;
 }
 
@@ -116,12 +116,18 @@ export async function getGitHubArchivePhotoImages(
     return [];
   }
 
-  const response = await fetchImpl(apiUrl, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': 'hackmum-blog-build',
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetchImpl(apiUrl, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        'User-Agent': 'hackmum-blog-build',
+      },
+    });
+  } catch (error) {
+    console.warn(`Unable to load canonical archive photos from ${apiUrl}`, error);
+    return [];
+  }
 
   if (!response.ok) {
     console.warn(`Unable to load canonical archive photos from ${apiUrl}: ${response.status}`);

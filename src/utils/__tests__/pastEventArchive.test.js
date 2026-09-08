@@ -118,4 +118,14 @@ describe('pastEventArchive', () => {
       },
     ]);
   });
+
+  it('falls back to an empty gallery when GitHub archive photo discovery fails', async () => {
+    const fetchImpl = async () => {
+      throw new Error('Network unavailable');
+    };
+
+    await expect(
+      getGitHubArchivePhotoImages(`${archiveUrl}/media/photos`, 'Dev Days', fetchImpl)
+    ).resolves.toEqual([]);
+  });
 });
