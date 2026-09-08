@@ -38,6 +38,16 @@ const pastEvents = defineCollection({
       resourceType: z.enum(["slides", "video", "recording", "documentation", "blog", "github", "other"]).describe("Type of resource"),
       description: z.string().optional().describe("Brief description of the resource"),
     })).optional().describe("Array of speaker resources for this event"),
+    archiveLinks: z.object({
+      archiveUrl: z.string().url().optional().describe("Canonical event archive URL"),
+      mediaUrl: z.string().url().optional().describe("Canonical media archive URL"),
+      photosUrl: z.string().url().optional().describe("Canonical photos archive URL"),
+      videosUrl: z.string().url().optional().describe("Canonical videos archive URL"),
+      recapUrl: z.string().url().optional().describe("Canonical recap URL"),
+      speakersUrl: z.string().url().optional().describe("Canonical speakers archive URL"),
+      resourcesUrl: z.string().url().optional().describe("Canonical resources archive URL"),
+      communityUrl: z.string().url().optional().describe("Canonical community contributions URL"),
+    }).optional().describe("Links to the canonical public event archive"),
   }),
 });
 

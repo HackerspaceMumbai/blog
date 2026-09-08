@@ -123,12 +123,12 @@ const headingId = validatedEvents.length > 0 ? "upcoming-events" : "recent-event
     {/* Recent events — fallback when none upcoming, or always on the events page */}
     {showRecentEvents && (
       <div 
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 items-stretch"
         role="list"
         aria-label="Recent past events from Hackerspace Mumbai"
       >
         {sortedRecentEvents.map((event) => (
-          <div role="listitem">
+          <div role="listitem" class="h-full">
             <RecentEventCard
               title={event.data.title}
               date={event.data.date}

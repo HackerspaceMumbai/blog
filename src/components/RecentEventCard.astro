@@ -35,7 +35,7 @@ const label = eventType ? typeLabel[eventType] : 'EVENT';
 ---
 
 <article
-  class="card bg-base-200 border border-base-300 rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
+  class="card bg-base-200 border border-base-300 rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
   aria-label={title}
 >
   <!-- Cover Image -->
@@ -67,7 +67,7 @@ const label = eventType ? typeLabel[eventType] : 'EVENT';
     <p class="text-xs font-bold tracking-widest text-primary mb-2 uppercase">{label}</p>
 
     <!-- Title -->
-    <h3 class="font-bold text-lg text-base-content leading-snug mb-2 hover:text-primary transition-colors">
+    <h3 class="font-bold text-lg text-base-content leading-snug mb-2 hover:text-primary transition-colors line-clamp-2 min-h-[3.5rem]">
       {title}
     </h3>
 
