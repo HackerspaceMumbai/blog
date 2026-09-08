@@ -18,9 +18,10 @@ import { FEATURED_HOME_EVENT } from "../data/upcomingEvents.js";
 import featuredEventImage from "../assets/images/events/dev-days-mumbai-2026.png";
 
 const FOUNDED_YEAR = 2011;
+const NEW_MEMBERS_THIS_MONTH = 113;
 const stats = {
   yearsRunning: new Date().getFullYear() - FOUNDED_YEAR,
-  meetupsHosted: 110,
+  meetupsHosted: 111,
   membersCount: "5,000+",
   projectsSupported: 60,
 };
@@ -38,7 +39,11 @@ export const canonical = "https://hackmum.in/";
   canonical={canonical}
   type="website"
 >
-  <HeroSection heroImage={heroBackground} featuredPremiere={FEATURED_PREMIERE} />
+  <HeroSection
+    heroImage={heroBackground}
+    featuredPremiere={FEATURED_PREMIERE}
+    newMembersThisMonth={NEW_MEMBERS_THIS_MONTH}
+  />
 
   <FeaturedEventBanner
     title={FEATURED_HOME_EVENT.title}

@@ -7,9 +7,10 @@ import { getPremiereTimeBounds, resolvePremiereState } from '../utils/premiere.j
 interface Props {
   heroImage: ImageMetadata;
   featuredPremiere?: PremiereHeroConfig | null;
+  newMembersThisMonth?: number;
 }
 
-const { heroImage, featuredPremiere = null } = Astro.props as Props;
+const { heroImage, featuredPremiere = null, newMembersThisMonth } = Astro.props as Props;
 
 const premiereBounds = getPremiereTimeBounds(featuredPremiere);
 const hasPremiere = Boolean(premiereBounds && featuredPremiere?.enabled);
@@ -98,6 +99,12 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
           See how it works ↗
         </CTAButton>
       </div>
+      {typeof newMembersThisMonth === 'number' && newMembersThisMonth > 0 && (
+        <p class="hero-live-stat">
+          <span class="hero-live-dot" aria-hidden="true"></span>
+          Welcoming {newMembersThisMonth.toLocaleString('en-IN')} new members this month
+        </p>
+      )}
     </div>
     <figure class="hero-photo">
       <Picture
@@ -179,6 +186,38 @@ const upcomingBadgeText = featuredPremiere?.upcomingBadgeText ?? 'LIVE PREMIERE'
     flex-wrap: wrap;
     align-items: center;
     gap: 1.25rem 1.75rem;
+  }
+
+  .hero-live-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 1.75rem 0 0;
+    color: color-mix(in oklab, var(--color-base-content) 48%, transparent);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .hero-live-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+    animation: hero-live-pulse 2.2s ease-out infinite;
+  }
+
+  @keyframes hero-live-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 0.55rem rgba(52, 211, 153, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+    }
   }
 
   .hero-photo {

@@ -12,13 +12,13 @@ export interface UpcomingEvent {
 // Keep only truly upcoming events here.
 // Past events should live in src/content/pastEvents/ and use /past-events/{slug}/gallery.
 export const FEATURED_HOME_EVENT: UpcomingEvent = {
-  slug: "github-copilot-dev-days-mumbai-sep-2026",
-  title: "Dev Days – Mumbai",
-  date: "5 September 2026 · 10:00 AM",
-  location: "Paytm, Andheri East",
+  slug: "dev-days-mangaluru-series-sep-2026",
+  title: "Dev Days | Mangaluru Series",
+  date: "10–19 September 2026",
+  location: "Mangaluru & coastal campuses",
   description:
-    "A community-hosted GitHub Copilot Dev Days session: talks, live demos, and hands-on workshops for Mumbai’s builders.",
-  rsvpLink: "https://scan.hackmum.in/devdays",
+    "A multi-stop Dev Days tour across the Mangaluru region—campus sessions from 10 September, with the marquee professionals edition at UniCourt on 19 September.",
+  rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/316369683/",
   coverImage: "",
   galleryPath: "",
 };
