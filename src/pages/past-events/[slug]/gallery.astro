@@ -4,6 +4,7 @@ import EventGallery from "../../../components/EventGallery.astro";
 import { getCollection } from "astro:content";
 import { existsSync, readdirSync } from "node:fs";
 import { extname, join } from "node:path";
+import { getExternalMediaLinks, getGitHubArchivePhotoImages } from "../../../utils/pastEventArchive";
 
 // Fetch all past events
 const pastEventCollection = await getCollection("pastEvents");
@@ -55,6 +56,12 @@ const eventImages = imageEntries
       alt: `${event.data.title} - ${filename}`,
     };
   });
+
+const externalPhotoImages = eventImages.length === 0
+  ? await getGitHubArchivePhotoImages(event.data.archiveLinks?.photosUrl, event.data.title)
+  : [];
+const galleryImages = eventImages.length > 0 ? eventImages : externalPhotoImages;
+const externalMediaLinks = getExternalMediaLinks(event.data.archiveLinks);
 
 const photosDirectory = join(
   process.cwd(),
@@ -114,7 +121,8 @@ const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
   <EventGallery
     eventTitle={event.data.title}
     eventSlug={slug}
-    images={eventImages}
+    images={galleryImages}
+    externalMediaLinks={externalMediaLinks}
     breadcrumb={breadcrumb}
     backLink={{ label: "Back to Event", href: `/past-events/${slug}` }}
   />
