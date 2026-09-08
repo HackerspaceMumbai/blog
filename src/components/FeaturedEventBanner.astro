@@ -103,6 +103,16 @@ const {
       max-width: 100%;
       padding-right: 1rem;
     }
+
+    /*
+     * At narrow widths the copy spans the full banner, so a left-to-right
+     * gradient can no longer guarantee contrast against the (still
+     * right-anchored) artwork crop. Switch to a near-solid backdrop so
+     * legibility never depends on how much bright artwork the crop shows.
+     */
+    .event-banner-overlay {
+      background: rgb(8 6 14 / 0.78);
+    }
   }
 
   .event-banner-kicker {
