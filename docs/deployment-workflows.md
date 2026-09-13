@@ -395,6 +395,10 @@ pnpm deploy:prod
 - **GitHub commit status**: See deployment status on commits and PRs
 - **Notifications**: Configure GitHub notifications for deployment failures
 
+### Events archive rebuilds
+
+Official artifact merges in [HackerspaceMumbai/events](https://github.com/HackerspaceMumbai/events) can trigger a Netlify Build Hook via the events repository secret `HACKMUM_SYNC_WEBHOOK`. See [Events archive sync](./events-archive-sync.md) for activation and build-time consumption details.
+
 ### Local Development Monitoring
 
 - **Terminal output**: Real-time deployment progress and errors
