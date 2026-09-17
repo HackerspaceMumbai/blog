@@ -4,7 +4,7 @@ import EventGallery from "../../../components/EventGallery.astro";
 import { getCollection } from "astro:content";
 import { existsSync, readdirSync } from "node:fs";
 import { extname, join } from "node:path";
-import { getExternalMediaLinks, getGitHubArchivePhotoImages } from "../../../utils/pastEventArchive";
+import { getExternalMediaLinks, getGitHubArchivePhotoImages, enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 
 // Fetch all past events
 const pastEventCollection = await getCollection("pastEvents");
@@ -24,6 +24,14 @@ interface Props {
 
 const { event } = Astro.props;
 const { slug } = Astro.params;
+
+const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
+  title: event.data.title,
+  date: event.data.date,
+  location: event.data.location,
+  description: event.data.description,
+  speakerResources: event.data.speakerResources,
+});
 
 // Map past event slugs to their image folder paths
 // Example: "april-2026-github-copilot-dev-days" -> "april-2026-github-copilot-dev-days"
@@ -53,12 +61,12 @@ const eventImages = imageEntries
     const filename = path.split("/").pop() || "Photo";
     return {
       src: image.default,
-      alt: `${event.data.title} - ${filename}`,
+      alt: `${enriched.title} - ${filename}`,
     };
   });
 
 const externalPhotoImages = eventImages.length === 0
-  ? await getGitHubArchivePhotoImages(event.data.archiveLinks?.photosUrl, event.data.title)
+  ? await getGitHubArchivePhotoImages(event.data.archiveLinks?.photosUrl, enriched.title)
   : [];
 const galleryImages = eventImages.length > 0 ? eventImages : externalPhotoImages;
 const externalMediaLinks = getExternalMediaLinks(event.data.archiveLinks);
@@ -91,11 +99,11 @@ const skippedUnsupportedCount = existsSync(photosDirectory)
 const breadcrumb = [
   { label: "Home", href: "/" },
   { label: "Past Events", href: "/past-events" },
-  { label: event.data.title, href: `/past-events/${slug}` },
+  { label: enriched.title, href: `/past-events/${slug}` },
 ];
 
-const title = `${event.data.title} - Photo Gallery`;
-const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
+const title = `${enriched.title} - Photo Gallery`;
+const description = `Photos from ${enriched.title} at Hackerspace Mumbai`;
 ---
 
 <Layout
@@ -106,7 +114,7 @@ const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
   type="website"
 >
   <!-- Page heading for screen readers -->
-  <h1 class="sr-only">{event.data.title} Gallery</h1>
+  <h1 class="sr-only">{enriched.title} Gallery</h1>
 
   {skippedUnsupportedCount > 0 && (
     <div class="max-w-6xl mx-auto px-4 pt-6">
@@ -119,7 +127,7 @@ const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
   )}
 
   <EventGallery
-    eventTitle={event.data.title}
+    eventTitle={enriched.title}
     eventSlug={slug}
     images={galleryImages}
     externalMediaLinks={externalMediaLinks}

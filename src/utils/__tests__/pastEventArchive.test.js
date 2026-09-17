@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach } from 'vitest';
 import {
+  clearArchiveEnrichmentCache,
   enrichPastEventFromArchive,
   getArchiveLinks,
   getArchiveRawFileUrl,
@@ -10,6 +11,7 @@ import {
   isSafeRawArchiveUrl,
   isSupportedPhotoFile,
   mergeSpeakerResources,
+  parseArchiveDate,
   parseSpeakerFrontmatter,
   speakerResourcesFromFrontmatter,
 } from '../pastEventArchive';
@@ -18,6 +20,9 @@ const archiveUrl =
   'https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-09-05-github-copilot-dev-days-mumbai';
 
 describe('pastEventArchive', () => {
+  beforeEach(() => {
+    clearArchiveEnrichmentCache();
+  });
   it('allows only canonical HackerspaceMumbai events GitHub URLs', () => {
     expect(isSafeArchiveUrl(archiveUrl)).toBe(true);
     expect(isSafeArchiveUrl('https://github.com/HackerspaceMumbai/events')).toBe(true);
@@ -323,6 +328,7 @@ slides: https://speakerdeck.com/example/deck
       title: 'Archive Title',
       location: 'Paytm Office, Mumbai',
       description: 'From event.yml',
+      date: new Date(Date.UTC(2026, 8, 5)),
       speakerResources: [
         {
           speakerName: 'Anas Khan',
@@ -338,8 +344,13 @@ slides: https://speakerdeck.com/example/deck
     });
   });
 
-  it('falls back to local past-event fields when archive enrichment fails', async () => {
-    const fetchImpl = async () => {
+  it('parses archive dates as UTC and rejects invalid calendar dates', () => {
+    expect(parseArchiveDate('2026-09-05')).toEqual(new Date(Date.UTC(2026, 8, 5)));
+    expect(parseArchiveDate('2026-02-30')).toBeUndefined();
+    expect(parseArchiveDate('not-a-date')).toBeUndefined();
+  });
+
+  it('falls back to local past-event fields when archive enrichment fails', async () => {    const fetchImpl = async () => {
       throw new Error('offline');
     };
 

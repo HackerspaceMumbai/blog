@@ -19,22 +19,22 @@ const {
   subtitle = "Explore resources and insights from our community events"
 } = Astro.props;
 
-// Sort events by date (most recent first), then enrich from the events archive when linked.
-const sortedEvents = [...events].sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
-
-const enrichedEvents = await Promise.all(
-  sortedEvents.map(async (event) => {
-    const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
-      title: event.data.title,
-      date: event.data.date,
-      location: event.data.location,
-      description: event.data.description,
-      speakerResources: event.data.speakerResources,
-    });
-    return { event, enriched };
-  })
+// Enrich from the events archive when linked, then sort by the displayed date.
+const enrichedEvents = (
+  await Promise.all(
+    events.map(async (event) => {
+      const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
+        title: event.data.title,
+        date: event.data.date,
+        location: event.data.location,
+        description: event.data.description,
+        speakerResources: event.data.speakerResources,
+      });
+      return { event, enriched };
+    })
+  )
+).sort(
+  (a, b) => b.enriched.date.getTime() - a.enriched.date.getTime()
 );
 ---
 

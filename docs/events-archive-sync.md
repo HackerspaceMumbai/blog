@@ -14,8 +14,10 @@ Speaker/organizer PR merges on events main
   → Past-event pages show updated metadata and speaker resources
 ```
 
-Community contributions under `community/**` in the events archive do **not**
-trigger rebuilds and are not auto-published here.
+Community contributions under `community/**` in the events archive are **not**
+auto-published into Hackmum pages. The events `Notify website sync` workflow also
+excludes `community/**` from rebuild triggers (official artifacts only: `event.yml`,
+agenda/recap, `speakers/**`, `resources/**`, `media/**`).
 
 ## Maintainer setup
 

@@ -111,6 +111,12 @@ const GITHUB_API_HEADERS = {
   'User-Agent': 'hackmum-blog-build',
 } as const;
 
+/** Per-request timeout for GitHub archive fetches during static builds. */
+export const ARCHIVE_FETCH_TIMEOUT_MS = 10_000;
+
+const metadataCache = new Map<string, Promise<ArchiveEventMetadata | null>>();
+const speakerResourcesCache = new Map<string, Promise<ArchiveSpeakerResource[]>>();
+
 export type ArchiveSpeakerResourceType =
   | 'slides'
   | 'video'
@@ -216,8 +222,54 @@ export function parseSpeakerFrontmatter(markdown: string): Record<string, string
   return parseSimpleYamlMapping(markdown);
 }
 
+/**
+ * Parse YYYY-MM-DD as UTC midnight and reject calendar-normalized invalid dates
+ * (for example 2026-02-30).
+ */
+export function parseArchiveDate(value: string | undefined): Date | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return undefined;
+  }
+
+  const [yearText, monthText, dayText] = value.split('-');
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    Number.isNaN(parsed.getTime()) ||
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return parsed;
+}
+
 function isHttpUrl(value: string | undefined): value is string {
   return typeof value === 'string' && /^https?:\/\//i.test(value);
+}
+
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  fetchImpl: typeof fetch,
+  timeoutMs = ARCHIVE_FETCH_TIMEOUT_MS
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetchImpl(url, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /** Map speaker.md frontmatter resource fields to PastEventCard speakerResources. */
@@ -228,14 +280,14 @@ export function speakerResourcesFromFrontmatter(
   const sessionTitle = fields.sessionTitle?.trim() || 'Session resources';
   const resources: ArchiveSpeakerResource[] = [];
 
-  const candidates: Array<[keyof typeof fields | string, ArchiveSpeakerResourceType, string]> = [
+  const candidates: Array<[string, ArchiveSpeakerResourceType, string]> = [
     ['slides', 'slides', 'Slides'],
     ['repository', 'github', 'Repository'],
     ['recording', 'recording', 'Recording'],
   ];
 
   for (const [key, resourceType, label] of candidates) {
-    const resourceUrl = fields[key as string];
+    const resourceUrl = fields[key];
     if (!isHttpUrl(resourceUrl)) {
       continue;
     }
@@ -275,12 +327,16 @@ async function fetchText(
   fetchImpl: typeof fetch
 ): Promise<string | null> {
   try {
-    const response = await fetchImpl(url, {
-      headers: {
-        Accept: 'text/plain',
-        'User-Agent': 'hackmum-blog-build',
+    const response = await fetchWithTimeout(
+      url,
+      {
+        headers: {
+          Accept: 'text/plain',
+          'User-Agent': 'hackmum-blog-build',
+        },
       },
-    });
+      fetchImpl
+    );
     if (!response.ok) {
       console.warn(`Unable to load archive file from ${url}: ${response.status}`);
       return null;
@@ -297,7 +353,11 @@ async function fetchGitHubJson(
   fetchImpl: typeof fetch
 ): Promise<unknown | null> {
   try {
-    const response = await fetchImpl(apiUrl, { headers: GITHUB_API_HEADERS });
+    const response = await fetchWithTimeout(
+      apiUrl,
+      { headers: GITHUB_API_HEADERS },
+      fetchImpl
+    );
     if (!response.ok) {
       console.warn(`Unable to load GitHub API ${apiUrl}: ${response.status}`);
       return null;
@@ -313,95 +373,122 @@ export async function getArchiveEventMetadata(
   archiveUrl: string | undefined,
   fetchImpl: typeof fetch = fetch
 ): Promise<ArchiveEventMetadata | null> {
-  const rawUrl = getArchiveRawFileUrl(archiveUrl, 'event.yml');
-  if (!rawUrl || !isSafeRawArchiveUrl(rawUrl)) {
+  if (!archiveUrl) {
     return null;
   }
 
-  const text = await fetchText(rawUrl, fetchImpl);
-  if (!text) {
-    return null;
+  const cached = metadataCache.get(archiveUrl);
+  if (cached) {
+    return cached;
   }
 
-  const fields = parseSimpleYamlMapping(text);
-  const metadata: ArchiveEventMetadata = {};
-
-  if (fields.title) {
-    metadata.title = fields.title;
-  }
-  if (fields.description) {
-    metadata.description = fields.description;
-  }
-  if (fields.status) {
-    metadata.status = fields.status;
-  }
-
-  if (fields.date) {
-    const parsed = new Date(`${fields.date}T00:00:00`);
-    if (!Number.isNaN(parsed.getTime())) {
-      metadata.date = parsed;
+  const pending = (async (): Promise<ArchiveEventMetadata | null> => {
+    const rawUrl = getArchiveRawFileUrl(archiveUrl, 'event.yml');
+    if (!rawUrl || !isSafeRawArchiveUrl(rawUrl)) {
+      return null;
     }
-  }
 
-  const venue = fields.venue?.trim();
-  const city = fields.city?.trim();
-  if (venue && city) {
-    metadata.location = `${venue}, ${city}`;
-  } else if (venue) {
-    metadata.location = venue;
-  } else if (city) {
-    metadata.location = city;
-  }
+    const text = await fetchText(rawUrl, fetchImpl);
+    if (!text) {
+      return null;
+    }
 
-  return metadata;
+    const fields = parseSimpleYamlMapping(text);
+    const metadata: ArchiveEventMetadata = {};
+
+    if (fields.title) {
+      metadata.title = fields.title;
+    }
+    if (fields.description) {
+      metadata.description = fields.description;
+    }
+    if (fields.status) {
+      metadata.status = fields.status;
+    }
+
+    const parsedDate = parseArchiveDate(fields.date);
+    if (parsedDate) {
+      metadata.date = parsedDate;
+    }
+
+    const venue = fields.venue?.trim();
+    const city = fields.city?.trim();
+    if (venue && city) {
+      metadata.location = `${venue}, ${city}`;
+    } else if (venue) {
+      metadata.location = venue;
+    } else if (city) {
+      metadata.location = city;
+    }
+
+    return metadata;
+  })();
+
+  metadataCache.set(archiveUrl, pending);
+  return pending;
 }
 
 export async function getArchiveSpeakerResources(
   speakersUrl: string | undefined,
   fetchImpl: typeof fetch = fetch
 ): Promise<ArchiveSpeakerResource[]> {
-  const apiUrl = getGitHubContentsApiUrl(speakersUrl);
-  if (!apiUrl) {
+  if (!speakersUrl) {
     return [];
   }
 
-  const items = await fetchGitHubJson(apiUrl, fetchImpl);
-  if (!Array.isArray(items)) {
-    return [];
+  const cached = speakerResourcesCache.get(speakersUrl);
+  if (cached) {
+    return cached;
   }
 
-  const speakerDirs = items
-    .filter((item): item is GitHubContentItem => (
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as GitHubContentItem).name === 'string' &&
-      typeof (item as GitHubContentItem).type === 'string'
-    ))
-    .filter((item) => item.type === 'dir')
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  const resources: ArchiveSpeakerResource[] = [];
-
-  for (const dir of speakerDirs) {
-    const speakerMdUrl = getArchiveRawFileUrl(speakersUrl, `${dir.name}/speaker.md`);
-    if (!speakerMdUrl || !isSafeRawArchiveUrl(speakerMdUrl)) {
-      continue;
+  const pending = (async (): Promise<ArchiveSpeakerResource[]> => {
+    const apiUrl = getGitHubContentsApiUrl(speakersUrl);
+    if (!apiUrl) {
+      return [];
     }
 
-    const markdown = await fetchText(speakerMdUrl, fetchImpl);
-    if (!markdown) {
-      continue;
+    const items = await fetchGitHubJson(apiUrl, fetchImpl);
+    if (!Array.isArray(items)) {
+      return [];
     }
 
-    resources.push(...speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown)));
-  }
+    const speakerDirs = items
+      .filter((item): item is GitHubContentItem => (
+        typeof item === 'object' &&
+        item !== null &&
+        typeof (item as GitHubContentItem).name === 'string' &&
+        typeof (item as GitHubContentItem).type === 'string'
+      ))
+      .filter((item) => item.type === 'dir')
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-  return resources;
+    const resources: ArchiveSpeakerResource[] = [];
+
+    for (const dir of speakerDirs) {
+      const speakerMdUrl = getArchiveRawFileUrl(speakersUrl, `${dir.name}/speaker.md`);
+      if (!speakerMdUrl || !isSafeRawArchiveUrl(speakerMdUrl)) {
+        continue;
+      }
+
+      const markdown = await fetchText(speakerMdUrl, fetchImpl);
+      if (!markdown) {
+        continue;
+      }
+
+      resources.push(...speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown)));
+    }
+
+    return resources;
+  })();
+
+  speakerResourcesCache.set(speakersUrl, pending);
+  return pending;
 }
 
 /**
  * Enrich local past-event frontmatter with canonical archive event.yml + speaker.md resources.
  * Local fields remain the fallback when archive fetch fails. Community paths are never fetched.
+ * Metadata/speaker fetches are memoized per archive URL for the duration of the build.
  */
 export async function enrichPastEventFromArchive(
   archiveLinks: PastEventArchiveLinks | undefined,
@@ -415,15 +502,17 @@ export async function enrichPastEventFromArchive(
     };
   }
 
+  const speakersUrl =
+    archiveLinks.speakersUrl ??
+    (archiveLinks.archiveUrl
+      ? `${archiveLinks.archiveUrl.replace(/\/$/, '')}/speakers`
+      : undefined);
+
   const [metadata, archiveResources] = await Promise.all([
     archiveLinks.archiveUrl
       ? getArchiveEventMetadata(archiveLinks.archiveUrl, fetchImpl)
       : Promise.resolve(null),
-    getArchiveSpeakerResources(
-      archiveLinks.speakersUrl ??
-        (archiveLinks.archiveUrl ? `${archiveLinks.archiveUrl.replace(/\/$/, '')}/speakers` : undefined),
-      fetchImpl
-    ),
+    getArchiveSpeakerResources(speakersUrl, fetchImpl),
   ]);
 
   return {
@@ -466,4 +555,10 @@ export async function getGitHubArchivePhotoImages(
       src: item.download_url as string,
       alt: `${eventTitle} - ${item.name}`,
     }));
+}
+
+/** Test helper: clear build-time memoization between cases. */
+export function clearArchiveEnrichmentCache(): void {
+  metadataCache.clear();
+  speakerResourcesCache.clear();
 }
