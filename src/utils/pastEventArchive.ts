@@ -46,6 +46,29 @@ export function isSafeRawArchiveUrl(url: string | undefined | null): url is stri
   return typeof url === 'string' && /^https:\/\/raw\.githubusercontent\.com\/HackerspaceMumbai\/events\//.test(url);
 }
 
+/** Community paths may be linked for browsing but must never be fetched into public pages. */
+export function isCommunityArchivePath(url: string | undefined | null): boolean {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const { pathname } = new URL(url);
+    return /\/community(?:\/|$)/i.test(pathname);
+  } catch {
+    return /\/community(?:\/|$)/i.test(url);
+  }
+}
+
+/** Official event content eligible for build-time ingest (excludes community/**). */
+export function isIngestibleArchiveUrl(url: string | undefined): url is string {
+  return isSafeArchiveUrl(url) && !isCommunityArchivePath(url);
+}
+
+export function isIngestibleRawArchiveUrl(url: string | undefined | null): url is string {
+  return isSafeRawArchiveUrl(url) && !isCommunityArchivePath(url);
+}
+
 export function getArchiveLinks(archiveLinks?: PastEventArchiveLinks): ArchiveLink[] {
   if (!archiveLinks) {
     return [];
@@ -80,7 +103,7 @@ export function getExternalMediaLinks(archiveLinks?: PastEventArchiveLinks): Arc
 }
 
 export function getGitHubContentsApiUrl(treeUrl: string | undefined): string | null {
-  if (!isSafeArchiveUrl(treeUrl)) {
+  if (!isIngestibleArchiveUrl(treeUrl)) {
     return null;
   }
 
@@ -159,7 +182,7 @@ export function getArchiveRawFileUrl(
   archiveTreeUrl: string | undefined,
   relativePath = ''
 ): string | null {
-  if (!isSafeArchiveUrl(archiveTreeUrl)) {
+  if (!isIngestibleArchiveUrl(archiveTreeUrl)) {
     return null;
   }
 
@@ -172,12 +195,21 @@ export function getArchiveRawFileUrl(
 
   const [, ref, path] = match;
   const fullPath = relativePath ? `${path.replace(/\/$/, '')}/${relativePath}` : path;
+  if (isCommunityArchivePath(`https://github.com/HackerspaceMumbai/events/tree/${ref}/${fullPath}`)) {
+    return null;
+  }
+
   const encodedPath = fullPath
     .split('/')
     .map((segment) => encodeURIComponent(segment))
     .join('/');
 
   return `https://raw.githubusercontent.com/HackerspaceMumbai/events/${encodeURIComponent(ref)}/${encodedPath}`;
+}
+
+/** True for YAML block/flow scalars this lightweight parser cannot expand. */
+export function isUnsupportedYamlScalar(value: string): boolean {
+  return /^(?:[|>][-+]?|&\w*|\*\w+)$/.test(value.trim());
 }
 
 /** Parse simple scalar YAML / frontmatter key-value pairs (no nested structures). */
@@ -208,7 +240,8 @@ export function parseSimpleYamlMapping(text: string): Record<string, string> {
     ) {
       value = value.slice(1, -1);
     }
-    if (!value) {
+    // Skip block/alias markers so values like `description: |` never override local metadata.
+    if (!value || isUnsupportedYamlScalar(value)) {
       continue;
     }
 
@@ -373,7 +406,7 @@ export async function getArchiveEventMetadata(
   archiveUrl: string | undefined,
   fetchImpl: typeof fetch = fetch
 ): Promise<ArchiveEventMetadata | null> {
-  if (!archiveUrl) {
+  if (!archiveUrl || !isIngestibleArchiveUrl(archiveUrl)) {
     return null;
   }
 
@@ -384,12 +417,13 @@ export async function getArchiveEventMetadata(
 
   const pending = (async (): Promise<ArchiveEventMetadata | null> => {
     const rawUrl = getArchiveRawFileUrl(archiveUrl, 'event.yml');
-    if (!rawUrl || !isSafeRawArchiveUrl(rawUrl)) {
+    if (!rawUrl || !isIngestibleRawArchiveUrl(rawUrl)) {
       return null;
     }
 
     const text = await fetchText(rawUrl, fetchImpl);
     if (!text) {
+      metadataCache.delete(archiveUrl);
       return null;
     }
 
@@ -432,7 +466,7 @@ export async function getArchiveSpeakerResources(
   speakersUrl: string | undefined,
   fetchImpl: typeof fetch = fetch
 ): Promise<ArchiveSpeakerResource[]> {
-  if (!speakersUrl) {
+  if (!speakersUrl || !isIngestibleArchiveUrl(speakersUrl)) {
     return [];
   }
 
@@ -449,6 +483,7 @@ export async function getArchiveSpeakerResources(
 
     const items = await fetchGitHubJson(apiUrl, fetchImpl);
     if (!Array.isArray(items)) {
+      speakerResourcesCache.delete(speakersUrl);
       return [];
     }
 
@@ -462,23 +497,23 @@ export async function getArchiveSpeakerResources(
       .filter((item) => item.type === 'dir')
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const resources: ArchiveSpeakerResource[] = [];
+    const perSpeaker = await Promise.all(
+      speakerDirs.map(async (dir) => {
+        const speakerMdUrl = getArchiveRawFileUrl(speakersUrl, `${dir.name}/speaker.md`);
+        if (!speakerMdUrl || !isIngestibleRawArchiveUrl(speakerMdUrl)) {
+          return [] as ArchiveSpeakerResource[];
+        }
 
-    for (const dir of speakerDirs) {
-      const speakerMdUrl = getArchiveRawFileUrl(speakersUrl, `${dir.name}/speaker.md`);
-      if (!speakerMdUrl || !isSafeRawArchiveUrl(speakerMdUrl)) {
-        continue;
-      }
+        const markdown = await fetchText(speakerMdUrl, fetchImpl);
+        if (!markdown) {
+          return [] as ArchiveSpeakerResource[];
+        }
 
-      const markdown = await fetchText(speakerMdUrl, fetchImpl);
-      if (!markdown) {
-        continue;
-      }
+        return speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown));
+      })
+    );
 
-      resources.push(...speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown)));
-    }
-
-    return resources;
+    return perSpeaker.flat();
   })();
 
   speakerResourcesCache.set(speakersUrl, pending);
@@ -549,7 +584,7 @@ export async function getGitHubArchivePhotoImages(
     ))
     .filter((item) => item.type === 'file')
     .filter((item) => isSupportedPhotoFile(item.name))
-    .filter((item) => isSafeRawArchiveUrl(item.download_url))
+    .filter((item) => isIngestibleRawArchiveUrl(item.download_url))
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((item) => ({
       src: item.download_url as string,

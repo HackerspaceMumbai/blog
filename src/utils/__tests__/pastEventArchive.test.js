@@ -2,16 +2,22 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import {
   clearArchiveEnrichmentCache,
   enrichPastEventFromArchive,
+  getArchiveEventMetadata,
   getArchiveLinks,
   getArchiveRawFileUrl,
+  getArchiveSpeakerResources,
   getExternalMediaLinks,
   getGitHubArchivePhotoImages,
   getGitHubContentsApiUrl,
+  isCommunityArchivePath,
+  isIngestibleArchiveUrl,
   isSafeArchiveUrl,
   isSafeRawArchiveUrl,
   isSupportedPhotoFile,
+  isUnsupportedYamlScalar,
   mergeSpeakerResources,
   parseArchiveDate,
+  parseSimpleYamlMapping,
   parseSpeakerFrontmatter,
   speakerResourcesFromFrontmatter,
 } from '../pastEventArchive';
@@ -186,6 +192,94 @@ describe('pastEventArchive', () => {
       'https://raw.githubusercontent.com/HackerspaceMumbai/events/main/events/2026/2026-09-05-github-copilot-dev-days-mumbai/speakers/anxkhn/speaker.md'
     );
     expect(getArchiveRawFileUrl('https://github.com/HackerspaceMumbai/blog/tree/main/x', 'a.yml')).toBeNull();
+  });
+
+  it('rejects community paths for ingest while still allowing browse links', () => {
+    const communityUrl = `${archiveUrl}/community`;
+    expect(isCommunityArchivePath(communityUrl)).toBe(true);
+    expect(isIngestibleArchiveUrl(communityUrl)).toBe(false);
+    expect(isIngestibleArchiveUrl(`${archiveUrl}/speakers`)).toBe(true);
+    expect(getGitHubContentsApiUrl(communityUrl)).toBeNull();
+    expect(getArchiveRawFileUrl(communityUrl, 'notes.md')).toBeNull();
+    expect(getArchiveRawFileUrl(archiveUrl, 'community/notes.md')).toBeNull();
+    expect(
+      getArchiveLinks({
+        archiveUrl,
+        communityUrl,
+      })
+    ).toEqual([
+      { label: 'Canonical Archive', href: archiveUrl },
+      { label: 'Community Contributions', href: communityUrl },
+    ]);
+  });
+
+  it('skips YAML block scalar markers so they cannot override local metadata', () => {
+    expect(
+      parseSimpleYamlMapping(`title: Keep me
+description: |
+status: |
+`)
+    ).toEqual({ title: 'Keep me' });
+    expect(isUnsupportedYamlScalar('|')).toBe(true);
+    expect(isUnsupportedYamlScalar('>-')).toBe(true);
+    expect(isUnsupportedYamlScalar('plain text')).toBe(false);
+  });
+
+  it('fetches speaker.md files concurrently', async () => {
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const fetchImpl = async (url) => {
+      if (String(url).includes('/contents/') && String(url).includes('/speakers')) {
+        return {
+          ok: true,
+          json: async () => [
+            { name: 'anshul2209', type: 'dir' },
+            { name: 'zpratikpathak', type: 'dir' },
+          ],
+        };
+      }
+      if (String(url).endsWith('/speaker.md')) {
+        inFlight += 1;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        await new Promise((resolve) => setTimeout(resolve, 30));
+        inFlight -= 1;
+        const name = String(url).includes('anshul') ? 'Anshul' : 'Pratik';
+        return {
+          ok: true,
+          text: async () => `---
+name: ${name}
+sessionTitle: Talk
+slides: https://example.com/${name.toLowerCase()}.pdf
+---
+`,
+        };
+      }
+      return { ok: false, status: 404, json: async () => ({}), text: async () => '' };
+    };
+
+    const resources = await getArchiveSpeakerResources(`${archiveUrl}/speakers`, fetchImpl);
+    expect(maxInFlight).toBeGreaterThan(1);
+    expect(resources).toHaveLength(2);
+  });
+
+  it('does not cache failed archive metadata loads', async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      if (calls === 1) {
+        return { ok: false, status: 503, text: async () => '' };
+      }
+      return {
+        ok: true,
+        text: async () => 'title: Recovered\ndate: 2026-09-05\n',
+      };
+    };
+
+    await expect(getArchiveEventMetadata(archiveUrl, fetchImpl)).resolves.toBeNull();
+    await expect(getArchiveEventMetadata(archiveUrl, fetchImpl)).resolves.toMatchObject({
+      title: 'Recovered',
+    });
+    expect(calls).toBe(2);
   });
 
   it('parses speaker frontmatter and maps resource URLs', () => {
