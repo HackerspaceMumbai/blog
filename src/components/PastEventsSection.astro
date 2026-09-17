@@ -5,6 +5,7 @@ import SectionHeading from './SectionHeading.astro';
 import CTAButton from './CTAButton.astro';
 import { EmptyState } from './EmptyState.astro';
 import type { CollectionEntry } from 'astro:content';
+import { enrichPastEventFromArchive } from '../utils/pastEventArchive';
 
 interface Props {
   events: CollectionEntry<'pastEvents'>[];
@@ -18,9 +19,22 @@ const {
   subtitle = "Explore resources and insights from our community events"
 } = Astro.props;
 
-// Sort events by date (most recent first)
-const sortedEvents = [...events].sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+// Enrich from the events archive when linked, then sort by the displayed date.
+const enrichedEvents = (
+  await Promise.all(
+    events.map(async (event) => {
+      const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
+        title: event.data.title,
+        date: event.data.date,
+        location: event.data.location,
+        description: event.data.description,
+        speakerResources: event.data.speakerResources,
+      });
+      return { event, enriched };
+    })
+  )
+).sort(
+  (a, b) => b.enriched.date.getTime() - a.enriched.date.getTime()
 );
 ---
 
@@ -47,24 +61,24 @@ const sortedEvents = [...events].sort(
     </header>
 
     <!-- Events Grid -->
-    {sortedEvents.length > 0 ? (
+    {enrichedEvents.length > 0 ? (
       <div 
         class="grid gap-8"
         role="list"
-        aria-label={`${sortedEvents.length} past event${sortedEvents.length === 1 ? '' : 's'} with speaker resources`}
+        aria-label={`${enrichedEvents.length} past event${enrichedEvents.length === 1 ? '' : 's'} with speaker resources`}
       >
-        {sortedEvents.map((event, index) => (
+        {enrichedEvents.map(({ event, enriched }, index) => (
           <div 
             role="listitem"
-            aria-setsize={sortedEvents.length}
+            aria-setsize={enrichedEvents.length}
             aria-posinset={index + 1}
           >
             <PastEventCard
-              title={event.data.title}
-              date={event.data.date}
-              location={event.data.location}
-              description={event.data.description}
-              speakerResources={event.data.speakerResources}
+              title={enriched.title}
+              date={enriched.date}
+              location={enriched.location}
+              description={enriched.description}
+              speakerResources={enriched.speakerResources}
               coverImage={event.data.coverImage}
               eventId={event.id}
               slug={event.slug}
