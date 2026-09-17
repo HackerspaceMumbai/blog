@@ -209,7 +209,8 @@ export function getArchiveRawFileUrl(
 
 /** True for YAML block/flow scalars this lightweight parser cannot expand. */
 export function isUnsupportedYamlScalar(value: string): boolean {
-  return /^(?:[|>][-+]?|&\w*|\*\w+)$/.test(value.trim());
+  // Allow trailing whitespace/comments after markers (e.g. `| # folded`).
+  return /^(?:[|>][-+]?(?:\s|$)|&\w*(?:\s|$)|\*\w+(?:\s|$))/.test(value.trim());
 }
 
 /** Parse simple scalar YAML / frontmatter key-value pairs (no nested structures). */
@@ -501,19 +502,26 @@ export async function getArchiveSpeakerResources(
       speakerDirs.map(async (dir) => {
         const speakerMdUrl = getArchiveRawFileUrl(speakersUrl, `${dir.name}/speaker.md`);
         if (!speakerMdUrl || !isIngestibleRawArchiveUrl(speakerMdUrl)) {
-          return [] as ArchiveSpeakerResource[];
+          return { failed: false, resources: [] as ArchiveSpeakerResource[] };
         }
 
         const markdown = await fetchText(speakerMdUrl, fetchImpl);
-        if (!markdown) {
-          return [] as ArchiveSpeakerResource[];
+        if (markdown === null) {
+          return { failed: true, resources: [] as ArchiveSpeakerResource[] };
         }
 
-        return speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown));
+        return {
+          failed: false,
+          resources: speakerResourcesFromFrontmatter(parseSpeakerFrontmatter(markdown)),
+        };
       })
     );
 
-    return perSpeaker.flat();
+    if (perSpeaker.some((result) => result.failed)) {
+      speakerResourcesCache.delete(speakersUrl);
+    }
+
+    return perSpeaker.flatMap((result) => result.resources);
   })();
 
   speakerResourcesCache.set(speakersUrl, pending);

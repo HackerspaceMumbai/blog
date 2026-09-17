@@ -220,8 +220,16 @@ description: |
 status: |
 `)
     ).toEqual({ title: 'Keep me' });
+    expect(
+      parseSimpleYamlMapping(`title: Keep me
+description: | # folded block
+status: > # also folded
+`)
+    ).toEqual({ title: 'Keep me' });
     expect(isUnsupportedYamlScalar('|')).toBe(true);
     expect(isUnsupportedYamlScalar('>-')).toBe(true);
+    expect(isUnsupportedYamlScalar('| # comment')).toBe(true);
+    expect(isUnsupportedYamlScalar('> # comment')).toBe(true);
     expect(isUnsupportedYamlScalar('plain text')).toBe(false);
   });
 
@@ -280,6 +288,46 @@ slides: https://example.com/${name.toLowerCase()}.pdf
       title: 'Recovered',
     });
     expect(calls).toBe(2);
+  });
+
+  it('retries speaker.md after a partial fetch failure', async () => {
+    let speakerCalls = 0;
+    const fetchImpl = async (url) => {
+      if (String(url).includes('/contents/') && String(url).includes('/speakers')) {
+        return {
+          ok: true,
+          json: async () => [{ name: 'anshul2209', type: 'dir' }],
+        };
+      }
+      if (String(url).endsWith('/speaker.md')) {
+        speakerCalls += 1;
+        if (speakerCalls === 1) {
+          return { ok: false, status: 503, text: async () => '' };
+        }
+        return {
+          ok: true,
+          text: async () => `---
+name: Anshul
+sessionTitle: Talk
+slides: https://example.com/anshul.pdf
+---
+`,
+        };
+      }
+      return { ok: false, status: 404, json: async () => ({}), text: async () => '' };
+    };
+
+    await expect(getArchiveSpeakerResources(`${archiveUrl}/speakers`, fetchImpl)).resolves.toEqual([]);
+    await expect(getArchiveSpeakerResources(`${archiveUrl}/speakers`, fetchImpl)).resolves.toEqual([
+      {
+        speakerName: 'Anshul',
+        resourceTitle: 'Talk — Slides',
+        resourceUrl: 'https://example.com/anshul.pdf',
+        resourceType: 'slides',
+        description: 'Talk',
+      },
+    ]);
+    expect(speakerCalls).toBe(2);
   });
 
   it('parses speaker frontmatter and maps resource URLs', () => {
