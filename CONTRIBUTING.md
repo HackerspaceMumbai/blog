@@ -242,8 +242,15 @@ title: "Your Event Title"
 date: 2024-04-15
 location: "Hackerspace Mumbai"
 description: "A compelling description of your event"
+# Optional: shown only when present (no empty states on the detail page)
+highlights:
+  - label: "Registrations"
+    value: "200+"
+recapPostSlug: "your-event-recap-blog-slug"   # links to /blog/{slug}/
+recapExcerpt: "Two or three sentences teasing the full recap blog post."
 speakerResources:
   - speakerName: "Speaker One"
+    sessionTitle: "Talk Title Shared Across Resources"  # groups slides + repo + recording
     resourceTitle: "Presentation Slides"
     resourceUrl: "./resources/speaker1-slides.pdf"  # Local file
     resourceType: "slides"
@@ -256,6 +263,7 @@ speakerResources:
     description: "Complete recording of the live workshop session"
   
   - speakerName: "Speaker One"
+    sessionTitle: "Talk Title Shared Across Resources"
     resourceTitle: "GitHub Repository"
     resourceUrl: "https://github.com/example/repo"  # Remote link
     resourceType: "github"
@@ -268,6 +276,18 @@ speakerResources:
     description: "Detailed write-up of the workshop concepts"
 ---
 ```
+
+The **event detail page** is session-centric: resources with the same `sessionTitle`
+(or the same talk title when `sessionTitle` is omitted) render as one session card
+with action chips (Slides, Repository, Recording, …). Do not add a fake
+"canonical archive" row under `speakerResources` — use `archiveLinks.archiveUrl`
+for the archive footer instead.
+
+Optional recap fields:
+- Publish the full narrative as a blog post under `src/content/posts/`
+- Set `recapPostSlug` + `recapExcerpt` on the past event so the detail page can
+  show a teaser and "Read Full Recap"
+- Leave both unset for older events; the Recap section is omitted entirely
 
 #### Resource URL Formats
 

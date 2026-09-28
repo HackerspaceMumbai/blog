@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../components/Layout.astro";
-import PastEventCard from "../../../components/PastEventCard.astro";
+import PastEventDetail from "../../../components/PastEventDetail.astro";
 import { getCollection } from "astro:content";
 import { enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 
@@ -79,7 +79,8 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
 
   <section class="py-12 sm:py-16 px-4 bg-base-100 text-base-content" aria-labelledby="past-event-title">
     <div class="max-w-5xl mx-auto">
-      <PastEventCard
+      <h2 id="past-event-title" class="sr-only">{enriched.title}</h2>
+      <PastEventDetail
         title={enriched.title}
         date={enriched.date}
         location={enriched.location}
@@ -89,6 +90,9 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
         eventId={event.id}
         slug={event.slug}
         archiveLinks={event.data.archiveLinks}
+        highlights={event.data.highlights}
+        recapPostSlug={event.data.recapPostSlug}
+        recapExcerpt={event.data.recapExcerpt}
       />
 
       <div class="text-center mt-10">

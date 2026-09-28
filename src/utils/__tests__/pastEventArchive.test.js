@@ -20,6 +20,10 @@ import {
   parseSimpleYamlMapping,
   parseSpeakerFrontmatter,
   speakerResourcesFromFrontmatter,
+  groupResourcesBySession,
+  getSessionGroupKey,
+  isEventLevelResource,
+  getResourceChipLabel,
 } from '../pastEventArchive';
 
 const archiveUrl =
@@ -321,10 +325,10 @@ slides: https://example.com/anshul.pdf
     await expect(getArchiveSpeakerResources(`${archiveUrl}/speakers`, fetchImpl)).resolves.toEqual([
       {
         speakerName: 'Anshul',
+        sessionTitle: 'Talk',
         resourceTitle: 'Talk — Slides',
         resourceUrl: 'https://example.com/anshul.pdf',
         resourceType: 'slides',
-        description: 'Talk',
       },
     ]);
     expect(speakerCalls).toBe(2);
@@ -347,26 +351,106 @@ recording: https://youtube.com/watch?v=example
     expect(speakerResourcesFromFrontmatter(fields)).toEqual([
       {
         speakerName: 'Anas Khan',
+        sessionTitle: 'One Interface, Infinite Agents',
         resourceTitle: 'One Interface, Infinite Agents — Slides',
         resourceUrl: 'https://speakerdeck.com/example/deck',
         resourceType: 'slides',
-        description: 'One Interface, Infinite Agents',
       },
       {
         speakerName: 'Anas Khan',
+        sessionTitle: 'One Interface, Infinite Agents',
         resourceTitle: 'One Interface, Infinite Agents — Repository',
         resourceUrl: 'https://github.com/example/session',
         resourceType: 'github',
-        description: 'One Interface, Infinite Agents',
       },
       {
         speakerName: 'Anas Khan',
+        sessionTitle: 'One Interface, Infinite Agents',
         resourceTitle: 'One Interface, Infinite Agents — Recording',
         resourceUrl: 'https://youtube.com/watch?v=example',
         resourceType: 'recording',
-        description: 'One Interface, Infinite Agents',
       },
     ]);
+  });
+
+  it('preserves sessionTitle and groups multiple resources under one session', () => {
+    const grouped = groupResourcesBySession([
+      {
+        speakerName: 'Alham Shakeel Ahmed Ansari',
+        sessionTitle: 'Copilot in the Classroom',
+        resourceTitle: 'Copilot in the Classroom — Slides',
+        resourceUrl: 'https://example.com/slides',
+        resourceType: 'slides',
+      },
+      {
+        speakerName: 'Alham Shakeel Ahmed Ansari',
+        sessionTitle: 'Copilot in the Classroom',
+        resourceTitle: 'Copilot in the Classroom — Recording',
+        resourceUrl: 'https://example.com/recording',
+        resourceType: 'recording',
+      },
+      {
+        speakerName: 'Anas Khan',
+        sessionTitle: 'One Interface, Infinite Agents',
+        resourceTitle: 'One Interface, Infinite Agents — Repository',
+        resourceUrl: 'https://github.com/example/omnigent',
+        resourceType: 'github',
+      },
+      {
+        speakerName: 'Event Archive',
+        resourceTitle: 'GitHub Copilot Dev Days Mumbai canonical archive',
+        resourceUrl: archiveUrl,
+        resourceType: 'github',
+      },
+    ]);
+
+    expect(grouped).toHaveLength(2);
+    expect(grouped[0]).toMatchObject({
+      title: 'Copilot in the Classroom',
+      speakers: ['Alham Shakeel Ahmed Ansari'],
+    });
+    expect(grouped[0].resources).toHaveLength(2);
+    expect(grouped[1].title).toBe('One Interface, Infinite Agents');
+    expect(isEventLevelResource({
+      speakerName: 'Event Archive',
+      resourceTitle: 'canonical archive',
+      resourceUrl: archiveUrl,
+      resourceType: 'github',
+    })).toBe(true);
+    expect(getSessionGroupKey({
+      speakerName: 'Anshul',
+      resourceTitle: 'Caching at the Gateway — Slides',
+      resourceUrl: 'https://example.com/x',
+      resourceType: 'slides',
+    })).toBe('Caching at the Gateway');
+    expect(getResourceChipLabel('github')).toBe('Repository');
+  });
+
+  it('groups local resources that share a talk title without sessionTitle', () => {
+    const grouped = groupResourcesBySession([
+      {
+        speakerName: 'Maninderjit Bindra',
+        resourceTitle: 'From Root to Rootless',
+        resourceUrl: './resources/root.pdf',
+        resourceType: 'slides',
+      },
+      {
+        speakerName: 'Maninderjit Bindra',
+        resourceTitle: 'From Root to Rootless',
+        resourceUrl: 'https://youtu.be/example',
+        resourceType: 'video',
+      },
+    ]);
+
+    expect(grouped).toEqual([
+      {
+        title: 'From Root to Rootless',
+        speakers: ['Maninderjit Bindra'],
+        description: undefined,
+        resources: expect.any(Array),
+      },
+    ]);
+    expect(grouped[0].resources).toHaveLength(2);
   });
 
   it('merges archive speaker resources ahead of local duplicates', () => {

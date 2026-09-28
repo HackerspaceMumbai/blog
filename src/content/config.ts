@@ -26,8 +26,15 @@ const pastEvents = defineCollection({
     description: z.string().describe("Event description"),
     eventType: z.enum(["meetup", "workshop", "conference", "discussion", "hackathon", "other"]).optional().describe("Type of event"),
     coverImage: image().optional().describe("Event cover image"),
+    highlights: z.array(z.object({
+      label: z.string().describe("Highlight label, e.g. Registrations"),
+      value: z.string().describe("Highlight value, e.g. 500+"),
+    })).optional().describe("Optional event statistics shown on the detail page"),
+    recapPostSlug: z.string().optional().describe("Blog post slug for the full event recap"),
+    recapExcerpt: z.string().optional().describe("Short recap teaser shown on the event detail page"),
     speakerResources: z.array(z.object({
       speakerName: z.string().describe("Speaker's name"),
+      sessionTitle: z.string().optional().describe("Session/talk title used to group resources"),
       resourceTitle: z.string().describe("Resource title"),
       resourceUrl: z.string()
         .refine(

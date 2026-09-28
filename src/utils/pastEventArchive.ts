@@ -151,10 +151,130 @@ export type ArchiveSpeakerResourceType =
 
 export interface ArchiveSpeakerResource {
   speakerName: string;
+  sessionTitle?: string;
   resourceTitle: string;
   resourceUrl: string;
   resourceType: ArchiveSpeakerResourceType;
   description?: string;
+}
+
+export interface SessionResourceGroup {
+  title: string;
+  speakers: string[];
+  description?: string;
+  resources: ArchiveSpeakerResource[];
+}
+
+const RESOURCE_TYPE_SUFFIX =
+  /\s+[—–-]\s+(Slides|Repository|Recording|Video|Documentation|Blog Post|GitHub|Resource)$/i;
+
+const RESOURCE_CHIP_LABELS: Record<ArchiveSpeakerResourceType, string> = {
+  slides: 'Slides',
+  video: 'Video',
+  recording: 'Recording',
+  documentation: 'Docs',
+  blog: 'Blog',
+  github: 'Repository',
+  other: 'Resource',
+};
+
+/** Human-readable label for a session resource action chip. */
+export function getResourceChipLabel(resourceType: ArchiveSpeakerResourceType): string {
+  return RESOURCE_CHIP_LABELS[resourceType] ?? 'Resource';
+}
+
+/**
+ * Event-level artifacts (canonical archive roots, etc.) belong in the archive
+ * footer — not under Sessions.
+ */
+export function isEventLevelResource(resource: ArchiveSpeakerResource): boolean {
+  if (/^event archive$/i.test(resource.speakerName.trim())) {
+    return true;
+  }
+
+  if (/canonical archive/i.test(resource.resourceTitle)) {
+    return true;
+  }
+
+  if (resource.resourceType !== 'github') {
+    return false;
+  }
+
+  try {
+    const { pathname } = new URL(resource.resourceUrl);
+    const isEventsRepo =
+      /^\/HackerspaceMumbai\/events(?:\/|$)/i.test(pathname);
+    const looksLikeSessionArtifact =
+      /\/speakers\//i.test(pathname) || /\/sessions\//i.test(pathname);
+    return isEventsRepo && !looksLikeSessionArtifact;
+  } catch {
+    return false;
+  }
+}
+
+function stripResourceTypeSuffix(title: string): string {
+  return title.replace(RESOURCE_TYPE_SUFFIX, '').trim();
+}
+
+/** Derive a stable session grouping key from a flat resource row. */
+export function getSessionGroupKey(resource: ArchiveSpeakerResource): string {
+  const explicit = resource.sessionTitle?.trim();
+  if (explicit && !/^session resources$/i.test(explicit)) {
+    return explicit;
+  }
+
+  const stripped = stripResourceTypeSuffix(resource.resourceTitle);
+  if (stripped) {
+    return stripped;
+  }
+
+  return resource.speakerName.trim() || 'Session';
+}
+
+/**
+ * Group flat speaker resources into session cards.
+ * Event-level archive rows are excluded. Order follows first appearance.
+ */
+export function groupResourcesBySession(
+  resources: ArchiveSpeakerResource[] = []
+): SessionResourceGroup[] {
+  const groups = new Map<string, SessionResourceGroup>();
+
+  for (const resource of resources) {
+    if (isEventLevelResource(resource)) {
+      continue;
+    }
+
+    const title = getSessionGroupKey(resource);
+    const existing = groups.get(title);
+
+    if (!existing) {
+      groups.set(title, {
+        title,
+        speakers: [resource.speakerName],
+        description: resource.description?.trim() &&
+          resource.description.trim() !== title
+          ? resource.description.trim()
+          : undefined,
+        resources: [resource],
+      });
+      continue;
+    }
+
+    if (!existing.speakers.includes(resource.speakerName)) {
+      existing.speakers.push(resource.speakerName);
+    }
+    if (
+      !existing.description &&
+      resource.description?.trim() &&
+      resource.description.trim() !== title
+    ) {
+      existing.description = resource.description.trim();
+    }
+    existing.resources.push(resource);
+  }
+
+  return Array.from(groups.values());
 }
 
 export interface ArchiveEventMetadata {
@@ -327,10 +447,10 @@ export function speakerResourcesFromFrontmatter(
     }
     resources.push({
       speakerName,
+      sessionTitle,
       resourceTitle: `${sessionTitle} — ${label}`,
       resourceUrl,
       resourceType,
-      description: sessionTitle,
     });
   }
 

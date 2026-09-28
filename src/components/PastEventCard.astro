@@ -8,6 +8,7 @@ import type { ImageMetadata } from 'astro';
 
 export interface SpeakerResource {
   speakerName: string;
+  sessionTitle?: string;
   resourceTitle: string;
   resourceUrl: string;
   resourceType: "slides" | "video" | "recording" | "documentation" | "blog" | "github" | "other";
@@ -185,14 +186,6 @@ const canonicalArchiveUrl = isSafeArchiveUrl(archiveLinks?.archiveUrl)
             />
           ))}
         </div>
-      </div>
-    )}
-
-    {!resolvedResources || resolvedResources.length === 0 && (
-      <div class="mt-8 p-4 rounded-lg bg-base-200/50 text-center">
-        <p class="text-sm text-base-content/60">
-          Speaker resources will be added soon.
-        </p>
       </div>
     )}
   </div>

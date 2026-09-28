@@ -39,6 +39,15 @@ pointing at the events tree. At build time:
 - Prefer `event.yml` for title, date, description, and venue/city when available
 - Merge speaker resources from `speakers/*/speaker.md` frontmatter (`slides`,
   `repository`, `recording`) ahead of local `speakerResources`
+- Preserve each speaker's `sessionTitle` on ingested resources; the event detail
+  page groups resources into **Sessions** by that title (falling back to the
+  resource title when `sessionTitle` is absent)
+- Event-level rows such as a "canonical archive" GitHub link are excluded from
+  Sessions and belong in the detail page archive footer instead
+- Optional detail-page storytelling fields (local only, not fetched from the
+  archive): `highlights`, `recapPostSlug`, and `recapExcerpt`. When both recap
+  fields are set, the page shows a teaser that links to the blog post. Omit them
+  for older events — sections stay hidden with no empty states
 - Continue loading official gallery photos from `archiveLinks.photosUrl` when
   local `src/assets/images/events/.../photos` is empty
 
