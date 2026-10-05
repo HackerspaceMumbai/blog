@@ -5,7 +5,7 @@ import GallerySection from "../../components/GallerySection.astro";
 import FeaturedEventBanner from "../../components/FeaturedEventBanner.astro";
 import { getCollection } from "astro:content";
 import { FEATURED_HOME_EVENT, UPCOMING_EVENTS } from "../../data/upcomingEvents.js";
-import featuredEventImage from "../../assets/images/events/dev-days-mumbai-2026.png";
+import featuredEventImage from "../../assets/images/events/hacktoberfest-hack-day-mumbai-2026.png";
 
 const recentPastEvents = (await getCollection("pastEvents"))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())

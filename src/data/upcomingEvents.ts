@@ -12,13 +12,13 @@ export interface UpcomingEvent {
 // Keep only truly upcoming events here.
 // Past events should live in src/content/pastEvents/ and use /past-events/{slug}/gallery.
 export const FEATURED_HOME_EVENT: UpcomingEvent = {
-  slug: "dev-days-mangaluru-series-sep-2026",
-  title: "Dev Days | Mangaluru Series",
-  date: "10–19 September 2026",
-  location: "Mangaluru & coastal campuses",
+  slug: "hacktoberfest-hack-day-mumbai-2026",
+  title: "Hacktoberfest Hack Day Mumbai",
+  date: "17 October 2026",
+  location: "Mumbai, India",
   description:
-    "A multi-stop Dev Days tour across the Mangaluru region—campus sessions from 10 September, with the marquee professionals edition at UniCourt on 19 September.",
-  rsvpLink: "https://www.meetup.com/mumbai-technology-meetup/events/316369683/",
+    "Join Hackerspace Mumbai for a day of open-source contributions and community building at Hacktoberfest Hack Day Mumbai.",
+  rsvpLink: "https://scan.hackmum.in/hacktoberfest26",
   coverImage: "",
   galleryPath: "",
 };
