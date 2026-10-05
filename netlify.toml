@@ -23,7 +23,7 @@
   [functions.newsletter]
     # Specific settings for newsletter function
     timeout = 30
-    memory = 256
+    memory = 1024
     # Enable detailed logging
     environment = { LOG_LEVEL = "info" }
 
