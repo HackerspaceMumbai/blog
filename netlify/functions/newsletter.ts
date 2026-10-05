@@ -87,8 +87,31 @@ const BLOCKED_DOMAINS = [
 const getKitApiKey = () => process.env.KIT_API_KEY;
 const getKitFormId = () => process.env.KIT_FORM_ID;
 const KIT_API_URL = process.env.KIT_API_URL || 'https://api.kit.com/v4';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || (process.env.NODE_ENV === 'production' ? 'https://hackmum.in' : '*');
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const CORS_ORIGIN = (
+  process.env.CORS_ORIGIN ||
+  (NODE_ENV === 'production' ? 'https://hackmum.in,https://www.hackmum.in' : '*')
+).trim() || '*';
+
+function resolveCorsOrigin(requestOrigin?: string): string {
+  if (CORS_ORIGIN === '*') {
+    return '*';
+  }
+
+  const allowedOrigins = CORS_ORIGIN
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  if (!requestOrigin) {
+    return allowedOrigins[0] || '*';
+  }
+
+  const normalizedRequestOrigin = requestOrigin.trim();
+  return allowedOrigins.includes(normalizedRequestOrigin)
+    ? normalizedRequestOrigin
+    : allowedOrigins[0] || '*';
+}
 
 // Logging configuration
 const LOG_LEVEL = process.env.LOG_LEVEL || (NODE_ENV === 'production' ? 'error' : 'debug');
@@ -638,15 +661,15 @@ function logSubscriptionEvent(subscription: NewsletterSubscription): void {
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   const startTime = Date.now();
   const requestId = context.awsRequestId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const requestOrigin = event.headers.origin || event.headers.Origin;
   
   // Set CORS headers
   const corsHeaders = {
-    'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
-      ? 'https://hackmum.in' 
-      : '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': resolveCorsOrigin(requestOrigin),
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
     'X-Request-ID': requestId
   };
 

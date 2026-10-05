@@ -25,9 +25,17 @@ const pastEvents = defineCollection({
     date: z.coerce.date().describe("Event date"),
     location: z.string().describe("Event location"),
     description: z.string().describe("Event description"),
+    eventType: z.enum(["meetup", "workshop", "conference", "discussion", "hackathon", "other"]).optional().describe("Type of event"),
     coverImage: image().optional().describe("Event cover image"),
+    highlights: z.array(z.object({
+      label: z.string().describe("Highlight label, e.g. Registrations"),
+      value: z.string().describe("Highlight value, e.g. 500+"),
+    })).optional().describe("Optional event statistics shown on the detail page"),
+    recapPostSlug: z.string().optional().describe("Blog post slug for the full event recap"),
+    recapExcerpt: z.string().optional().describe("Short recap teaser shown on the event detail page"),
     speakerResources: z.array(z.object({
       speakerName: z.string().describe("Speaker's name"),
+      sessionTitle: z.string().optional().describe("Session/talk title used to group resources"),
       resourceTitle: z.string().describe("Resource title"),
       resourceUrl: z.string()
         .refine(
@@ -38,6 +46,16 @@ const pastEvents = defineCollection({
       resourceType: z.enum(["slides", "video", "recording", "documentation", "blog", "github", "other"]).describe("Type of resource"),
       description: z.string().optional().describe("Brief description of the resource"),
     })).optional().describe("Array of speaker resources for this event"),
+    archiveLinks: z.object({
+      archiveUrl: z.string().url().optional().describe("Canonical event archive URL"),
+      mediaUrl: z.string().url().optional().describe("Canonical media archive URL"),
+      photosUrl: z.string().url().optional().describe("Canonical photos archive URL"),
+      videosUrl: z.string().url().optional().describe("Canonical videos archive URL"),
+      recapUrl: z.string().url().optional().describe("Canonical recap URL"),
+      speakersUrl: z.string().url().optional().describe("Canonical speakers archive URL"),
+      resourcesUrl: z.string().url().optional().describe("Canonical resources archive URL"),
+      communityUrl: z.string().url().optional().describe("Canonical community contributions URL"),
+    }).optional().describe("Links to the canonical public event archive"),
   }),
 });
 

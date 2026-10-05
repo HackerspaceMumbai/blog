@@ -90,6 +90,12 @@ pnpm run dev
 
 ## Configuration Details
 
+### Function Memory
+
+The newsletter function uses `memory = 1024` in `netlify.toml`. Netlify accepts
+function memory values between 1024 and 4096 MB; values below this range cause
+configuration parsing to fail before the build starts.
+
 ### Build Settings
 
 - **Build Command:** `npm run build`

@@ -1,0 +1,64 @@
+---
+import {
+  getResourceChipLabel,
+  type ArchiveSpeakerResourceType,
+  type SessionResourceGroup,
+} from '../utils/pastEventArchive';
+
+interface Props {
+  session: SessionResourceGroup;
+}
+
+const { session } = Astro.props;
+
+const chipClass =
+  'inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-primary/40 text-primary hover:bg-primary hover:text-primary-content transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-base-100';
+---
+
+<article
+  class="rounded-xl border border-base-300 bg-base-100 p-5 sm:p-6"
+  aria-labelledby={`session-${session.title.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '')}`}
+>
+  <h3
+    id={`session-${session.title.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '')}`}
+    class="text-xl font-bold text-base-content mb-3"
+  >
+    {session.title}
+  </h3>
+
+  <p class="text-sm text-base-content/70 mb-4">
+    <span class="font-semibold text-base-content/80">
+      {session.speakers.length > 1 ? 'Speakers' : 'Speaker'}
+    </span>
+    <br />
+    {session.speakers.join(', ')}
+  </p>
+
+  {session.description && (
+    <p class="text-sm text-base-content/75 mb-4">
+      {session.description}
+    </p>
+  )}
+
+  {session.resources.length > 0 && (
+    <div>
+      <p class="text-sm font-semibold text-base-content/80 mb-2">Resources</p>
+      <div class="flex flex-wrap gap-2">
+        {session.resources.map((resource) => (
+          <a
+            href={resource.resourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={chipClass}
+            aria-label={`Open ${getResourceChipLabel(resource.resourceType as ArchiveSpeakerResourceType)} for ${session.title} (opens in new window)`}
+          >
+            {getResourceChipLabel(resource.resourceType as ArchiveSpeakerResourceType)}
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+</article>

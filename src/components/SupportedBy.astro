@@ -1,0 +1,82 @@
+---
+const supporters = [
+  { name: 'Microsoft', href: 'https://microsoft.com' },
+  { name: 'Google', href: 'https://google.com' },
+  { name: 'BookMyShow', href: 'https://bookmyshow.com' },
+  { name: 'Directi', href: 'https://directi.com' },
+  { name: 'Neo4j', href: 'https://neo4j.com' },
+  { name: 'CodeRabbit', href: 'https://coderabbit.com' },
+];
+---
+
+<section class="supported-by home-gutter" aria-label="Supported by">
+  <div class="supported-by-row home-column">
+    <p class="supported-by-label">Supported by:</p>
+    <ul class="supported-by-list">
+      {supporters.map((supporter) => (
+        <li>
+          <a
+            href={supporter.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {supporter.name}
+            <span class="sr-only"> (opens in new window)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .supported-by {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    background: var(--color-base-200);
+    color: var(--color-base-content);
+  }
+
+  .supported-by-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem 1.5rem;
+    text-align: center;
+  }
+
+  .supported-by-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 1.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .supported-by-label {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .supported-by-list a {
+    color: var(--color-base-content);
+    opacity: 0.65;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .supported-by-list a:hover {
+    color: var(--color-primary);
+    opacity: 1;
+  }
+</style>

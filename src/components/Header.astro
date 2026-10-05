@@ -24,8 +24,8 @@
     <!-- Desktop navigation -->
     <nav class="hidden md:flex space-x-6">
       <a href="/" class="hover:text-accent transition-colors">Home</a>
-      <a href="/#about" class="hover:text-accent transition-colors">About</a>
-      <a href="/#events" class="hover:text-accent transition-colors">Events</a>
+      <a href="/about/" class="hover:text-accent transition-colors">About</a>
+      <a href="/events/" class="hover:text-accent transition-colors">Events</a>
       <a href="/blog/" class="hover:text-accent transition-colors">Blog</a>
       <a href="/#join" class="hover:text-accent transition-colors">Join</a>
     </nav>
@@ -39,58 +39,13 @@
   >
     <div class="px-4 py-2 space-y-2">
       <a href="/" class="block py-2 hover:text-accent transition-colors">Home</a>
-      <a href="/#about" class="block py-2 hover:text-accent transition-colors">About</a>
-      <a href="/#events" class="block py-2 hover:text-accent transition-colors">Events</a>
+      <a href="/about/" class="block py-2 hover:text-accent transition-colors">About</a>
+      <a href="/events/" class="block py-2 hover:text-accent transition-colors">Events</a>
       <a href="/blog/" class="block py-2 hover:text-accent transition-colors">Blog</a>
       <a href="/#join" class="block py-2 hover:text-accent transition-colors">Join</a>
     </div>
   </nav>
 </header>
 
-<!-- Inline mobile menu behavior to avoid an extra network request for a small script -->
-<script is:inline>
-  (function() {
-    // Small, self-contained mobile menu toggler. Runs immediately where it is placed (after header).
-    const menuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (!menuButton || !mobileMenu) return;
-
-    // Toggle mobile menu
-    menuButton.addEventListener('click', function() {
-      const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-      const newState = !isExpanded;
-
-      // Toggle menu visibility
-      mobileMenu.classList.toggle('hidden');
-      menuButton.setAttribute('aria-expanded', newState.toString());
-
-      // Animate hamburger icon
-      const spans = menuButton.querySelectorAll('span');
-      if (isExpanded) {
-        // Reset to hamburger
-        spans[0].style.transform = 'none';
-        spans[1].style.opacity = '1';
-        spans[2].style.transform = 'none';
-      } else {
-        // Transform to X
-        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-        spans[1].style.opacity = '0';
-        spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-      }
-    });
-
-    // Close menu when clicking on navigation links
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', function() {
-        mobileMenu.classList.add('hidden');
-        menuButton.setAttribute('aria-expanded', 'false');
-
-        // Reset hamburger icon
-        const spans = menuButton.querySelectorAll('span');
-        spans[0].style.transform = 'none';
-        spans[1].style.opacity = '1';
-        spans[2].style.transform = 'none';
-      });
-    });
-  })();
-</script>
+<!-- External script: covered by CSP script-src 'self' (no fragile inline hashes) -->
+<script src="/scripts/mobile-menu.js" defer></script>

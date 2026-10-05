@@ -1,0 +1,139 @@
+---
+import type { CommunityStats } from './types';
+
+interface Props {
+  stats: CommunityStats;
+}
+
+const { stats } = Astro.props;
+
+const metrics = [
+  {
+    value: `${stats.yearsRunning}+`,
+    label: 'Years running',
+    href: '/about/',
+    action: 'Our story',
+    external: false,
+  },
+  {
+    value: `${stats.meetupsHosted}+`,
+    label: 'Events hosted',
+    href: '/events/',
+    action: 'Browse events',
+    external: false,
+  },
+  {
+    value: stats.membersCount,
+    label: 'Community members',
+    href: '/blog/',
+    action: 'Community stories',
+    external: false,
+  },
+  {
+    value: `${stats.projectsSupported}+`,
+    label: 'Projects supported',
+    href: 'https://github.com/HackerspaceMumbai',
+    action: 'Open source projects',
+    external: true,
+  },
+];
+---
+
+<section class="bg-base-100 text-base-content home-gutter" aria-labelledby="community-metrics-heading">
+  <div class="home-column pt-6 pb-10 md:pt-8 md:pb-12">
+    <h2 id="community-metrics-heading" class="sr-only">Community metrics</h2>
+    <ul class="metrics-grid border-t border-base-300 pt-6 md:pt-8">
+      {metrics.map((metric) => (
+        <li class="metric">
+          <p class="metric-value">{metric.value}</p>
+          <p class="metric-label">{metric.label}</p>
+          <a
+            class="metric-link"
+            href={metric.href}
+            target={metric.external ? '_blank' : undefined}
+            rel={metric.external ? 'noopener noreferrer' : undefined}
+          >
+            {metric.action}
+            <span aria-hidden="true">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+    margin: 0;
+    padding-top: 1.5rem;
+    list-style: none;
+  }
+
+  .metric {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .metric-value {
+    margin: 0;
+    color: var(--color-base-content);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .metric-label {
+    margin: 0.65rem 0 0;
+    color: var(--color-base-content);
+    opacity: 0.55;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .metric-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+    color: var(--color-base-content);
+    opacity: 0.7;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .metric-link:hover {
+    color: var(--color-primary);
+    opacity: 1;
+  }
+
+  .metric-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 768px) {
+    .metrics-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .metric {
+      padding: 0 1.5rem;
+      border-left: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+    }
+
+    .metric:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

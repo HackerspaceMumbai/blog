@@ -1,0 +1,30 @@
+---
+description: WSL + pnpm workflow for hm_blog (never PowerShell/npm)
+alwaysApply: true
+---
+
+# Repo runtime: WSL + pnpm
+
+This project lives in **WSL (Ubuntu)**, not Windows PowerShell.
+
+## Shell
+
+- Run all commands in WSL bash (`/home/ac/projects/hm_blog`).
+- Do **not** use PowerShell, `cmd`, or Windows `npm`/`npx` against UNC paths.
+- Prefer: `wsl -d Ubuntu-22.04 -e bash -lc 'cd /home/ac/projects/hm_blog && …'` when the agent host is Windows.
+
+## Package manager
+
+Use **pnpm** only (not npm/npx for project scripts):
+
+| Intent | Command |
+|--------|---------|
+| Install | `pnpm install` |
+| Dev server | `pnpm dev` |
+| Build | `pnpm build` |
+| Test (all) | `pnpm test` |
+| Test one file | `pnpm exec vitest run src/utils/__tests__/pastEventArchive.test.js` |
+| Add dep | `pnpm add <pkg>` |
+| Add devDep | `pnpm add -D <pkg>` |
+
+Do not use `pnpm dlx vitest` / a global Vitest for this repo — that can pull Vitest 5+ and break `jsdom` resolution. Always use the workspace Vitest via `pnpm test` or `pnpm exec vitest`.

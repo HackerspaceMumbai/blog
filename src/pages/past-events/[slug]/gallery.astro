@@ -2,20 +2,30 @@
 import Layout from "../../../components/Layout.astro";
 import EventGallery from "../../../components/EventGallery.astro";
 import { getCollection } from "astro:content";
+import { getExternalMediaLinks, getGitHubArchivePhotoImages, enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 
-// Fetch all past events
 const pastEventCollection = await getCollection("pastEvents");
-
-const getPastEventSlug = (event: (typeof pastEventCollection)[0]) => event.id.replace(/\/index$/, '');
 const { slug } = Astro.params;
 
-const event = typeof slug === 'string'
-  ? pastEventCollection.find((entry) => getPastEventSlug(entry) === slug)
-  : undefined;
-
-if (!event || typeof slug !== 'string') {
-  return Astro.redirect('/past-events');
+if (typeof slug !== 'string') {
+  return new Response("Past event not found", { status: 404 });
 }
+
+const event = pastEventCollection.find(
+  (entry) => entry.id.replace(/\/index$/, '') === slug
+);
+
+if (!event) {
+  return new Response("Past event not found", { status: 404 });
+}
+
+const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
+  title: event.data.title,
+  date: event.data.date,
+  location: event.data.location,
+  description: event.data.description,
+  speakerResources: event.data.speakerResources,
+});
 
 // Map past event slugs to their image folder paths
 // Example: "april-2026-github-copilot-dev-days" -> "april-2026-github-copilot-dev-days"
@@ -37,19 +47,24 @@ const eventImages = imageEntries
     const filename = path.split("/").pop() || "Photo";
     return {
       src: image.default,
-      alt: `${event.data.title} - ${filename}`,
+      alt: `${enriched.title} - ${filename}`,
     };
   });
 
+const externalPhotoImages = eventImages.length === 0
+  ? await getGitHubArchivePhotoImages(event.data.archiveLinks?.photosUrl, enriched.title)
+  : [];
+const galleryImages = eventImages.length > 0 ? eventImages : externalPhotoImages;
+const externalMediaLinks = getExternalMediaLinks(event.data.archiveLinks);
 // Create breadcrumb navigation
 const breadcrumb = [
   { label: "Home", href: "/" },
   { label: "Past Events", href: "/past-events" },
-  { label: event.data.title, href: `/past-events/${slug}` },
+  { label: enriched.title, href: `/past-events/${slug}` },
 ];
 
-const title = `${event.data.title} - Photo Gallery`;
-const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
+const title = `${enriched.title} - Photo Gallery`;
+const description = `Photos from ${enriched.title} at Hackerspace Mumbai`;
 ---
 
 <Layout
@@ -60,12 +75,13 @@ const description = `Photos from ${event.data.title} at Hackerspace Mumbai`;
   type="website"
 >
   <!-- Page heading for screen readers -->
-  <h1 class="sr-only">{event.data.title} Gallery</h1>
+  <h1 class="sr-only">{enriched.title} Gallery</h1>
 
   <EventGallery
-    eventTitle={event.data.title}
+    eventTitle={enriched.title}
     eventSlug={slug}
-    images={eventImages}
+    images={galleryImages}
+    externalMediaLinks={externalMediaLinks}
     breadcrumb={breadcrumb}
     backLink={{ label: "Back to Event", href: `/past-events/${slug}` }}
   />

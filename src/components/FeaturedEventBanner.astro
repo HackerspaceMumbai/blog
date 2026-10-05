@@ -1,0 +1,123 @@
+---
+import CTAButton from './CTAButton.astro';
+
+interface Props {
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  rsvpLink: string;
+  image: ImageMetadata;
+  kicker?: string;
+  sectionId?: string;
+}
+
+const {
+  title,
+  date,
+  location,
+  description,
+  rsvpLink,
+  image,
+  kicker = 'Upcoming event',
+  sectionId = 'events',
+} = Astro.props;
+---
+
+<section id={sectionId} class="home-gutter py-2 md:py-3" aria-labelledby="featured-event-heading">
+  <div class="event-banner home-column">
+    <img
+      src={image.src}
+      alt=""
+      width={image.width}
+      height={image.height}
+      class="event-banner-photo"
+      decoding="async"
+    />
+    <div class="event-banner-copy">
+      <p class="event-banner-kicker">{kicker}</p>
+      <h2 id="featured-event-heading" class="event-banner-title">{title}</h2>
+      <p class="event-banner-meta">{date} · {location}</p>
+      <p class="event-banner-lede">{description}</p>
+      <CTAButton
+        href={rsvpLink}
+        variant="primary"
+        target="_blank"
+        aria-label={`Register for ${title} (opens in new window)`}
+      >
+        Register →
+      </CTAButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .event-banner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background-color: #08060e;
+  }
+
+  .event-banner-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .event-banner-copy {
+    min-width: 0;
+    padding: 1.5rem;
+  }
+
+  .event-banner-kicker {
+    margin: 0 0 0.75rem;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .event-banner-title {
+    margin: 0 0 0.75rem;
+    color: #ffffff;
+    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .event-banner-meta {
+    margin: 0 0 1rem;
+    color: rgb(255 255 255 / 0.78);
+    font-size: 0.95rem;
+  }
+
+  .event-banner-lede {
+    margin: 0 0 1.5rem;
+    color: rgb(255 255 255 / 0.88);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  @media (min-width: 900px) {
+    .event-banner {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .event-banner-photo {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .event-banner-copy {
+      grid-column: 1;
+      grid-row: 1;
+      padding: 2rem;
+    }
+  }
+</style>

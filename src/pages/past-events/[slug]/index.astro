@@ -1,24 +1,34 @@
 ---
 import Layout from "../../../components/Layout.astro";
-import PastEventCard from "../../../components/PastEventCard.astro";
+import PastEventDetail from "../../../components/PastEventDetail.astro";
 import { getCollection } from "astro:content";
+import { enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 
-// Fetch all past events for static route generation
 const pastEventCollection = await getCollection("pastEvents");
-
-const getPastEventSlug = (event: (typeof pastEventCollection)[0]) => event.id.replace(/\/index$/, '');
 const { slug } = Astro.params;
 
-const event = typeof slug === 'string'
-  ? pastEventCollection.find((entry) => getPastEventSlug(entry) === slug)
-  : undefined;
-
-if (!event || typeof slug !== 'string') {
-  return Astro.redirect('/past-events');
+if (typeof slug !== 'string') {
+  return new Response("Past event not found", { status: 404 });
 }
 
-const title = `${event.data.title} - Past Event - Hackerspace Mumbai`;
-const description = event.data.description;
+const event = pastEventCollection.find(
+  (entry) => entry.id.replace(/\/index$/, '') === slug
+);
+
+if (!event) {
+  return new Response("Past event not found", { status: 404 });
+}
+
+const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
+  title: event.data.title,
+  date: event.data.date,
+  location: event.data.location,
+  description: event.data.description,
+  speakerResources: event.data.speakerResources,
+});
+
+const title = `${enriched.title} - Past Event - Hackerspace Mumbai`;
+const description = enriched.description;
 const canonical = `https://hackmum.in/past-events/${slug}`;
 ---
 
@@ -29,7 +39,7 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
   canonical={canonical}
   type="article"
 >
-  <h1 class="sr-only">{event.data.title}</h1>
+  <h1 class="sr-only">{enriched.title}</h1>
 
   <!-- Hero-like section with breadcrumb -->
   <div class="bg-gradient-to-b from-primary/10 to-base-100 py-8 px-4">
@@ -57,7 +67,7 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
             </svg>
           </li>
           <li class="text-base-content font-medium" aria-current="page">
-            {event.data.title}
+            {enriched.title}
           </li>
         </ol>
       </nav>
@@ -66,15 +76,20 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
 
   <section class="py-12 sm:py-16 px-4 bg-base-100 text-base-content" aria-labelledby="past-event-title">
     <div class="max-w-5xl mx-auto">
-      <PastEventCard
-        title={event.data.title}
-        date={event.data.date}
-        location={event.data.location}
-        description={event.data.description}
-        speakerResources={event.data.speakerResources}
+      <h2 id="past-event-title" class="sr-only">{enriched.title}</h2>
+      <PastEventDetail
+        title={enriched.title}
+        date={enriched.date}
+        location={enriched.location}
+        description={enriched.description}
+        speakerResources={enriched.speakerResources}
         coverImage={event.data.coverImage}
         eventId={event.id}
-        slug={getPastEventSlug(event)}
+        slug={slug}
+        archiveLinks={event.data.archiveLinks}
+        highlights={event.data.highlights}
+        recapPostSlug={event.data.recapPostSlug}
+        recapExcerpt={event.data.recapExcerpt}
       />
 
       <div class="text-center mt-10">

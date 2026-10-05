@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import type { ArchiveLink } from '../utils/pastEventArchive';
 
 export interface EventGalleryProps {
   eventTitle: string;
@@ -7,6 +8,7 @@ export interface EventGalleryProps {
   images: Array<{ src: any; alt: string }>;
   breadcrumb: Array<{ label: string; href: string }>;
   backLink?: { label: string; href: string };
+  externalMediaLinks?: ArchiveLink[];
 }
 
 const {
@@ -15,11 +17,13 @@ const {
   images = [],
   breadcrumb = [],
   backLink,
+  externalMediaLinks = [],
 } = Astro.props;
 
 // Validate images array
 const validImages = Array.isArray(images) ? images : [];
 const hasImages = validImages.length > 0;
+const validExternalMediaLinks = Array.isArray(externalMediaLinks) ? externalMediaLinks : [];
 ---
 
 <section
@@ -91,18 +95,30 @@ const hasImages = validImages.length > 0;
               class="group bg-base-200 border border-primary/20 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               <div class="aspect-square overflow-hidden">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  widths={[300, 400, 500]}
-                  sizes="(max-width: 640px) 300px, (max-width: 1024px) 400px, 500px"
-                  width={500}
-                  height={500}
-                  format="webp"
-                  quality={80}
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
+                {typeof image.src === 'string' ? (
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    width="500"
+                    height="500"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    widths={[300, 400, 500]}
+                    sizes="(max-width: 640px) 300px, (max-width: 1024px) 400px, 500px"
+                    width={500}
+                    height={500}
+                    format="webp"
+                    quality={80}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                )}
               </div>
             </div>
           ))}
@@ -131,9 +147,25 @@ const hasImages = validImages.length > 0;
           </svg>
         </div>
         <h2 class="text-xl font-semibold text-base-content mb-2">No photos yet</h2>
-        <p class="text-base-content/70">
-          Photos from this event will appear here soon. Check back later!
+        <p class="text-base-content/70 max-w-2xl mx-auto">
+          {validExternalMediaLinks.length > 0
+            ? "Photos and videos for this event live in the canonical Hackerspace Mumbai events archive."
+            : "Photos from this event will appear here soon. Check back later!"}
         </p>
+        {validExternalMediaLinks.length > 0 && (
+          <div class="mt-6 flex flex-wrap justify-center gap-3">
+            {validExternalMediaLinks.map((link) => (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline btn-primary"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     )}
 

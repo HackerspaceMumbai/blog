@@ -1,0 +1,48 @@
+---
+import Layout from '../components/Layout.astro';
+import ComingSoonHero from '../components/ComingSoonHero.astro';
+import NewsletterSection from '../components/NewsletterSection.astro';
+
+export const title = 'Mentorship | Hackerspace Mumbai';
+export const description =
+  'Explore the upcoming Hackerspace Mumbai mentorship program launching September 5, 2026.';
+export const tags = [
+  'mentorship',
+  'community',
+  'open source',
+  'mumbai',
+  'hackerspace',
+  'learning',
+];
+export const canonical = 'https://hackmum.in/mentorship';
+---
+
+<Layout
+  title={title}
+  description={description}
+  tags={tags}
+  canonical={canonical}
+  type="website"
+>
+  <ComingSoonHero
+    breadcrumbCurrent="Mentorship"
+    headingId="mentorship-heading"
+    launchDate="Coming September 5, 2026"
+    title="Mentorship at"
+    titleAccent="Hackerspace Mumbai"
+    description="Learn from experienced community members and help others grow through technology, open source, public speaking, and community leadership."
+    featuresHeading="Future mentorship areas"
+    features={[
+      'Career Growth',
+      'Open Source Guidance',
+      'AI & Developer Tools',
+      'Cloud & Platform Engineering',
+      'Public Speaking',
+      'Community Leadership',
+    ]}
+    primaryCta={{ label: 'Join the Community →', href: '#newsletter' }}
+    secondaryCta={{ label: 'Read Community Stories', href: '/blog/' }}
+  />
+
+  <NewsletterSection />
+</Layout>
