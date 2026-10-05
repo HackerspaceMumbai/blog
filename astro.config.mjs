@@ -36,8 +36,8 @@ export default defineConfig({
     responsiveStyles: true
   },
 
-  // Prefetch configuration
-  prefetch: true,
+  // Avoid adding speculative requests to the critical request chain.
+  prefetch: false,
   
   // Compression and optimization
   compressHTML: true,
