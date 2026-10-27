@@ -74,9 +74,6 @@ const BLOCKED_DOMAINS = [
   'getnada.com'
 ];
 
-// In-memory store for subscriptions fallback (will be shared across requests in the same isolate)
-const subscriptions = new Set<string>();
-
 /**
  * Sanitizes input string by removing potentially harmful content
  */
@@ -282,9 +279,11 @@ async function subscribeToKit(email: string, firstName: string, source: string, 
   const KIT_API_URL = env.KIT_API_URL || 'https://api.kit.com/v4';
   
   if (!KIT_API_KEY) {
-    console.warn('Kit credentials not configured, using fallback storage');
-    subscriptions.add(email.toLowerCase().trim());
-    return { success: true };
+    console.error('Kit API key is not configured');
+    return {
+      success: false,
+      error: 'Newsletter service is temporarily unavailable. Please try again later.'
+    };
   }
 
   const maxRetries = 3;
@@ -381,10 +380,11 @@ async function subscribeToKit(email: string, firstName: string, source: string, 
     }
   }
 
-  // All attempts failed, use fallback
-  console.warn('All Kit API attempts failed, using fallback storage');
-  subscriptions.add(email.toLowerCase().trim());
-  return { success: true };
+  console.error('All Kit API subscription attempts failed', { error: lastError });
+  return {
+    success: false,
+    error: 'Newsletter service is temporarily unavailable. Please try again in a few minutes.'
+  };
 }
 
 /**

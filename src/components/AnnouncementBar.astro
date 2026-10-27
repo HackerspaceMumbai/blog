@@ -1,0 +1,81 @@
+---
+import type { FeaturedSessionPremiere } from '../utils/premiere';
+import { getPremiereTimeBounds, resolvePremiereState } from '../utils/premiere';
+
+interface Props {
+  premiere?: FeaturedSessionPremiere | null;
+}
+
+const { premiere = null } = Astro.props as Props;
+
+const bounds = getPremiereTimeBounds(premiere);
+const state = resolvePremiereState(premiere);
+const show = Boolean(premiere?.enabled && bounds && state !== 'post');
+
+const upcomingPrefix = premiere?.announcementPrefix ?? 'PREMIERING TONIGHT';
+const livePrefix = premiere?.announcementLivePrefix ?? 'PREMIERING NOW';
+const ctaText = premiere?.announcementCtaText ?? 'Watch Now';
+const prefix = state === 'live' ? livePrefix : upcomingPrefix;
+const ariaLabel = premiere
+  ? `${prefix}: ${premiere.sessionTitle} with ${premiere.speakerName}. ${ctaText}.`
+  : '';
+
+// Dismissal is scoped to this premiere so a future promotion is not silently hidden.
+const dismissKey = premiere ? `hm-announcement-dismissed:${premiere.eventSlug}:${premiere.startAt}` : '';
+---
+
+{show && premiere && bounds && (
+  <div
+    class="announcement-bar bg-neutral text-neutral-content"
+    data-premiere-promo
+    data-start-at={String(bounds.startMs)}
+    data-end-at={String(bounds.endMs)}
+    data-hide-after-end="true"
+    data-dismiss-key={dismissKey}
+    role="region"
+    aria-label="Site announcement"
+  >
+    <div class="relative flex items-center justify-center px-10 py-2.5 sm:px-12">
+      <a
+        href={premiere.eventUrl}
+        class="group flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-center text-xs font-semibold leading-snug sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral rounded"
+        aria-label={ariaLabel}
+      >
+        <span aria-hidden="true">🚀</span>
+        <span
+          class="text-primary"
+          data-premiere-label
+          data-label-upcoming={`${upcomingPrefix}:`}
+          data-label-live={`${livePrefix}:`}
+        >
+          {prefix}:
+        </span>
+        <span>{premiere.sessionTitle}</span>
+        <span class="hidden sm:inline">with {premiere.speakerName}</span>
+        <span class="inline-flex items-center gap-1 text-primary underline underline-offset-2 group-hover:no-underline">
+          {ctaText}
+          <span aria-hidden="true">→</span>
+        </span>
+      </a>
+
+      <button
+        type="button"
+        class="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-neutral-content/70 hover:bg-neutral-content/15 hover:text-neutral-content focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        data-premiere-dismiss
+        aria-label="Dismiss announcement"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
+
+{show && <script src="/scripts/premiere-promo.js" defer></script>}
+
+<style>
+  .announcement-bar {
+    border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  }
+</style>

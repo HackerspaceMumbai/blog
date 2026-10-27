@@ -1,8 +1,7 @@
 # Blog post redirects (for SEO)
 /posts/*    /blog/:splat    301
 
-# Rewrite incoming frontend paths to internal runtime endpoints (200 Rewrite)
-/api/newsletter        /api/newsletter          200
+# Newsletter compatibility aliases
 /subscribe             /api/newsletter          200
 /api/newsletter/health /api/newsletter-health   200
 /health/newsletter     /api/newsletter-health   200

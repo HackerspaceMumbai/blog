@@ -3,6 +3,8 @@ import Layout from "../../../components/Layout.astro";
 import PastEventDetail from "../../../components/PastEventDetail.astro";
 import { getCollection } from "astro:content";
 import { enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
+import { getPremiereForEvent } from "../../../utils/premiere";
+import { FEATURED_SESSION_PREMIERE } from "../../../data/featuredSessionPremiere";
 
 const pastEventCollection = await getCollection("pastEvents");
 const { slug } = Astro.params;
@@ -30,6 +32,7 @@ const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
 const title = `${enriched.title} - Past Event - Hackerspace Mumbai`;
 const description = enriched.description;
 const canonical = `https://hackmum.in/past-events/${slug}`;
+const featuredPremiere = getPremiereForEvent(slug, FEATURED_SESSION_PREMIERE);
 ---
 
 <Layout
@@ -90,6 +93,7 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
         highlights={event.data.highlights}
         recapPostSlug={event.data.recapPostSlug}
         recapExcerpt={event.data.recapExcerpt}
+        featuredPremiere={featuredPremiere}
       />
 
       <div class="text-center mt-10">

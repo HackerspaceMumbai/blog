@@ -2,18 +2,12 @@
 import Layout from "../../components/Layout.astro";
 import EventsSection from "../../components/EventsSection.astro";
 import GallerySection from "../../components/GallerySection.astro";
-import FeaturedEventBanner from "../../components/FeaturedEventBanner.astro";
 import { getCollection } from "astro:content";
-import { FEATURED_HOME_EVENT, UPCOMING_EVENTS } from "../../data/upcomingEvents.js";
-import featuredEventImage from "../../assets/images/events/hacktoberfest-hack-day-mumbai-2026.png";
+import { UPCOMING_EVENTS } from "../../data/upcomingEvents.js";
 
 const recentPastEvents = (await getCollection("pastEvents"))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
-
-const additionalUpcoming = UPCOMING_EVENTS.filter(
-  (event) => event.slug !== FEATURED_HOME_EVENT.slug
-);
 
 const FOUNDED_YEAR = 2011;
 const meetupsHosted = 111;
@@ -51,19 +45,8 @@ export const canonical = "https://hackmum.in/events";
     </div>
   </section>
 
-  <FeaturedEventBanner
-    sectionId="upcoming"
-    title={FEATURED_HOME_EVENT.title}
-    date={FEATURED_HOME_EVENT.date}
-    location={FEATURED_HOME_EVENT.location}
-    description={FEATURED_HOME_EVENT.description}
-    rsvpLink={FEATURED_HOME_EVENT.rsvpLink}
-    image={featuredEventImage}
-    kicker="Upcoming event"
-  />
-
   <EventsSection
-    events={additionalUpcoming}
+    events={UPCOMING_EVENTS}
     recentEvents={recentPastEvents}
     totalEventsHosted={meetupsHosted}
     showRecentAlways={true}

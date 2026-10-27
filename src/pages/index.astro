@@ -5,7 +5,6 @@ import heroBackground from '../assets/images/hero_background.jpg';
 import AboutSection from "../components/AboutSection.astro";
 import NewsletterSection from "../components/NewsletterSection.astro";
 import CommunityIntro from "../components/CommunityIntro.astro";
-import FeaturedEventBanner from "../components/FeaturedEventBanner.astro";
 import CommunityMetrics from "../components/CommunityMetrics.astro";
 import IdeaSection from "../components/IdeaSection.astro";
 import PathSection from "../components/PathSection.astro";
@@ -14,8 +13,6 @@ import QuoteSection from "../components/QuoteSection.astro";
 import CloseCtaSection from "../components/CloseCtaSection.astro";
 import SupportedBy from "../components/SupportedBy.astro";
 import { FEATURED_PREMIERE } from "../data/featuredPremiere.js";
-import { FEATURED_HOME_EVENT } from "../data/upcomingEvents.js";
-import featuredEventImage from "../assets/images/events/hacktoberfest-hack-day-mumbai-2026.png";
 
 const FOUNDED_YEAR = 2011;
 const NEW_MEMBERS_THIS_MONTH = 113;
@@ -43,16 +40,6 @@ export const canonical = "https://hackmum.in/";
     heroImage={heroBackground}
     featuredPremiere={FEATURED_PREMIERE}
     newMembersThisMonth={NEW_MEMBERS_THIS_MONTH}
-  />
-
-  <FeaturedEventBanner
-    title={FEATURED_HOME_EVENT.title}
-    date={FEATURED_HOME_EVENT.date}
-    location={FEATURED_HOME_EVENT.location}
-    description={FEATURED_HOME_EVENT.description}
-    rsvpLink={FEATURED_HOME_EVENT.rsvpLink}
-    image={featuredEventImage}
-    kicker="Upcoming event"
   />
 
   <CommunityIntro />

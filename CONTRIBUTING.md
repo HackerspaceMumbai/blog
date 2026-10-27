@@ -109,6 +109,13 @@ After following the steps, you should see:
 - **Size:** Optimize for web (usually under 200KB per image)
 - **Format:** PNG for screenshots/diagrams, JPG for photos
 
+Cloudflare's runtime Images binding accepts source images up to 20 MB.
+Keep originals comfortably below that limit (preferably below 19,000,000 bytes),
+even when Astro generates smaller responsive outputs: the original must be
+decoded before resizing. An oversized image can deploy successfully under the
+25 MiB asset limit but fail at the `/_image` endpoint.
+See the [Images binding input limit](https://developers.cloudflare.com/images/optimization/binding/#inputstream).
+
 #### Complete Example
 
 Here's a complete example of a blog post structure:

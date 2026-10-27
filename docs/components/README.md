@@ -13,6 +13,9 @@ This document provides comprehensive documentation for all components in the Hac
 
 ## 🏗️ Layout Components
 
+> Site-wide session premiere promotion (announcement bar, featured premiere section, and
+> session card watch chip) is documented in [PremierePromotion.md](./PremierePromotion.md).
+
 ### Layout.astro
 
 The main layout component that wraps all pages with consistent structure, SEO, and monitoring.

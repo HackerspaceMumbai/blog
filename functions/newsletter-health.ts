@@ -22,7 +22,7 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
   const KIT_API_URL = env.KIT_API_URL || 'https://api.kit.com/v4';
 
   if (!KIT_API_KEY) {
-    return 'degraded'; // Service can work with fallback
+    return 'unhealthy';
   }
 
   try {
@@ -59,9 +59,7 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
  * Check environment configuration
  */
 function checkEnvironment(env: any): 'healthy' | 'unhealthy' {
-  // Check if we have basic environment setup
-  // For Cloudflare Pages, the environment is always healthy if the function runs
-  return 'healthy';
+  return env.KIT_API_KEY ? 'healthy' : 'unhealthy';
 }
 
 /**
@@ -110,7 +108,7 @@ export async function onRequest(context: any) {
     if (environmentStatus === 'unhealthy') {
       overallStatus = 'unhealthy';
     } else if (kitApiStatus === 'unhealthy') {
-      overallStatus = 'degraded'; // Can still work with fallback
+      overallStatus = 'unhealthy';
     } else if (kitApiStatus === 'degraded') {
       overallStatus = 'degraded';
     } else {

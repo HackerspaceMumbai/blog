@@ -16,7 +16,7 @@ export interface NewsletterSubscriptionData {
 // Client-side API call helper
 export async function subscribeToNewsletter(email: string): Promise<ApiResponse<NewsletterSubscriptionData>> {
   try {
-    const response = await fetch('/.netlify/functions/newsletter', {
+    const response = await fetch('/api/newsletter', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

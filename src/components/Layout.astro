@@ -1,9 +1,11 @@
 ---
 import "../styles/global.css";
+import AnnouncementBar from './AnnouncementBar.astro';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import TrackingScripts from './TrackingScripts.astro';
 import socialPreviewImage from '../assets/images/hackerspace_mumbai_social.png';
+import { FEATURED_SESSION_PREMIERE } from '../data/featuredSessionPremiere';
 
 export interface Props {
   title?: string;
@@ -233,6 +235,7 @@ const pageSchema = type === 'article' && publishedTime ? {
     <a href="#navigation" class="skip-link">Skip to navigation</a>
     
     <div class="min-h-screen flex flex-col bg-base-100 text-base-content">
+      <AnnouncementBar premiere={FEATURED_SESSION_PREMIERE} />
       <header class="sticky top-0 z-50" role="banner">
         <div id="navigation">
           <Header />

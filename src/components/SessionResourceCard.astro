@@ -4,15 +4,34 @@ import {
   type ArchiveSpeakerResourceType,
   type SessionResourceGroup,
 } from '../utils/pastEventArchive';
+import {
+  getPremiereTimeBounds,
+  getPremiereWatchLabel,
+  isPremiereSession,
+  resolvePremiereState,
+  type FeaturedSessionPremiere,
+} from '../utils/premiere';
 
 interface Props {
   session: SessionResourceGroup;
+  premiere?: FeaturedSessionPremiere | null;
 }
 
-const { session } = Astro.props;
+const { session, premiere = null } = Astro.props;
+
+const showPremiereChip = isPremiereSession(
+  { title: session.title, speakers: session.speakers },
+  premiere
+);
+const premiereBounds = showPremiereChip ? getPremiereTimeBounds(premiere) : null;
+const premiereState = resolvePremiereState(premiere);
+const premiereChipLabel = getPremiereWatchLabel(premiereState);
 
 const chipClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-primary/40 text-primary hover:bg-primary hover:text-primary-content transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-base-100';
+
+const premiereChipClass =
+  'inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg bg-primary text-primary-content hover:bg-primary-focus transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-base-100';
 ---
 
 <article
@@ -40,7 +59,7 @@ const chipClass =
     </p>
   )}
 
-  {session.resources.length > 0 && (
+  {(session.resources.length > 0 || (showPremiereChip && premiere && premiereBounds)) && (
     <div>
       <p class="text-sm font-semibold text-base-content/80 mb-2">Resources</p>
       <div class="flex flex-wrap gap-2">
@@ -58,7 +77,34 @@ const chipClass =
             </svg>
           </a>
         ))}
+
+        {showPremiereChip && premiere && premiereBounds && (
+          <a
+            href={premiere.watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={premiereChipClass}
+            data-premiere-promo
+            data-start-at={String(premiereBounds.startMs)}
+            data-end-at={String(premiereBounds.endMs)}
+            aria-label={`${premiereChipLabel} on YouTube for ${session.title} (opens in new window)`}
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.6 7.2a2.7 2.7 0 0 0-1.9-1.9C18 4.8 12 4.8 12 4.8s-6 0-7.7.5A2.7 2.7 0 0 0 2.4 7.2 28 28 0 0 0 1.9 12c0 1.6.2 3.2.5 4.8a2.7 2.7 0 0 0 1.9 1.9c1.7.5 7.7.5 7.7.5s6 0 7.7-.5a2.7 2.7 0 0 0 1.9-1.9c.3-1.6.5-3.2.5-4.8s-.2-3.2-.5-4.8ZM10.1 15.1V8.9l5.1 3.1-5.1 3.1Z" />
+            </svg>
+            <span
+              data-premiere-label
+              data-label-upcoming="Watch Premiere"
+              data-label-live="Watch Premiere"
+              data-label-post="Watch Recording"
+            >
+              {premiereChipLabel}
+            </span>
+          </a>
+        )}
       </div>
     </div>
   )}
 </article>
+
+{showPremiereChip && premiereBounds && <script src="/scripts/premiere-promo.js" defer></script>}
