@@ -12,9 +12,7 @@ export default defineConfig({
   integrations: [mdx()],
   output: 'server',
   adapter: cloudflare({
-    platformProxy: {
-      enabled: true
-    }
+    imageService: { build: 'compile', runtime: 'cloudflare-binding' }
   }),
 
   // Image optimization
@@ -42,10 +40,8 @@ export default defineConfig({
   // Compression and optimization
   compressHTML: true,
   
-  // Build optimizations
   build: {
-    // Inline small assets to reduce HTTP requests
-    inlineStylesheets: 'always'
+    inlineStylesheets: 'auto'
   },
 
   vite: {
@@ -55,26 +51,21 @@ export default defineConfig({
       external: ['path', 'fs', 'crypto', 'stream', 'util', 'buffer']
     },
     build: {
-      // Inline CSS for files smaller than 8KB to reduce HTTP requests
-      assetsInlineLimit: 8192,
-      // Enable CSS code splitting for better caching
-      cssCodeSplit: false, // Disable to inline more CSS
+      // Keep executable scripts external so script-src 'self' can protect every route.
+      assetsInlineLimit: 0,
+      cssCodeSplit: true,
       // Minify CSS aggressively
       cssMinify: 'esbuild',
       rollupOptions: {
         output: {
+          // Avoid asset canonicalization redirects, especially on HTTP previews with production CSP.
+          sanitizeFileName: (name) => name.replace(/[^a-zA-Z0-9._/-]/g, '_'),
           // Optimize chunk splitting
           manualChunks: {
             // Keep vendor code separate for better caching
             vendor: ['astro/runtime/client/idle.js', 'astro/runtime/client/load.js']
           },
-          // Inline small CSS files
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-              return 'assets/[name].[hash][extname]';
-            }
-            return 'assets/[name].[hash][extname]';
-          }
+          assetFileNames: 'assets/[name].[hash][extname]'
         }
       }
     }

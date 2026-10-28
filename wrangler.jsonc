@@ -5,6 +5,21 @@
 	"assets": {
 		"directory": "./dist"
 	},
+	"vars": {
+		"NODE_ENV": "production",
+		"CORS_ORIGIN": "https://hackmum.in",
+		"LOG_LEVEL": "info",
+		"KIT_API_URL": "https://api.kit.com/v4"
+	},
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 0.1,
+		"redact_query_string": true,
+		"traces": {
+			"enabled": true,
+			"head_sampling_rate": 0.1
+		}
+	},
 	"env": {
 		"dev": {
 			"vars": {

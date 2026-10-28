@@ -50,9 +50,22 @@ All commands are run from the root of the project:
 
 ## 🚀 Deployment
 
+### Cloudflare Workers (current)
+
+Run `pnpm deploy` to build and deploy to Cloudflare Workers. Astro generates
+the Worker entry point and static asset configuration; do not upload `dist`
+with `wrangler pages deploy`.
+
+Blog articles are prerendered, with WebP variants generated locally during the
+build. Other routes, including newsletter APIs, retain on-demand rendering.
+Shared stylesheets and fingerprinted images are cached as immutable assets.
+Run `pnpm build && pnpm test:cloudflare-build` to check the production output.
+See [deployment details](docs/DEPLOYMENT.md).
+
 ### Netlify Deployment Setup
 
-This project is configured for automated deployment to Netlify through GitHub Actions. The deployment process requires proper authentication setup for both CI/CD and local development.
+The following describes the legacy Netlify deployment, not the current Astro
+Cloudflare build.
 
 #### Required Environment Variables
 

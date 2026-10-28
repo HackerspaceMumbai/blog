@@ -1,15 +1,10 @@
 ---
-import { getEntry, render } from "astro:content";
+import { getCollection, render } from "astro:content";
 import { Image } from 'astro:assets'; 
 import Layout from "../../components/Layout.astro";
-// Removed custom Prose.astro component
-
-// Import the Image component
-
-// Cover images are now handled by Astro's content collection image() helper
+export const prerender = true;
 
 export async function getStaticPaths() {
-  const { getCollection } = await import("astro:content");
   const posts = await getCollection("posts");
 
   return posts.map(post => {
@@ -17,7 +12,7 @@ export async function getStaticPaths() {
       ? post.data.slug.trim()
       : post.id.replace(/\/index$/, '');
 
-    return { params: { slug } };
+    return { params: { slug }, props: { post } };
   });
 }
 
@@ -27,7 +22,7 @@ if (typeof slug !== 'string') {
   throw new Error(`Invalid slug: ${slug}`);
 }
 
-const post = await getEntry("posts", slug);
+const { post } = Astro.props;
 
 if (!post) {
   throw new Error(`Post not found: ${slug}`);
@@ -286,8 +281,8 @@ const publishedTime = post.data.date.toISOString();
               class="cover-image"
               loading="eager"
               fetchpriority="high"
-              widths={[340, 600, 900, 1200]}
-              sizes="(max-width: 640px) 340px, (max-width: 768px) 600px, (max-width: 1024px) 900px, 1200px"
+              widths={[400, 800, 1200, 1600]}
+              sizes="(min-width: 800px) 736px, calc(100vw - 64px)"
               width={1200}
               height={672}
               format="webp"

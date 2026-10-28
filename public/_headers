@@ -1,9 +1,9 @@
-# Security headers (Cloudflare Pages format)
-# Works with both Netlify and Cloudflare Pages
+# Static asset headers for Cloudflare Workers.
+# Keep the common protections in sync with src/config/responseHeaders.ts.
 
 /*
   # Content Security Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://api.github.com https://www.google-analytics.com https://www.clarity.ms; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com https://www.clarity.ms https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://api.github.com https://www.google-analytics.com https://www.clarity.ms https://cloudflareinsights.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   
   # X-Frame-Options
   X-Frame-Options: DENY
@@ -21,6 +21,12 @@
   Cross-Origin-Embedder-Policy: require-corp
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # API endpoints - specific headers for newsletter function
 /api/*

@@ -111,7 +111,9 @@ const pageSchema = type === 'article' && publishedTime ? {
     <meta name="generator" content={Astro.generator} />
     
   <!-- Self-hosted Playfair for italic headings (same-origin, no fonts.gstatic chain) -->
-  <link rel="preload" href="/fonts/playfair-display-italic-500-latin.woff2" as="font" type="font/woff2" crossorigin />
+  {Astro.url.pathname === '/' && (
+    <link rel="preload" href="/fonts/playfair-display-italic-500-latin.woff2" as="font" type="font/woff2" crossorigin />
+  )}
     
     <!-- Optional LCP image preload (only when caller passes a URL that is actually used) -->
     {preloadImage && (

@@ -18,6 +18,23 @@ Our blog uses a **colocated image system** where each blog post has its own dire
 - ✅ Better organization and scalability
 - ✅ Simplified content creation workflow
 
+### Responsive article photographs
+
+Use the shared `BlogImage` component for imported article photos:
+
+```mdx
+import BlogImage from '../../../components/BlogImage.astro';
+import Photo from './photo.jpg';
+
+<BlogImage src={Photo} alt="Describe the photograph" width={1200} />
+```
+
+It defaults to quality 80, lazy loading, article-width sizing, and variants up
+to 1600px for high-density screens. Blog articles and their local image variants
+are generated during `pnpm build`, avoiding runtime transformation delays.
+The article template separately prioritizes the cover image. Keep the standard
+Astro `Image` component for diagrams or images requiring different layouts.
+
 ### Directory Structure
 
 ```

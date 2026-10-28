@@ -1,5 +1,10 @@
 # Migration Guide: Netlify to Cloudflare Pages
 
+> Historical migration notes. The current Astro 6 deployment targets
+> **Cloudflare Workers**, not Pages. Use `pnpm deploy` and follow
+> [the current deployment guide](docs/DEPLOYMENT.md). Pages upload commands and
+> `platformProxy` settings below do not describe the current configuration.
+
 This document outlines the migration from Netlify to Cloudflare Pages for the Hackerspace Mumbai blog.
 
 ## Overview
