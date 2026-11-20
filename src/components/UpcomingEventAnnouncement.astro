@@ -1,0 +1,22 @@
+---
+import { getEntry } from 'astro:content';
+import FeaturedEventBanner from './FeaturedEventBanner.astro';
+
+interface Props {
+  sectionId?: string;
+}
+
+const { sectionId } = Astro.props;
+const slug = 'github-universe-2026-recap-mumbai';
+const announcement = await getEntry('posts', slug);
+if (!announcement) throw new Error(`Missing upcoming event announcement: ${slug}`);
+---
+
+<FeaturedEventBanner
+  sectionId={sectionId}
+  title={announcement.data.title}
+  date="Saturday, 28 November 2026"
+  location="Microsoft Mumbai"
+  description="Organized by Hackerspace Mumbai. Programme and registration details will be announced when available."
+  announcementLink={`/blog/${announcement.slug}/`}
+/>
