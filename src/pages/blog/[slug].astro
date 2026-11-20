@@ -99,6 +99,11 @@ const publishedTime = post.data.date.toISOString();
     margin: 0 auto;
     padding: 0 1rem;
   }
+
+  /* Lets wide BlogImage figures size against the page width without 100vw. */
+  .blog-page {
+    container-type: inline-size;
+  }
   
   .blog-meta {
     display: flex;
@@ -258,6 +263,7 @@ const publishedTime = post.data.date.toISOString();
   <div class="progress-bar-container">
     <div class="progress-bar" id="scroll-progress-bar"></div>
   </div>
+  <div class="blog-page">
       <div class="blog-container">
         <header class="blog-header">
           <h1 class="blog-title text-foreground">{post.data.title}</h1>
@@ -330,6 +336,7 @@ const publishedTime = post.data.date.toISOString();
           </div>
         </footer>
       </div>
+  </div>
   
   <script>
     // Progress bar scroll logic
