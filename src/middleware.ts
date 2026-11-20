@@ -1,8 +1,24 @@
 import type { MiddlewareHandler } from 'astro';
 import { SECURITY_HEADERS } from './config/responseHeaders.js';
 
-export const onRequest: MiddlewareHandler = async ({ url }, next) => {
-  const response = await next();
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  const { url } = context;
+  const rewritePaths: Record<string, string> = {
+    '/subscribe': '/api/newsletter',
+    '/api/newsletter/health': '/api/newsletter-health',
+    '/health/newsletter': '/api/newsletter-health',
+  };
+  const rewritePath = rewritePaths[url.pathname];
+
+  let response: Response;
+  if (rewritePath) {
+    const rewrittenUrl = new URL(url);
+    rewrittenUrl.pathname = rewritePath;
+    response = await context.rewrite(rewrittenUrl);
+  } else {
+    response = await next();
+  }
+
   const headers = new Headers(response.headers);
 
   if (!import.meta.env.DEV) {
@@ -11,7 +27,7 @@ export const onRequest: MiddlewareHandler = async ({ url }, next) => {
     }
   }
 
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.startsWith('/api/') || rewritePath?.startsWith('/api/')) {
     headers.set('Cache-Control', 'no-store');
   }
 

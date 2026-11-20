@@ -2,7 +2,9 @@
 
 Hackmum past-event pages can rebuild automatically when the canonical archive
 ([HackerspaceMumbai/events](https://github.com/HackerspaceMumbai/events)) changes
-official published artifacts.
+official published artifacts. This legacy integration currently points to an
+externally managed Netlify Build Hook; it is separate from the Cloudflare
+production workflow and is not changed by this repository migration.
 
 ## Flow
 

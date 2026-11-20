@@ -134,7 +134,7 @@ describe('Post-Deployment Verification', () => {
       const result = await runHealthCheck('https://example.com');
       expect(result).toBe(true);
       expect(fetch).toHaveBeenCalledWith(
-        'https://example.com/.netlify/functions/health',
+        'https://example.com/api/newsletter-health',
         expect.objectContaining({
           method: 'GET'
         })

@@ -50,94 +50,10 @@ All commands are run from the root of the project:
 
 ## 🚀 Deployment
 
-### Cloudflare Workers (current)
-
-Run `pnpm deploy` to build and deploy to Cloudflare Workers. Astro generates
-the Worker entry point and static asset configuration; do not upload `dist`
-with `wrangler pages deploy`.
-
-Blog articles are prerendered, with WebP variants generated locally during the
-build. Other routes, including newsletter APIs, retain on-demand rendering.
-Shared stylesheets and fingerprinted images are cached as immutable assets.
-Run `pnpm build && pnpm test:cloudflare-build` to check the production output.
-See [deployment details](docs/DEPLOYMENT.md).
-
-### Netlify Deployment Setup
-
-The following describes the legacy Netlify deployment, not the current Astro
-Cloudflare build.
-
-#### Required Environment Variables
-
-For successful deployment, you need to configure the following environment variables:
-
-- **`NETLIFY_AUTH_TOKEN`**: Personal access token for Netlify API authentication
-- **`NETLIFY_SITE_ID`**: Unique identifier for your Netlify site
-
-#### GitHub Repository Secrets Setup
-
-1. **Generate Netlify Auth Token:**
-   - Go to [Netlify User Settings > Applications](https://app.netlify.com/user/applications)
-   - Click "New access token"
-   - Give it a descriptive name (e.g., "GitHub Actions Deploy")
-   - Copy the generated token
-
-2. **Find Your Site ID:**
-   - Go to your site in Netlify dashboard
-   - Navigate to Site Settings > General
-   - Copy the "Site ID" from the Site Information section
-
-3. **Add GitHub Secrets:**
-   - Go to your GitHub repository
-   - Navigate to Settings > Secrets and variables > Actions
-   - Add the following repository secrets:
-     - `NETLIFY_AUTH_TOKEN`: Your Netlify access token
-     - `NETLIFY_SITE_ID`: Your Netlify site ID
-
-#### Deployment Commands
-
-| Command                | Action                                           |
-|------------------------|--------------------------------------------------|
-| `pnpm deploy:preview`  | Deploy preview build (requires auth setup)      |
-| `pnpm deploy:prod`     | Deploy to production (requires auth setup)      |
-| `pnpm deploy:preview:ci` | CI-optimized preview deploy with JSON output  |
-| `pnpm deploy:prod:ci`  | CI-optimized production deploy with JSON output |
-
-#### Local Development Deployment
-
-For local deployment testing:
-
-1. **Set up environment variables:**
-   ```bash
-   export NETLIFY_AUTH_TOKEN="your_token_here"
-   export NETLIFY_SITE_ID="your_site_id_here"
-   ```
-
-2. **Verify authentication:**
-   ```bash
-   netlify status
-   ```
-
-3. **Deploy preview:**
-   ```bash
-   pnpm build
-   pnpm deploy:preview
-   ```
-
-#### CI/CD Workflow
-
-The GitHub Actions workflow automatically:
-- Verifies Netlify credentials are properly configured
-- Builds the site with production optimizations
-- Deploys to Netlify using token-based authentication
-- Runs post-deployment health checks
-- Reports deployment status and URLs
-
-#### Additional Documentation
-
-- **[Deployment Troubleshooting Guide](docs/deployment-troubleshooting.md)** - Resolve common authentication and deployment issues
-- **[Developer Onboarding Guide](docs/developer-onboarding.md)** - Complete setup guide for new developers
-- **[Deployment Workflows](docs/deployment-workflows.md)** - Detailed comparison of CI/CD vs local deployment workflows
+Cloudflare Workers is the production target. Pull requests run validation;
+merges to `main` build and deploy the Worker through the protected GitHub
+`production` environment. To configure credentials, verify the first release,
+and roll back safely, see [the deployment runbook](docs/DEPLOYMENT.md).
 
 ## ✍️ Creating Blog Content
 

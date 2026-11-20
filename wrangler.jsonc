@@ -3,7 +3,8 @@
 	"name": "hackmum-blog",
 	"compatibility_date": "2026-04-22",
 	"assets": {
-		"directory": "./dist"
+		"directory": "./dist",
+		"run_worker_first": ["/api/*", "/subscribe", "/health/newsletter"]
 	},
 	"vars": {
 		"NODE_ENV": "production",
@@ -18,6 +19,17 @@
 		"traces": {
 			"enabled": true,
 			"head_sampling_rate": 0.1
+		}
+	},
+	"previews": {
+		"vars": {
+			"NODE_ENV": "preview",
+			"CORS_ORIGIN": "https://hackmum.in",
+			"LOG_LEVEL": "info",
+			"KIT_API_URL": "https://api.kit.com/v4"
+		},
+		"images": {
+			"binding": "IMAGES"
 		}
 	},
 	"env": {

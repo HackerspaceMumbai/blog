@@ -7,6 +7,15 @@ import sharp from 'sharp';
 const client = new URL('../dist/client/', import.meta.url);
 const blog = new URL('blog/', client);
 let postCount = 0;
+const redirects = await readFile(new URL('_redirects', client), 'utf8');
+const headers = await readFile(new URL('_headers', client), 'utf8');
+
+assert.match(redirects, /^\/posts\/\* \/blog\/:splat 301$/m, 'Static blog redirects must be published');
+assert.match(headers, /^\/\*$/m, 'Static security headers must cover all asset responses');
+assert.match(headers, /^\/_astro\/\*$/m, 'Astro assets must have a cache policy');
+assert.match(headers, /^\/assets\/\*$/m, 'Site assets must have a cache policy');
+assert.match(headers, /^\/api\/\*$/m, 'API assets must have a no-store policy');
+assert.match(headers, /^  Content-Security-Policy:/m, 'Static security headers must include CSP');
 
 for (const file of await readdir(new URL('assets/', client))) {
   if (!file.endsWith('.css')) continue;
@@ -58,6 +67,11 @@ assert.ok(postCount > 0, 'No prerendered blog posts found; run pnpm build first'
 const worker = JSON.parse(await readFile(new URL('../dist/server/wrangler.json', import.meta.url), 'utf8'));
 assert.ok(worker.main, 'Dynamic Worker entry point must be retained for APIs');
 assert.equal(worker.assets.binding, 'ASSETS');
+assert.deepEqual(
+  worker.assets.run_worker_first,
+  ['/api/*', '/subscribe', '/health/newsletter'],
+  'API and compatibility paths must reach the Worker before static asset routing'
+);
 console.log(`Verified ${postCount} prerendered blog posts, static images, external scripts/CSS, and Worker entry point.`);
 
 const previewUrl = process.argv[2];
@@ -76,6 +90,16 @@ if (previewUrl) {
     assert.equal(response.status, 200, `${path}: stylesheet must load without redirects`);
     assert.ok(response.headers.get('Content-Type')?.startsWith('text/css'), `${path}: expected CSS`);
     assert.ok((await response.text()).length > 0, `${path}: empty stylesheet`);
+  }
+  const postRedirect = await fetch(new URL('/posts/cloudflare-routing-check', previewUrl), { redirect: 'manual' });
+  assert.equal(postRedirect.status, 301, 'Static blog redirect must work in the Worker preview');
+  assert.equal(postRedirect.headers.get('Location'), '/blog/cloudflare-routing-check');
+
+  for (const path of ['/api/newsletter', '/subscribe', '/api/newsletter-health', '/api/newsletter/health', '/health/newsletter']) {
+    const response = await fetch(new URL(path, previewUrl), { method: 'OPTIONS' });
+    assert.equal(response.status, 200, `${path}: Worker API route must handle preflight`);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://hackmum.in', `${path}: expected production CORS origin`);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store', `${path}: API responses must not be cached`);
   }
   console.log(`Verified ${stylesheets.size} linked stylesheets across seven preview routes without redirects.`);
 }

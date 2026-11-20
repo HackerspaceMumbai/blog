@@ -94,14 +94,12 @@ node scripts/run-blog-image-tests.js --skip-prereqs
 
 #### Blog Image Tests Workflow (`.github/workflows/blog-image-tests.yml`)
 - Triggers on changes to components, content, or assets
-- Runs on Node.js 18.x and 20.x
+- Runs on Node.js 22.x
 - Uploads test results on failure
 
 #### Main CI/CD Pipeline (`.github/workflows/ci.yml`)
-- Includes blog image tests as a critical step
-- Fails the build if blog image tests don't pass
-- Runs accessibility and security audits
-- Handles deployment to Netlify
+- Runs the full Vitest suite and Cloudflare build-artifact verification
+- Deploys production separately through the protected Cloudflare workflow
 
 ### Critical Test Requirements
 - **Mandatory**: All blog image tests must pass for deployment
