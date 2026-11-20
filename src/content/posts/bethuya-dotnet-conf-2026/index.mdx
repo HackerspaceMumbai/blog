@@ -1,0 +1,725 @@
+---
+title: "Building an AI-Powered Community Platform: The Architecture Behind Bethuya"
+description: "How Bethuya uses Blazor, Blazor Hybrid, .NET MAUI, Aspire, and Microsoft Foundry to build around community participation, explainable AI, and human judgment."
+date: 2026-11-17
+author: "Augustine Correa"
+slug: "bethuya-dotnet-conf-2026"
+tags:
+  - Bethuya
+  - Blazor
+  - Blazor Hybrid
+  - .NET MAUI
+  - Aspire
+  - Microsoft Foundry
+  - AI
+  - Community
+categories:
+  - Engineering
+  - AI
+cover: "./bethuya-dotnet-conf-2026-hero.png"
+---
+
+import Image from '../../../components/BlogImage.astro';
+import BlogConclusion from '../../../components/BlogConclusion.astro';
+import BlogRecordCard from '../../../components/BlogRecordCard.astro';
+import DisconnectedSystems from './disconnected-systems.png'
+import UnifiedParticipationLedger from './unified-participation-ledger.png'
+import DotNetStackLedger from './dotnet-stack-brings-ledger-to-life.png';
+import AspireOperationalSpine from './aspire-operational-spine.png'
+import BlazorHybridTwoHosts from './blazor-hybrid-two-hosts.png'
+import GroundedAiBoundedAction from './grounded-ai-bounded-action.png'
+import WhatChangedBuildingBethuya from './what-changed-building-bethuya.png'
+import BethuyaClosingPrinciples from './bethuya-closing-principles.png'
+
+> **Start with what happened. Then choose the technology that serves it.**
+
+That was the most important lesson from building [Bethuya](https://github.com/HackerspaceMumbai/bethuya), and the idea behind my .NET Conf 2026 session, *"Building an AI-Powered Community Platform with Blazor, .NET MAUI, Aspire, and Microsoft Foundry."*
+
+The session grew out of a familiar problem for anyone who runs a developer community.
+
+Someone registers for an event in one system, joins conversations in another, contributes code on GitHub, volunteers through a form or spreadsheet, and perhaps mentors a newcomer without that work ever being recorded.
+
+Yet organizers are still expected to understand that person's community journey.
+
+Bethuya grew out of that disconnect.
+
+It is our attempt to build a **Community Operating System around the journey of people rather than around a collection of events**.
+
+Its architecture starts not with a framework or an AI model, but with meaningful participation.
+
+---
+
+## Communities Run Across Disconnected Systems
+
+Developer communities rarely operate inside a single application.
+
+Registration might happen in Luma or Meetup.
+
+Conversations happen in Teams or Discord.
+
+Projects and pull requests live on GitHub.
+
+Volunteer coordination often lives in a form, a spreadsheet, or an organizer's memory.
+
+Each tool can be very good at its own transaction:
+
+- The registration system knows someone signed up.
+- GitHub knows someone opened a pull request.
+- A chat platform knows someone joined a discussion.
+
+None of those records alone answers the larger question:
+
+> **What does all of this mean as part of one person's community journey?**
+
+<Image src={DisconnectedSystems} alt="Different community tools capture individual activities without preserving the complete member journey" />
+
+
+An event system naturally thinks in transactions:
+
+**Register. Check in. Attend.**
+
+Communities extend far beyond attendance.
+
+Someone might attend a Hackerspace Mumbai event, then contribute to a project, volunteer, mentor, speak, or organize.
+
+Those are different forms of participation, **not rungs on a prescribed ladder**.
+
+A speaker may later volunteer.
+
+An organizer may return as a learner.
+
+Someone may make a lasting contribution through documentation or mentoring without ever wanting to step on stage.
+
+The system shouldn't decide which of those makes somebody "more valuable."
+
+It should preserve the evidence.
+
+> **The system records evidence. People provide context.**
+
+---
+
+## The Unified Participation Ledger
+
+That led to the central domain concept in Bethuya: **the Unified Participation Ledger**: an append-only history of meaningful community activity, carrying enough context to understand what happened and why the record exists.
+
+<Image
+  src={UnifiedParticipationLedger}
+  alt="Unified Participation Ledger connecting community participation evidence with member journeys and opportunities"
+  wide
+  expandable
+  caption="The Unified Participation Ledger preserves evidence and context rather than reducing participation to a score."
+/>
+
+A record might capture:
+
+- Member and community
+- Activity and role
+- Event, program, or project
+- Evidence
+- Evidence source
+- When the activity occurred
+- Visibility
+- Consent
+- Verification state
+
+A human-readable record might look something like this:
+
+<BlogRecordCard
+  label="Participation record"
+  fields={[
+    { name: 'Member', value: 'Priya Sharma' },
+    { name: 'Activity', value: 'Mentoring' },
+    { name: 'Role', value: 'Mentor' },
+    { name: 'Context', value: 'Hacktoberfest Hack Day' },
+    { name: 'Evidence', value: 'Helped two first-time contributors with their first pull requests.' },
+    { name: 'Source', value: 'Event volunteer observation' },
+    { name: 'Visibility', value: 'Member + organizers' },
+    { name: 'Status', value: 'Verified' },
+  ]}
+/>
+
+The important word is **evidence**.
+
+The ledger records what happened, where the information came from, and the context that makes the activity meaningful.
+
+Conceptually, that begins to become a domain type rather than a collection of unrelated event fields:
+
+```csharp
+public sealed record ParticipationRecord(
+    Guid Id,
+    string MemberId,
+    string CommunityId,
+    ParticipationActivity Activity,
+    string Role,
+    string Context,
+    string Evidence,
+    EvidenceSource Source,
+    DateTimeOffset OccurredAt,
+    VisibilityScope Visibility,
+    ConsentState Consent,
+    VerificationStatus Verification);
+
+```
+
+The exact implementation can evolve, but the concepts are important.
+
+A participation record is more than `Member + Event`.
+
+It also carries the provenance and state required to answer questions such as:
+
+* Where did this evidence come from?
+* Was it submitted by the member, imported from another system, or verified by an organizer?
+* Who is allowed to see it?
+* What consent applies to its use?
+* Has it been verified?
+* If corrected later, what happened to the original record?
+
+That is why the append-only nature of the ledger matters.
+
+A correction should not silently rewrite history.
+
+The history itself is evidence.
+
+### The Ledger Is Not a Community Score
+
+It would be very easy to take those records and derive something like this:
+
+> **Community Score: 873**
+
+But what would 873 mean?
+
+Is speaking worth more than mentoring?
+
+Is organizing inherently more valuable than contributing documentation?
+
+Should attending five meetups count for more than spending three hours helping a first-time contributor through a difficult pull request?
+
+Does someone become less valuable because their contribution happened in a way the platform didn't observe?
+
+The moment we collapse contextual evidence into an opaque number, we lose much of the information that made the evidence useful in the first place.
+
+We also introduce difficult questions around:
+
+* fairness;
+* explainability;
+* incentives;
+* gaming;
+* bias;
+* and whose definition of "valuable participation" became encoded in the score.
+
+That isn't what I want Bethuya to become.
+
+> **Record what happened. Preserve the context. Let people make the judgment.**
+
+---
+
+## Let the Domain Shape the Architecture
+
+Once the Unified Participation Ledger became the center of the domain, the technology choices stopped looking like a list of .NET features.
+
+Each part of the stack had a specific job to do.
+
+The architecture isn't simply *Blazor + .NET MAUI + Aspire + AI = Community Platform*.
+
+It's closer to a set of layers organized around people: different contexts lead to user experiences, which rely on application services, a participation domain model, and ultimately the Unified Participation Ledger with its evidence and context.
+
+Blazor, Blazor Hybrid, .NET MAUI, Aspire, and Microsoft Foundry exist around that domain model.
+
+Broadly:
+
+* **Blazor** → Rich web experiences
+* **Blazor Hybrid + .NET MAUI** → Focused mobile experiences
+* **Application services** → Domain rules, authorization, and verification
+* **Unified Participation Ledger** → Participation evidence and context
+* **Microsoft Foundry** → Bounded AI capabilities over grounded evidence
+* **Aspire** → Model, run, and observe the distributed application
+
+That distinction matters.
+
+Technology should serve the domain. The domain shouldn't exist to justify the technology.
+
+<Image
+  src={DotNetStackLedger}
+  alt="Layered architecture diagram showing people using Blazor web and .NET MAUI mobile apps that call application services, backed by the Unified Participation Ledger, Microsoft Foundry, and human approval, all orchestrated by Aspire"
+  wide
+  expandable
+  caption="Each technology serves the participation domain rather than defining it."
+/>
+
+---
+
+## Aspire Is the Operational Spine
+
+Once Bethuya includes a frontend, APIs, PostgreSQL, AI-assisted operations, and supporting services, running one application is no longer the same thing as understanding a distributed system.
+
+That is where Aspire comes in.
+
+Aspire gives Bethuya a code-first application model for describing and running the distributed system.
+
+A simplified AppHost might look something like this:
+
+```csharp
+var builder =
+    DistributedApplication.CreateBuilder(args);
+
+var postgres = builder
+    .AddPostgres("postgres")
+    .AddDatabase("bethuya");
+
+var api = builder
+    .AddProject<Projects.Bethuya_Api>("api")
+    .WithReference(postgres);
+
+builder
+    .AddProject<Projects.Bethuya_Web>("web")
+    .WithReference(api);
+
+builder.Build().Run();
+
+```
+
+The interesting part isn't the syntax.
+
+It's making the relationships between services explicit instead of depending on tribal knowledge about startup order, development ports, connection strings, and configuration.
+
+I think about Aspire's role in Bethuya in three ways:
+
+### Compose
+
+The AppHost describes the services, infrastructure, and relationships that make up the application.
+
+Instead of manually starting PostgreSQL, APIs, web applications, and supporting services across multiple terminals, the distributed application has an explicit model.
+
+As Bethuya grows, that model can grow with it.
+
+### Observe
+
+Now consider a single community action:
+
+```text
+Member contribution
+        │
+        ▼
+Blazor
+        │
+        ▼
+Participation API
+        │
+        ▼
+Application service
+        │
+        ▼
+Unified Participation Ledger
+        │
+        ▼
+AI-assisted recommendation
+        │
+        ▼
+Human review
+
+```
+
+That may appear to be one operation to the person using Bethuya.
+
+Several components may have participated in making it happen.
+
+Without correlation, debugging that operation becomes a hunt through unrelated log files.
+
+With distributed tracing, we can follow the workflow across component boundaries.
+
+* **Logs** tell us what individual components said.
+* **Metrics** tell us how the system is behaving.
+* **Traces** tell us how one operation moved through the system.
+
+<Image
+  src={AspireOperationalSpine}
+  alt="Aspire AppHost code wiring a Postgres database, the Bethuya API, and the web front end together, alongside panels showing Aspire's roles: compose services, observe logs and traces, and operate health and configuration"
+  expandable
+  caption="Aspire gives Bethuya a code-first application model and one place to observe the distributed workflow."
+/>
+
+### Operate
+
+The system also needs to make its health visible.
+
+* Is PostgreSQL available?
+* Can the frontend reach the API?
+* Which dependency failed?
+* Which configuration reached which service?
+* What happened just before an AI-backed workflow failed?
+
+The operational goal is simple:
+
+> **One command starts the system. One trace explains the workflow.**
+
+---
+
+## One Blazor Experience. Two Hosts.
+
+One of the more interesting architectural decisions in Bethuya concerns mobile.
+
+It would be tempting to think of the architecture as Blazor for web and .NET MAUI for mobile.
+
+Bethuya's use of **Blazor Hybrid** makes that distinction too simplistic.
+
+The goal isn't to maintain two unrelated implementations of the same product.
+
+Where the interaction makes sense in both environments, the architecture can share:
+
+* Razor components
+* Models
+* Validation
+* Domain contracts
+* UI patterns
+* Application services
+
+<Image
+  src={BlazorHybridTwoHosts}
+  alt="Shared Blazor components such as RecordParticipation feeding both a Blazor Web organizer command centre and a .NET MAUI Blazor Hybrid event-day mobile app, with both hosts using the same application services and Unified Participation Ledger"
+  wide
+  expandable
+  caption="One Blazor experience, two hosts: shared building blocks across Blazor Web and the .NET MAUI Blazor Hybrid host."
+/>
+
+That changes the question.
+
+Instead of asking *"How do we rebuild Bethuya for mobile?"*, we can ask:
+
+> **Which Bethuya building blocks make sense in this mobile context?**
+
+A component such as `<RecordParticipation />` can reuse Bethuya's models, validation rules, application contracts, domain terminology, and appropriate UI behavior.
+
+That doesn't mean the complete web application belongs on a phone.
+
+### Mobile Should Be Focused
+
+An organizer sitting at a desktop might need:
+
+* Verification queues
+* Member journeys
+* Opportunity review
+* Community insights
+* Deeper operational navigation
+
+Someone moving around a venue has a very different context.
+
+That person might need only one task: the very step where Priya Sharma's verified record from earlier begins.
+
+<BlogRecordCard
+  label="Record participation"
+  fields={[
+    { name: 'Member', value: 'Priya Sharma' },
+    { name: 'Activity', value: 'Mentoring' },
+    { name: 'Evidence', value: 'Helped two first-time contributors with their first pull requests.' },
+    { name: 'Status', value: 'Pending verification' },
+  ]}
+  action="Submit for verification"
+/>
+
+That's enough.
+
+The .NET MAUI host becomes particularly useful when the workflow benefits from native capabilities such as:
+
+* Camera or QR scanning
+* Secure storage
+* Connectivity awareness
+* Notifications
+* Device permissions
+* Platform lifecycle integration
+
+Blazor Hybrid gives us reuse.
+
+.NET MAUI gives those experiences a native host when a native host adds value.
+
+The goal isn't to maximize code reuse for its own sake.
+
+The principle is:
+
+> **Different contexts. Shared components. One domain model.**
+
+---
+
+## Grounded AI. Bounded Action.
+
+AI introduced perhaps the most important boundary in Bethuya.
+
+The obvious AI feature in almost any application is a chatbot: connect it to the application's data and let people ask questions.
+
+Except that immediately raises difficult questions:
+
+* What information can the model access?
+* Where did the information come from?
+* Can the model modify participation records?
+* Can AI decide who gets an opportunity?
+* What happens when the model invents something?
+* How can an organizer challenge its conclusion?
+* What happens to community accountability when a recommendation becomes automated?
+
+A better direction for Bethuya is to place AI inside bounded application workflows.
+
+The pattern consists of three important boundaries.
+
+<Image
+  src={GroundedAiBoundedAction}
+  alt="Three-step flow in which verified ledger records, provenance, and consent ground a bounded AI capability that explains, recommends, or drafts outreach, with every result going to a human to approve, edit, or dismiss"
+  wide
+  expandable
+  caption="Verified evidence enters a bounded AI capability; consequential decisions return to human review."
+/>
+
+### 1. Ground the Model in Application Evidence
+
+AI begins with evidence that exists independently of the model.
+
+That might include:
+
+* Verified participation records
+* Activity
+* Role
+* Context
+* Provenance
+* Consent
+* Visibility
+* Verification state
+
+The model doesn't get to create those underlying facts.
+
+The application determines which evidence is relevant and appropriate to provide.
+
+That is a crucial boundary.
+
+### 2. Give AI a Bounded Job
+
+Instead of asking *"Tell me everything about this person."*, Bethuya can expose narrower application capabilities.
+
+For example:
+
+* *"Explain this member journey."*
+* *"Recommend a relevant opportunity using these verified participation records."*
+* *"Draft outreach for this opportunity for organizer review."*
+
+Notice the difference.
+
+The AI isn't the application. AI is one capability inside the application.
+
+The application chooses the evidence, defines the permitted operation, constrains the expected result, and owns the authorization boundary.
+
+### Where Microsoft Foundry Fits
+
+Microsoft Foundry sits behind these bounded AI capabilities rather than above Bethuya as an unrestricted intelligence layer.
+
+Bethuya decides:
+
+* which verified participation evidence is relevant;
+* which operation a model may perform;
+* what authorization applies;
+* which consent and visibility constraints apply;
+* what kind of result the application expects;
+* and whether the generated result requires human review.
+
+Conceptually:
+
+```text
+Unified Participation Ledger
+             │
+             ▼
+Verified evidence + context
+             │
+             ▼
+Bounded Bethuya AI capability
+             │
+             ▼
+Microsoft Foundry
+             │
+             ▼
+Explanation / recommendation
+             │
+             ▼
+Human review
+
+```
+
+Microsoft Foundry provides the AI capabilities that Bethuya uses for these model-backed operations.
+
+But Bethuya retains responsibility for the domain boundary around those operations:
+
+* Authorization
+* Evidence selection
+* Provenance
+* Consent
+* Visibility
+* Workflow state
+* Human review
+* Final disposition
+
+That separation is important for another reason: the underlying model can evolve without forcing the application to redefine its domain.
+
+**The application owns the workflow. The model performs a bounded task within it.**
+
+### 3. Make the Result Explainable
+
+Suppose Bethuya recommends someone for a mentoring opportunity.
+
+A useful AI result cannot simply be **"Recommended: YES."**
+
+An organizer needs to understand why:
+
+* Which participation records supported the recommendation?
+* What evidence was considered?
+* What relevant context might be missing?
+* Where does uncertainty remain?
+
+And importantly:
+
+```text
+AI recommendation
+        │
+        ▼
+Human review
+        │
+        ▼
+Approve · Edit · Dismiss · Request more context
+
+```
+
+The result should help a person make a better decision, not pretend the model has become the decision-maker.
+
+That leads to one of Bethuya's core AI principles:
+
+> **Evidence is deterministic. Explanation is generative. The decision remains human.**
+
+---
+
+## AI Recommends. Humans Decide. Communities Thrive.
+
+AI can summarize evidence, explain a member journey, surface missing context, recommend an opportunity, draft outreach, and reduce repetitive organizer work.
+
+But a recommendation isn't authority.
+
+An organizer may know something the model doesn't. A member may not want the suggested opportunity. The evidence may be accurate but incomplete, and important community context may never have been digitized in the first place.
+
+That is why the objective isn't to eliminate human judgment.
+
+The goal is to provide better evidence for human judgment.
+
+---
+
+## What Changed While Building Bethuya
+
+Some of the most useful lessons from Bethuya weren't about technologies we added.
+
+They were about assumptions we changed.
+
+### Events → Journeys
+
+**Center the person, not the calendar.**
+
+Events are useful moments in a community relationship, but they are not the relationship itself. The participation model needs to preserve the journey across those moments.
+
+### Chatbot → Workflow
+
+**AI is stronger inside a defined operation.**
+
+A generic chatbot has enormous freedom and relatively little application context. AI became more useful when placed inside a workflow with known evidence, a permitted operation, an expected result, and bounded authority.
+
+### Hidden Navigation → Authorization
+
+**The API owns authorization. The interface reflects it.**
+
+Removing an organizer menu item from a member's interface improves UX. It does not secure the underlying operation. Role, community scope, consent, visibility, and authorization must be enforced independently by the backend.
+
+### Native Everywhere → Focused Mobile
+
+**Use mobile where mobility adds value.**
+
+Blazor Hybrid gives us useful opportunities for reuse. That doesn't mean the entire web application belongs on a phone. The mobile experience should reflect what somebody needs while actually operating in a mobile context.
+
+### Logs Later → Traces First
+
+**Distributed AI needs correlation from the beginning.**
+
+A distributed AI-assisted workflow is difficult to understand by opening several unrelated log files. Correlation needs to exist before something breaks. That makes observability part of the architecture rather than a troubleshooting feature added later.
+
+<Image src={WhatChangedBuildingBethuya} alt="Five design shifts made while building Bethuya: events to journeys, chatbot to workflow, hidden navigation to API authorization, native everywhere to focused mobile, and logs later to traces first" />
+
+---
+
+## Where Bethuya Goes Next
+
+Bethuya continues to evolve as a real community platform rather than a static conference demonstration.
+
+There is still plenty to explore:
+
+* Richer participation provenance
+* Cross-community member journeys
+* Deeper integrations with the tools communities already use
+* Focused mobile event-day workflows
+* Explainable opportunity discovery
+* More observable AI-assisted operations
+* Better support for human review, correction, and contestability
+
+But adding capabilities can't come at the cost of the principles that led us here.
+
+---
+
+## What I'd Take Away From Building Bethuya
+
+Bethuya isn't a technology demonstration. Once the participation domain event became clear, every technical choice became easier to justify.
+
+### Evidence Over Scores
+
+Record what happened. Preserve provenance, context, consent, and verification. Don't reduce a person to an opaque number.
+
+### Shared Components Over Duplication
+
+Reuse the right building blocks. Let web and mobile serve different interaction contexts without inventing two different domain models.
+
+### Human Judgment Over Automation
+
+Let AI explain. Let AI recommend. Keep people responsible for consequential community decisions.
+
+And beneath all three sits the architectural principle that increasingly defines Bethuya:
+
+> **Different contexts. Shared components. One domain model.**
+
+<Image src={BethuyaClosingPrinciples} alt="Closing slide that builds on meaningful community participation with three principles: evidence over scores, shared components over duplication, and human judgment over automation" />
+
+---
+
+<BlogConclusion>
+
+## Start With What Happened
+
+When a project begins with the technology, every problem starts looking like an excuse to use that technology.
+
+Bethuya taught me to work in the opposite direction.
+
+Start with the thing that actually happened:
+
+* Someone attended.
+* Someone contributed.
+* Someone volunteered.
+* Someone mentored.
+* Someone spoke.
+* Someone organized.
+
+Preserve that evidence and its context. Build the domain around it.
+
+Then choose the user experience, application services, infrastructure, observability, and AI capabilities that help people do something useful with it.
+
+> **Start with what happened. Then choose the technology that serves it.**
+
+</BlogConclusion>
+
+The source for Bethuya is available in the [Hackerspace Mumbai / Bethuya repository](https://github.com/HackerspaceMumbai/bethuya).
+
+---
+
+## Continue Exploring Bethuya
+
+This article is one part of the broader Bethuya journey. You may also be interested in:
+
+* [Bethuya's human-AI curation journey](/blog/bethuya-human-ai-curation-system/)
+* [Agent workflows with Foundry and Aspire](/blog/bethuya-foundry-hosted-agents-aspire/)
+* [Bethuya on GitHub](https://github.com/HackerspaceMumbai/bethuya)
+
