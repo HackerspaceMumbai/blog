@@ -33,7 +33,11 @@ import BethuyaClosingPrinciples from './bethuya-closing-principles.png'
 
 > **Start with what happened. Then choose the technology that serves it.**
 
-That was the most important lesson from building [Bethuya](https://github.com/HackerspaceMumbai/bethuya), and the idea behind my .NET Conf 2026 session, *"Building an AI-Powered Community Platform with Blazor, .NET MAUI, Aspire, and Microsoft Foundry."*
+That was the most important lesson from building [Bethuya](https://github.com/HackerspaceMumbai/bethuya).
+
+This article accompanies my .NET Conf 2026 session, "Building an AI-Powered Community Platform with Blazor, .NET MAUI, Aspire, and Azure AI Foundry." It expands on the domain decisions and architecture that could only be covered briefly during the session.
+
+Azure AI Foundry is now Microsoft Foundry. This article uses the current product name except when quoting the original session title.
 
 The session grew out of a familiar problem for anyone who runs a developer community.
 
@@ -130,9 +134,10 @@ A human-readable record might look something like this:
     { name: 'Member', value: 'Priya Sharma' },
     { name: 'Activity', value: 'Mentoring' },
     { name: 'Role', value: 'Mentor' },
-    { name: 'Context', value: 'Hacktoberfest Hack Day' },
+    { name: 'Context', value: 'Hacktoberfest Hack Day 2026' },
     { name: 'Evidence', value: 'Helped two first-time contributors with their first pull requests.' },
-    { name: 'Source', value: 'Event volunteer observation' },
+    { name: 'Source', value: 'Organizer verification' },
+    { name: 'Occurred', value: '24 October 2026' },
     { name: 'Visibility', value: 'Member + organizers' },
     { name: 'Status', value: 'Verified' },
   ]}
@@ -142,7 +147,7 @@ The important word is **evidence**.
 
 The ledger records what happened, where the information came from, and the context that makes the activity meaningful.
 
-Conceptually, that begins to become a domain type rather than a collection of unrelated event fields:
+The concepts could be expressed in a domain type like this:
 
 ```csharp
 public sealed record ParticipationRecord(
@@ -161,7 +166,7 @@ public sealed record ParticipationRecord(
 
 ```
 
-The exact implementation can evolve, but the concepts are important.
+This is conceptual pseudocode, not a verified representation of Bethuya's production model.
 
 A participation record is more than `Member + Event`.
 
@@ -174,11 +179,9 @@ It also carries the provenance and state required to answer questions such as:
 * Has it been verified?
 * If corrected later, what happened to the original record?
 
-That is why the append-only nature of the ledger matters.
+In this article, append-only describes the intended history, not Bethuya's verified persistence mechanism. It does not mean mistakes become permanent: conceptually, a correction adds a new assertion that corrects or supersedes the earlier one while preserving its original evidence and provenance. This lets the system distinguish what it currently believes from how that record changed over time.
 
-A correction should not silently rewrite history.
-
-The history itself is evidence.
+Verification does not make a record visible to everyone. Verification determines whether evidence is trusted; visibility and consent determine who may access it and how it may be used. A mentoring record might be visible to the member and authorized community organizers while remaining unavailable to unrelated members or another community. The API must enforce that boundary. Hiding a menu item in Blazor is never an authorization mechanism.
 
 ### The Ledger Is Not a Community Score
 
@@ -219,8 +222,7 @@ Once the Unified Participation Ledger became the center of the domain, the techn
 
 Each part of the stack had a specific job to do.
 
-The architecture isn't simply *Blazor + .NET MAUI + Aspire + AI = Community Platform*.
-
+The architecture isn't simply a combination of Blazor, .NET MAUI, Aspire, and AI.
 It's closer to a set of layers organized around people: different contexts lead to user experiences, which rely on application services, a participation domain model, and ultimately the Unified Participation Ledger with its evidence and context.
 
 Blazor, Blazor Hybrid, .NET MAUI, Aspire, and Microsoft Foundry exist around that domain model.
@@ -240,10 +242,10 @@ Technology should serve the domain. The domain shouldn't exist to justify the te
 
 <Image
   src={DotNetStackLedger}
-  alt="Layered architecture diagram showing people using Blazor web and .NET MAUI mobile apps that call application services, backed by the Unified Participation Ledger, Microsoft Foundry, and human approval, all orchestrated by Aspire"
+  alt="People use Blazor web and .NET MAUI mobile interfaces that call application services and the participation ledger, with Microsoft Foundry AI operations and human review."
   wide
   expandable
-  caption="Each technology serves the participation domain rather than defining it."
+  caption="Each layer of the .NET stack serves the Unified Participation Ledger, rather than asking the domain to serve the stack."
 />
 
 ---
@@ -333,7 +335,7 @@ With distributed tracing, we can follow the workflow across component boundaries
 
 <Image
   src={AspireOperationalSpine}
-  alt="Aspire AppHost code wiring a Postgres database, the Bethuya API, and the web front end together, alongside panels showing Aspire's roles: compose services, observe logs and traces, and operate health and configuration"
+  alt="Aspire AppHost wires the Postgres database, Bethuya API, and web application; surrounding panels group compose, observe, and operate concerns."
   expandable
   caption="Aspire gives Bethuya a code-first application model and one place to observe the distributed workflow."
 />
@@ -375,7 +377,7 @@ Where the interaction makes sense in both environments, the architecture can sha
 
 <Image
   src={BlazorHybridTwoHosts}
-  alt="Shared Blazor components such as RecordParticipation feeding both a Blazor Web organizer command centre and a .NET MAUI Blazor Hybrid event-day mobile app, with both hosts using the same application services and Unified Participation Ledger"
+  alt="Shared Razor components, models, validation, and domain contracts power Blazor Web and a .NET MAUI Blazor Hybrid host through the same application services and participation ledger."
   wide
   expandable
   caption="One Blazor experience, two hosts: shared building blocks across Blazor Web and the .NET MAUI Blazor Hybrid host."
@@ -410,13 +412,16 @@ That person might need only one task: the very step where Priya Sharma's verifie
   fields={[
     { name: 'Member', value: 'Priya Sharma' },
     { name: 'Activity', value: 'Mentoring' },
+    { name: 'Context', value: 'Hacktoberfest Hack Day 2026' },
     { name: 'Evidence', value: 'Helped two first-time contributors with their first pull requests.' },
     { name: 'Status', value: 'Pending verification' },
   ]}
   action="Submit for verification"
 />
 
-That's enough.
+This card shows the earlier state of the same participation: **Mobile capture → Submit for verification → Organizer review → Verified ledger record.** The verified record above reflects the completed review, not a second or contradictory record.
+
+The point is not to reproduce the organizer workspace on a phone. The mobile experience exposes the task needed in that context while preserving the same application services, validation, authorization, and domain model.
 
 The .NET MAUI host becomes particularly useful when the workflow benefits from native capabilities such as:
 
@@ -461,7 +466,7 @@ The pattern consists of three important boundaries.
 
 <Image
   src={GroundedAiBoundedAction}
-  alt="Three-step flow in which verified ledger records, provenance, and consent ground a bounded AI capability that explains, recommends, or drafts outreach, with every result going to a human to approve, edit, or dismiss"
+  alt="Evidence, provenance, and consent enter bounded AI actions, followed by human approval, edits, or dismissal."
   wide
   expandable
   caption="Verified evidence enters a bounded AI capability; consequential decisions return to human review."
@@ -482,9 +487,7 @@ That might include:
 * Visibility
 * Verification state
 
-The model doesn't get to create those underlying facts.
-
-The application determines which evidence is relevant and appropriate to provide.
+The model doesn't get to create those underlying facts. The application selects relevant evidence and supplies it only when consent and visibility allow.
 
 That is a crucial boundary.
 
@@ -506,16 +509,7 @@ The application chooses the evidence, defines the permitted operation, constrain
 
 ### Where Microsoft Foundry Fits
 
-Microsoft Foundry sits behind these bounded AI capabilities rather than above Bethuya as an unrestricted intelligence layer.
-
-Bethuya decides:
-
-* which verified participation evidence is relevant;
-* which operation a model may perform;
-* what authorization applies;
-* which consent and visibility constraints apply;
-* what kind of result the application expects;
-* and whether the generated result requires human review.
+Microsoft Foundry sits behind these bounded AI capabilities rather than above Bethuya as an unrestricted intelligence layer. Bethuya selects the evidence, defines the permitted operation, applies authorization, consent, and visibility constraints, and decides whether a result requires human review.
 
 Conceptually:
 
@@ -538,19 +532,6 @@ Explanation / recommendation
 Human review
 
 ```
-
-Microsoft Foundry provides the AI capabilities that Bethuya uses for these model-backed operations.
-
-But Bethuya retains responsibility for the domain boundary around those operations:
-
-* Authorization
-* Evidence selection
-* Provenance
-* Consent
-* Visibility
-* Workflow state
-* Human review
-* Final disposition
 
 That separation is important for another reason: the underlying model can evolve without forcing the application to redefine its domain.
 
@@ -584,23 +565,11 @@ Approve · Edit · Dismiss · Request more context
 
 The result should help a person make a better decision, not pretend the model has become the decision-maker.
 
+AI recommends. Humans decide. Organizers may know context the model lacks, members may decline an opportunity, and evidence may be accurate yet incomplete. The goal is better evidence for human judgment, not its replacement.
+
 That leads to one of Bethuya's core AI principles:
 
 > **Evidence is deterministic. Explanation is generative. The decision remains human.**
-
----
-
-## AI Recommends. Humans Decide. Communities Thrive.
-
-AI can summarize evidence, explain a member journey, surface missing context, recommend an opportunity, draft outreach, and reduce repetitive organizer work.
-
-But a recommendation isn't authority.
-
-An organizer may know something the model doesn't. A member may not want the suggested opportunity. The evidence may be accurate but incomplete, and important community context may never have been digitized in the first place.
-
-That is why the objective isn't to eliminate human judgment.
-
-The goal is to provide better evidence for human judgment.
 
 ---
 
@@ -664,7 +633,7 @@ But adding capabilities can't come at the cost of the principles that led us her
 
 ## What I'd Take Away From Building Bethuya
 
-Bethuya isn't a technology demonstration. Once the participation domain event became clear, every technical choice became easier to justify.
+Bethuya isn't a technology demonstration. Once the participation model became clear, the technology choices became easier to justify.
 
 ### Evidence Over Scores
 
