@@ -78,7 +78,7 @@ async function verifyUrlAccessibility(url, maxRetries = 3, retryDelay = 5000) {
  * @returns {Promise<boolean>} - True if health check passes, false otherwise
  */
 async function runHealthCheck(baseUrl) {
-  const healthUrl = `${baseUrl}/.netlify/functions/health`;
+  const healthUrl = `${baseUrl}/api/newsletter-health`;
   
   try {
     console.log(`${colors.blue}🏥 Running health check: ${healthUrl}${colors.reset}`);

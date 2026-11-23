@@ -2,7 +2,6 @@
 import Layout from "../../components/Layout.astro";
 import EventsSection from "../../components/EventsSection.astro";
 import GallerySection from "../../components/GallerySection.astro";
-import UpcomingEventAnnouncement from "../../components/UpcomingEventAnnouncement.astro";
 import { getCollection } from "astro:content";
 import { UPCOMING_EVENTS } from "../../data/upcomingEvents.js";
 
@@ -45,8 +44,6 @@ export const canonical = "https://hackmum.in/events";
       </p>
     </div>
   </section>
-
-  <UpcomingEventAnnouncement sectionId="upcoming" />
 
   <EventsSection
     events={UPCOMING_EVENTS}

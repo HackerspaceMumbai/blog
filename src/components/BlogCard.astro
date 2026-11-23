@@ -1,12 +1,24 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
-import { formatDate } from '../utils/formatting';
+import { formatDate } from '../utils/formatting.js';
 import placeholderImage from '../assets/images/gallery/pinnedpic-1.jpg';
 
 const { post, featured = false } = Astro.props;
 
+const getBlogSlug = (post: CollectionEntry<'posts'>) => {
+  const frontmatterSlug = post?.data?.slug;
+
+  if (typeof frontmatterSlug === 'string' && frontmatterSlug.trim().length > 0) {
+    return frontmatterSlug.trim();
+  }
+
+  return post.id.replace(/\/index$/, '');
+};
+
 // Robust image resolution function
-const getBlogCoverImage = (post) => {
+const getBlogCoverImage = (post: { data?: { cover?: ImageMetadata | string } }) => {
   try {
     // Handle the case where post.data.cover might be ImageMetadata or undefined
     const cover = post?.data?.cover;
@@ -19,9 +31,8 @@ const getBlogCoverImage = (post) => {
     if (typeof cover === 'object' && cover.src) {
       return cover;
     }
-    
-    // If it's a string path (legacy), return it
-    if (typeof cover === 'string' && cover.length > 0) {
+
+    if (typeof cover === 'string' && cover.trim().length > 0) {
       return cover;
     }
     
@@ -34,15 +45,18 @@ const getBlogCoverImage = (post) => {
 };
 
 // Generate appropriate alt text based on image type
-const getImageAltText = (post, coverImage) => {
+const getImageAltText = (post: CollectionEntry<'posts'>, coverImage: typeof placeholderImage | string) => {
   if (coverImage === placeholderImage) {
     return ''; // Empty alt for decorative placeholder image
   }
   return `Cover image for article: ${post.data.title}`;
 };
 
-const href = `/blog/${post.slug}/`;
+const href = `/blog/${getBlogSlug(post)}/`;
 const coverImage = getBlogCoverImage(post);
+const imageSource = typeof coverImage === 'string'
+  ? { src: coverImage, width: 800, height: 450 }
+  : { src: coverImage, width: 800, height: 450 };
 const imageAltText = getImageAltText(post, coverImage);
 const formattedDate = formatDate(post.data.date.toString());
 ---
@@ -50,12 +64,10 @@ const formattedDate = formatDate(post.data.date.toString());
 <article class="card bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary hover:scale-[1.02] hover:-translate-y-1 group cursor-pointer transition-all duration-300 ease-out overflow-hidden h-full flex flex-col">
   <figure class="relative aspect-[3/2] w-full overflow-hidden">
     <Image
-      src={coverImage}
+      {...imageSource}
       alt={imageAltText}
       widths={[320, 480, 640, 800]}
       sizes="(max-width: 640px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px"
-      width={800}
-      height={450}
       loading="lazy"
       format="webp"
       quality={80}
@@ -92,7 +104,7 @@ const formattedDate = formatDate(post.data.date.toString());
     
     {post.data.tags && post.data.tags.length > 0 && (
       <div class="flex flex-wrap gap-2 mb-4">
-        {post.data.tags.slice(0, 3).map((tag) => (
+        {post.data.tags.slice(0, 3).map((tag: string) => (
           <span class="badge badge-outline badge-sm">{tag}</span>
         ))}
         {post.data.tags.length > 3 && (

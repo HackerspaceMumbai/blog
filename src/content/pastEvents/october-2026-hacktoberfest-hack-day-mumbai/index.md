@@ -1,0 +1,25 @@
+---
+title: "Hacktoberfest Hack Day Mumbai"
+date: "2026-10-17"
+eventType: "hackathon"
+location: "Paytm, Waterstones Corporate Park, Andheri East, Mumbai"
+description: "A community-driven open-source and AI buildathon where Mumbai's builders shared public progress checkpoints and submitted 18 practical projects."
+coverImage: "../../../assets/images/events/hacktoberfest-hack-day-mumbai-2026.png"
+highlights:
+  - label: "Registrations"
+    value: "500+"
+  - label: "Projects Submitted"
+    value: "18"
+  - label: "Photos Captured"
+    value: "442"
+recapPostSlug: "hacktoberfest-hack-day-mumbai-2026-recap"
+recapExcerpt: "Hacktoberfest Hack Day Mumbai put builders first: public progress checkpoints, 18 open-source AI projects, practical demos, community collaboration, and judging that continued well beyond the planned schedule."
+archiveLinks:
+  archiveUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai"
+  mediaUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/media"
+  photosUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/media/photos"
+  videosUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/media/videos"
+  recapUrl: "https://github.com/HackerspaceMumbai/events/blob/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/recap.md"
+  resourcesUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/resources"
+  communityUrl: "https://github.com/HackerspaceMumbai/events/tree/main/events/2026/2026-10-17-hacktoberfest-hack-day-mumbai/community"
+---

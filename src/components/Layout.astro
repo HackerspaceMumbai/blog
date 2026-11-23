@@ -1,9 +1,11 @@
 ---
 import "../styles/global.css";
+import AnnouncementBar from './AnnouncementBar.astro';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import TrackingScripts from './TrackingScripts.astro';
 import socialPreviewImage from '../assets/images/hackerspace_mumbai_social.png';
+import { FEATURED_SESSION_PREMIERE } from '../data/featuredSessionPremiere';
 
 export interface Props {
   title?: string;
@@ -109,7 +111,9 @@ const pageSchema = type === 'article' && publishedTime ? {
     <meta name="generator" content={Astro.generator} />
     
   <!-- Self-hosted Playfair for italic headings (same-origin, no fonts.gstatic chain) -->
-  <link rel="preload" href="/fonts/playfair-display-italic-500-latin.woff2" as="font" type="font/woff2" crossorigin />
+  {Astro.url.pathname === '/' && (
+    <link rel="preload" href="/fonts/playfair-display-italic-500-latin.woff2" as="font" type="font/woff2" crossorigin />
+  )}
     
     <!-- Optional LCP image preload (only when caller passes a URL that is actually used) -->
     {preloadImage && (
@@ -233,6 +237,7 @@ const pageSchema = type === 'article' && publishedTime ? {
     <a href="#navigation" class="skip-link">Skip to navigation</a>
     
     <div class="min-h-screen flex flex-col bg-base-100 text-base-content">
+      <AnnouncementBar premiere={FEATURED_SESSION_PREMIERE} />
       <header class="sticky top-0 z-50" role="banner">
         <div id="navigation">
           <Header />

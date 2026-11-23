@@ -248,7 +248,7 @@ interface NewsletterFormState {
     }
 
     private async submitToAPI(email: string, firstName: string = ''): Promise<APIResponse> {
-      const response = await fetch('/.netlify/functions/newsletter', {
+      const response = await fetch('/api/newsletter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

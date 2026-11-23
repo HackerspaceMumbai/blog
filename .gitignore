@@ -30,7 +30,7 @@ pnpm-debug.log*
 # Local Netlify folder
 .netlify
 
-# Backup files
+# Backup filesICC WS. 
 *.backup
 
 # CI test reports
@@ -38,3 +38,9 @@ ci-reports/
 
 # Ignore Lighthouse reports
 **/lighthouse.*/
+# Cloudflare Wrangler build artifacts
+.wrangler/
+
+# Locally installed agent skills
+.agents/
+skills-lock.json

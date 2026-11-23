@@ -2,22 +2,18 @@
 import { defineConfig } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
-import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import cloudflare from '@astrojs/cloudflare';
 
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://hackmum.in',
-  integrations: [
-    mdx({
-      rehypePlugins: [
-        rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-      ],
-    }),
-  ],
+  integrations: [mdx()],
+  output: 'server',
+  adapter: cloudflare({
+    imageService: { build: 'compile', runtime: 'cloudflare-binding' }
+  }),
 
   // Image optimization
   image: {
@@ -38,45 +34,38 @@ export default defineConfig({
     responsiveStyles: true
   },
 
-  // Prefetch disabled: no data-astro-prefetch usage, and the client script
-  // was showing up on Lighthouse's critical request chain for little benefit.
+  // Avoid adding speculative requests to the critical request chain.
   prefetch: false,
-
-  // Output configuration - hybrid mode for API endpoints
-  output: 'static',
   
   // Compression and optimization
   compressHTML: true,
   
-  // Build optimizations
   build: {
-    // Inline small assets to reduce HTTP requests
-    inlineStylesheets: 'always'
+    inlineStylesheets: 'auto'
   },
 
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      // Allow Node.js built-in modules for packages like sanitize-html
+      external: ['path', 'fs', 'crypto', 'stream', 'util', 'buffer']
+    },
     build: {
-      // Inline CSS for files smaller than 8KB to reduce HTTP requests
-      assetsInlineLimit: 8192,
-      // Enable CSS code splitting for better caching
-      cssCodeSplit: false, // Disable to inline more CSS
+      // Keep executable scripts external so script-src 'self' can protect every route.
+      assetsInlineLimit: 0,
+      cssCodeSplit: true,
       // Minify CSS aggressively
       cssMinify: 'esbuild',
       rollupOptions: {
         output: {
+          // Avoid asset canonicalization redirects, especially on HTTP previews with production CSP.
+          sanitizeFileName: (name) => name.replace(/[^a-zA-Z0-9._/-]/g, '_'),
           // Optimize chunk splitting
           manualChunks: {
             // Keep vendor code separate for better caching
             vendor: ['astro/runtime/client/idle.js', 'astro/runtime/client/load.js']
           },
-          // Inline small CSS files
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-              return 'assets/[name].[hash][extname]';
-            }
-            return 'assets/[name].[hash][extname]';
-          }
+          assetFileNames: 'assets/[name].[hash][extname]'
         }
       }
     }

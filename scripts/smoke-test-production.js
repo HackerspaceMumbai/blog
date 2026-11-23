@@ -259,7 +259,7 @@ class ProductionSmokeTest {
   
   async testHealthEndpoint() {
     try {
-      const response = await this.page.goto(`${this.baseUrl}/.netlify/functions/health`, {
+      const response = await this.page.goto(`${this.baseUrl}/api/newsletter-health`, {
         waitUntil: 'networkidle',
         timeout: 10000
       });

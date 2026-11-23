@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import FeaturedPremiereSection from './FeaturedPremiereSection.astro';
 import SessionResourceCard from './SessionResourceCard.astro';
 import {
   getExternalMediaLinks,
@@ -9,6 +10,8 @@ import {
   type ArchiveSpeakerResource,
 } from '../utils/pastEventArchive';
 import { resolveResourceUrl, getEventSlug, isValidResourceUrl } from '../utils/resourceUrl';
+import type { FeaturedSessionPremiere } from '../utils/premiere';
+import { isPremiereSession } from '../utils/premiere';
 import type { ImageMetadata } from 'astro';
 
 export interface EventHighlight {
@@ -29,6 +32,7 @@ export interface PastEventDetailProps {
   highlights?: EventHighlight[];
   recapPostSlug?: string;
   recapExcerpt?: string;
+  featuredPremiere?: FeaturedSessionPremiere | null;
 }
 
 const {
@@ -44,6 +48,7 @@ const {
   highlights = [],
   recapPostSlug,
   recapExcerpt,
+  featuredPremiere = null,
 } = Astro.props;
 
 const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -62,6 +67,18 @@ const resolvedResources = speakerResources
   .filter((resource) => resource.resourceUrl);
 
 const sessions = groupResourcesBySession(resolvedResources);
+
+// The promoted premiere must bind to an existing session card. If the archive
+// renames the session or drops the speaker, fail loudly at build time instead of
+// silently shipping a card without the watch link.
+if (featuredPremiere && !sessions.some((session) => isPremiereSession(session, featuredPremiere))) {
+  console.warn(
+    `[premiere] No session card matched the featured premiere for "${featuredPremiere.speakerName}" ` +
+      `on event "${featuredPremiere.eventSlug}". Checked ${sessions.length} session(s): ` +
+      `${sessions.map((session) => session.title).join(' | ') || '(none)'}. ` +
+      'Update speakerName or sessionTitleAliases in src/data/featuredSessionPremiere.ts.'
+  );
+}
 
 const canonicalArchiveUrl = isSafeArchiveUrl(archiveLinks?.archiveUrl)
   ? archiveLinks.archiveUrl
@@ -158,6 +175,9 @@ const hasMedia = Boolean(galleryHref || videosUrl || mediaLinks.length > 0);
     </div>
   </header>
 
+  <!-- Featured premiere -->
+  {featuredPremiere && <FeaturedPremiereSection premiere={featuredPremiere} />}
+
   <!-- Highlights -->
   {hasHighlights && (
     <section aria-labelledby="event-highlights-heading">
@@ -205,7 +225,7 @@ const hasMedia = Boolean(galleryHref || videosUrl || mediaLinks.length > 0);
       </h3>
       <div class="grid gap-4">
         {sessions.map((session) => (
-          <SessionResourceCard session={session} />
+          <SessionResourceCard session={session} premiere={featuredPremiere} />
         ))}
       </div>
     </section>

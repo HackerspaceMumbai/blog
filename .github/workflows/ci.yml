@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,24 +17,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22.x'
           cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -43,19 +37,17 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Run CI Test Orchestrator
-        run: pnpm test:ci-orchestrator
-        env:
-          CI: true
+      - name: Run tests
+        run: pnpm test
 
-      - name: Build project
-        run: pnpm build
+      - name: Build and verify Cloudflare artifact
+        run: pnpm build && pnpm test:cloudflare-build
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-${{ matrix.node-version }}
+          name: coverage
           path: coverage/
           if-no-files-found: ignore
           retention-days: 7
@@ -64,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ci-reports-${{ matrix.node-version }}
+          name: ci-reports
           path: ci-reports/
           if-no-files-found: ignore
           retention-days: 7
@@ -73,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: accessibility-reports-${{ matrix.node-version }}
+          name: accessibility-reports
           path: accessibility-reports/
           if-no-files-found: ignore
           retention-days: 7
@@ -82,10 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: security-reports-${{ matrix.node-version }}
+          name: security-reports
           path: security-reports/
           if-no-files-found: ignore
           retention-days: 7
-
-  # Netlify will auto-deploy after tests pass
-  # No manual deployment needed - much cleaner!

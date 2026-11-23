@@ -1,0 +1,258 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'img'>, 'src' | 'width' | 'height'> {
+  src: ImageMetadata;
+  alt: string;
+  width?: number;
+  height?: number;
+  quality?: number;
+  widths?: number[];
+  sizes?: string;
+  /** Let a dense diagram extend moderately beyond the prose column on wide screens. */
+  wide?: boolean;
+  caption?: string;
+  /** Open the image at full size in a native modal dialog. */
+  expandable?: boolean;
+}
+
+const {
+  quality = 80,
+  wide = false,
+  caption,
+  expandable = false,
+  widths = wide ? [400, 800, 1100, 1600, 2200] : [400, 800, 1200, 1600],
+  sizes = wide
+    ? '(min-width: 1180px) 1100px, calc(100vw - 32px)'
+    : '(min-width: 800px) 768px, calc(100vw - 32px)',
+  ...props
+} = Astro.props;
+
+const isFigure = wide || expandable || Boolean(caption);
+const dialogId = expandable ? `blog-image-dialog-${crypto.randomUUID()}` : undefined;
+---
+
+{!isFigure && <Image {...props} quality={quality} widths={widths} sizes={sizes} />}
+
+{isFigure && (
+  <figure class:list={['blog-figure', { 'blog-figure--wide': wide }]}>
+    {expandable ? (
+      <button
+        type="button"
+        class="blog-figure__trigger"
+        aria-haspopup="dialog"
+        aria-controls={dialogId}
+        aria-label={`Enlarge image: ${props.alt}`}
+        data-blog-image-open={dialogId}
+      >
+        <Image {...props} quality={quality} widths={widths} sizes={sizes} />
+        <span class="blog-figure__hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
+        </span>
+      </button>
+    ) : (
+      <Image {...props} quality={quality} widths={widths} sizes={sizes} />
+    )}
+    {caption && <figcaption class="blog-figure__caption">{caption}</figcaption>}
+    {expandable && (
+      <dialog id={dialogId} class="blog-image-dialog not-prose" aria-label={props.alt}>
+        <form method="dialog" class="blog-image-dialog__bar">
+          <button type="submit" class="blog-image-dialog__close" aria-label="Close enlarged image">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+            <span>Close</span>
+          </button>
+        </form>
+        <Image
+          src={props.src}
+          alt={props.alt}
+          class="blog-image-dialog__img"
+          quality={quality}
+          widths={[1600, 2400]}
+          sizes="100vw"
+          loading="lazy"
+        />
+      </dialog>
+    )}
+  </figure>
+)}
+
+<style>
+  .blog-figure {
+    margin-block: 2rem;
+  }
+
+  .blog-figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    border-radius: 6px;
+  }
+
+  /*
+   * Wide figures grow toward 1100px but never past the blog page container
+   * (100cqi), which excludes the vertical scrollbar, unlike 100vw.
+   */
+  @supports (width: 1cqi) {
+    .blog-figure--wide {
+      --blog-figure-wide: max(100%, min(1100px, 100cqi - 2rem));
+      width: var(--blog-figure-wide);
+      margin-inline: calc((100% - var(--blog-figure-wide)) / 2);
+    }
+  }
+
+  .blog-figure__caption {
+    max-width: 42rem;
+    margin: 0.75rem auto 0;
+    color: color-mix(in oklab, var(--color-base-content) 78%, transparent);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .blog-figure__trigger {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .blog-figure__trigger:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .blog-figure__hint {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--color-base-100) 85%, transparent);
+    color: var(--color-base-content);
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+  }
+
+  .blog-figure__trigger:hover .blog-figure__hint,
+  .blog-figure__trigger:focus-visible .blog-figure__hint {
+    opacity: 1;
+  }
+
+  .blog-image-dialog {
+    width: min(100vw - 2rem, 1800px);
+    max-width: none;
+    max-height: calc(100dvh - 2rem);
+    /* Tailwind preflight zeroes margins; restore the native modal centering. */
+    margin: auto;
+    padding: 0.75rem;
+    border: 1px solid var(--color-base-300);
+    border-radius: 0.75rem;
+    background: var(--color-base-100);
+    color: var(--color-base-content);
+    overscroll-behavior: contain;
+  }
+
+  .blog-image-dialog::backdrop {
+    background: rgb(0 0 0 / 0.8);
+  }
+
+  .blog-image-dialog__bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 0.5rem;
+  }
+
+  .blog-image-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--color-base-300);
+    border-radius: 9999px;
+    background: var(--color-base-200);
+    color: var(--color-base-content);
+    font: inherit;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  .blog-image-dialog__close:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .blog-image-dialog :global(.blog-image-dialog__img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 6.5rem);
+    margin: 0;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  :global(html.blog-image-dialog-open) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const openTriggers = new WeakMap<HTMLDialogElement, HTMLElement>();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-blog-image-open]').forEach((trigger) => {
+    const dialog = document.getElementById(trigger.dataset.blogImageOpen ?? '');
+    if (!(dialog instanceof HTMLDialogElement) || dialog.dataset.blogImageReady) return;
+    dialog.dataset.blogImageReady = 'true';
+
+    dialog.addEventListener('click', (event) => {
+      // A click on the dialog element itself (not its content) is a backdrop click.
+      if (event.target === dialog) dialog.close();
+    });
+
+    // Native Escape handling is skipped by some embedded browsers; close explicitly as a fallback.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !event.defaultPrevented && dialog.open) {
+        event.preventDefault();
+        dialog.close();
+      }
+    });
+
+    dialog.addEventListener('close', () => {
+      const root = document.documentElement;
+      root.classList.remove('blog-image-dialog-open');
+      root.style.removeProperty('padding-right');
+      openTriggers.get(dialog)?.focus();
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    const trigger = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-blog-image-open]');
+    if (!trigger) return;
+    const dialog = document.getElementById(trigger.dataset.blogImageOpen ?? '');
+    if (!(dialog instanceof HTMLDialogElement) || dialog.open) return;
+
+    // Compensate for the hidden scrollbar so the page does not shift sideways.
+    const root = document.documentElement;
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+    if (scrollbarWidth > 0) root.style.paddingRight = `${scrollbarWidth}px`;
+    root.classList.add('blog-image-dialog-open');
+
+    openTriggers.set(dialog, trigger);
+    dialog.showModal();
+  });
+</script>

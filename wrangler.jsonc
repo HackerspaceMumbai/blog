@@ -1,0 +1,75 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hackmum-blog",
+	"main": "src/worker.ts",
+	"compatibility_date": "2026-04-22",
+	"durable_objects": {
+		"bindings": [{ "name": "NEWSLETTER_RATE_LIMITER", "class_name": "NewsletterRateLimiter" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["NewsletterRateLimiter"] }],
+	"assets": {
+		"directory": "./dist",
+		"run_worker_first": ["/api/*", "/subscribe", "/health/newsletter"]
+	},
+	"vars": {
+		"NODE_ENV": "production",
+		"CORS_ORIGIN": "https://hackmum.in",
+		"LOG_LEVEL": "info",
+		"KIT_API_URL": "https://api.kit.com/v4"
+	},
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 0.1,
+		"redact_query_string": true,
+		"traces": {
+			"enabled": true,
+			"head_sampling_rate": 0.1
+		}
+	},
+	"previews": {
+		"durable_objects": {
+			"bindings": [{ "name": "NEWSLETTER_RATE_LIMITER", "class_name": "NewsletterRateLimiter" }]
+		},
+		"vars": {
+			"NODE_ENV": "preview",
+			"CORS_ORIGIN": "https://hackmum.in",
+			"LOG_LEVEL": "info",
+			"KIT_API_URL": "https://api.kit.com/v4"
+		},
+		"images": {
+			"binding": "IMAGES"
+		}
+	},
+	"env": {
+		"dev": {
+			"durable_objects": {
+				"bindings": [{ "name": "NEWSLETTER_RATE_LIMITER", "class_name": "NewsletterRateLimiter" }]
+			},
+			"vars": {
+				"NODE_ENV": "development",
+				"CORS_ORIGIN": "*",
+				"LOG_LEVEL": "debug",
+				"KIT_API_URL": "https://api.kit.com/v4"
+			}
+		},
+		"production": {
+			"durable_objects": {
+				"bindings": [{ "name": "NEWSLETTER_RATE_LIMITER", "class_name": "NewsletterRateLimiter" }]
+			},
+			"vars": {
+				"NODE_ENV": "production",
+				"CORS_ORIGIN": "https://hackmum.in",
+				"LOG_LEVEL": "info",
+				"KIT_API_URL": "https://api.kit.com/v4"
+			}
+		}
+	}
+	/*
+  // Production Route Configuration
+  // Uncomment this block when you are ready to point the live domain to Cloudflare
+
+  , "routes": [
+    { "pattern": "hackmum.in", "custom_domain": true }
+  ]
+    */
+}

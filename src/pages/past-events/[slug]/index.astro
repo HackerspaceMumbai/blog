@@ -3,24 +3,23 @@ import Layout from "../../../components/Layout.astro";
 import PastEventDetail from "../../../components/PastEventDetail.astro";
 import { getCollection } from "astro:content";
 import { enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
+import { getPremiereForEvent } from "../../../utils/premiere";
+import { FEATURED_SESSION_PREMIERE } from "../../../data/featuredSessionPremiere";
 
-// Fetch all past events for static route generation
 const pastEventCollection = await getCollection("pastEvents");
-
-export async function getStaticPaths() {
-  const pastEvents = await getCollection("pastEvents");
-  return pastEvents.map((event) => ({
-    params: { slug: event.slug },
-    props: { event },
-  }));
-}
-
-interface Props {
-  event: (typeof pastEventCollection)[0];
-}
-
-const { event } = Astro.props;
 const { slug } = Astro.params;
+
+if (typeof slug !== 'string') {
+  return new Response("Past event not found", { status: 404 });
+}
+
+const event = pastEventCollection.find(
+  (entry) => entry.id.replace(/\/index$/, '') === slug
+);
+
+if (!event) {
+  return new Response("Past event not found", { status: 404 });
+}
 
 const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
   title: event.data.title,
@@ -33,6 +32,7 @@ const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
 const title = `${enriched.title} - Past Event - Hackerspace Mumbai`;
 const description = enriched.description;
 const canonical = `https://hackmum.in/past-events/${slug}`;
+const featuredPremiere = getPremiereForEvent(slug, FEATURED_SESSION_PREMIERE);
 ---
 
 <Layout
@@ -88,11 +88,12 @@ const canonical = `https://hackmum.in/past-events/${slug}`;
         speakerResources={enriched.speakerResources}
         coverImage={event.data.coverImage}
         eventId={event.id}
-        slug={event.slug}
+        slug={slug}
         archiveLinks={event.data.archiveLinks}
         highlights={event.data.highlights}
         recapPostSlug={event.data.recapPostSlug}
         recapExcerpt={event.data.recapExcerpt}
+        featuredPremiere={featuredPremiere}
       />
 
       <div class="text-center mt-10">

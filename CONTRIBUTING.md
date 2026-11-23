@@ -109,6 +109,13 @@ After following the steps, you should see:
 - **Size:** Optimize for web (usually under 200KB per image)
 - **Format:** PNG for screenshots/diagrams, JPG for photos
 
+Cloudflare's runtime Images binding accepts source images up to 20 MB.
+Keep originals comfortably below that limit (preferably below 19,000,000 bytes),
+even when Astro generates smaller responsive outputs: the original must be
+decoded before resizing. An oversized image can deploy successfully under the
+25 MiB asset limit but fail at the `/_image` endpoint.
+See the [Images binding input limit](https://developers.cloudflare.com/images/optimization/binding/#inputstream).
+
 #### Complete Example
 
 Here's a complete example of a blog post structure:
@@ -296,6 +303,14 @@ Optional recap fields:
 - File is stored locally in the `resources/` folder
 - Example: `./resources/copilot-cli-mastery-slides.pdf`
 - Resolved to: `/content/past-events/your-event-slug/resources/copilot-cli-mastery-slides.pdf`
+
+Cloudflare Pages limits each deployed asset to 25 MiB (26,214,400 bytes).
+Keep local PDFs below 24 MiB to leave a safety margin. Compress slide images
+before adding large PDFs, and verify that all pages remain readable. If a file
+cannot be compressed sufficiently, host it externally (for example, in
+Cloudflare R2), use its HTTPS URL, and remove the oversized copy from `public/`.
+Changing the resource link alone does not exclude the local file from deployment.
+See the [Cloudflare Pages file-size limit](https://developers.cloudflare.com/pages/platform/limits/#file-size).
 
 **Remote Resources:**
 - Use full URLs with `http://` or `https://`

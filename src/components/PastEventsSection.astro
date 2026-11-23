@@ -3,7 +3,6 @@
 import PastEventCard from './PastEventCard.astro';
 import SectionHeading from './SectionHeading.astro';
 import CTAButton from './CTAButton.astro';
-import { EmptyState } from './EmptyState.astro';
 import type { CollectionEntry } from 'astro:content';
 import { enrichPastEventFromArchive } from '../utils/pastEventArchive';
 
@@ -36,6 +35,8 @@ const enrichedEvents = (
 ).sort(
   (a, b) => b.enriched.date.getTime() - a.enriched.date.getTime()
 );
+
+const getPastEventSlug = (event: CollectionEntry<'pastEvents'>) => event.id.replace(/\/index$/, '');
 ---
 
 <section 
@@ -81,7 +82,7 @@ const enrichedEvents = (
               speakerResources={enriched.speakerResources}
               coverImage={event.data.coverImage}
               eventId={event.id}
-              slug={event.slug}
+              slug={getPastEventSlug(event)}
               archiveLinks={event.data.archiveLinks}
             />
           </div>

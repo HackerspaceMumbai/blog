@@ -133,7 +133,7 @@ const headingId = validatedEvents.length > 0 ? "upcoming-events" : "recent-event
               title={event.data.title}
               date={event.data.date}
               location={event.data.location}
-              slug={event.slug}
+              slug={event.id.replace(/\/index$/, '')}
               coverImage={event.data.coverImage}
               eventType={event.data.eventType}
             />
