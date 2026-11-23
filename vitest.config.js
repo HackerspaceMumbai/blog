@@ -8,6 +8,7 @@ export default defineConfig({
     include: [
       'src/components/__tests__/**/*.test.js',
       'src/utils/__tests__/**/*.test.js',
+      'functions/__tests__/**/*.test.ts',
       'netlify/functions/__tests__/**/*.test.ts',
       'scripts/__tests__/**/*.test.js',
       'scripts/__tests__/**/*.test.mjs'
@@ -18,12 +19,14 @@ export default defineConfig({
         'src/components/**/*.{js,ts,astro}',
         'src/utils/**/*.{js,ts}',
         'netlify/functions/**/*.ts',
+        'functions/**/*.ts',
         'scripts/**/*.js'
       ],
       exclude: [
         'src/components/__tests__/**',
         'src/utils/__tests__/**',
         'netlify/functions/__tests__/**',
+        'functions/__tests__/**',
         'scripts/__tests__/**'
       ]
     }

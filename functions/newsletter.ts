@@ -44,8 +44,6 @@ interface KitResponse {
 }
 
 // Constants
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_ATTEMPTS_PER_WINDOW = 5;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Enhanced validation constants
@@ -181,51 +179,6 @@ function validateFirstName(firstName: string): ValidationResult {
   }
 
   return { isValid: true };
-}
-
-/**
- * Implements rate limiting using Cloudflare KV (if available) or in-memory fallback
- */
-async function checkRateLimit(ipAddress: string, env: any): Promise<{ allowed: boolean; error?: string }> {
-  const key = `rate_limit_${ipAddress}`;
-  const now = Date.now();
-
-  // If KV is available, use it for rate limiting
-  if (env?.RATE_LIMIT_KV) {
-    try {
-      const data = await env.RATE_LIMIT_KV.get(key, 'json');
-      
-      if (data && data.resetTime > now) {
-        if (data.attempts >= MAX_ATTEMPTS_PER_WINDOW) {
-          const remainingTime = Math.ceil((data.resetTime - now) / 1000 / 60);
-          return {
-            allowed: false,
-            error: `Too many attempts. Please try again in ${remainingTime} minutes.`
-          };
-        }
-        
-        // Increment attempts
-        await env.RATE_LIMIT_KV.put(key, JSON.stringify({
-          attempts: data.attempts + 1,
-          resetTime: data.resetTime
-        }), { expirationTtl: Math.ceil((data.resetTime - now) / 1000) });
-      } else {
-        // Create new rate limit entry
-        await env.RATE_LIMIT_KV.put(key, JSON.stringify({
-          attempts: 1,
-          resetTime: now + RATE_LIMIT_WINDOW
-        }), { expirationTtl: Math.ceil(RATE_LIMIT_WINDOW / 1000) });
-      }
-      
-      return { allowed: true };
-    } catch (error) {
-      console.error('Error accessing KV for rate limiting:', error);
-      // Fall through to simple check
-    }
-  }
-
-  // Simple check without persistent storage (resets on isolate restart)
-  return { allowed: true };
 }
 
 /**
@@ -428,22 +381,35 @@ export async function onRequest(context: any) {
     }
 
     // Get client IP address from Cloudflare headers
-    const ipAddress = request.headers.get('CF-Connecting-IP') || 
-                     request.headers.get('X-Forwarded-For')?.split(',')[0].trim() || 
-                     'unknown';
+    const ipAddress = request.headers.get('CF-Connecting-IP');
 
     // Check rate limiting
-    const rateLimitCheck = await checkRateLimit(ipAddress, env);
+    let rateLimitCheck: { allowed: boolean; retryAfter: number };
+    try {
+      if (!ipAddress || !env.NEWSLETTER_RATE_LIMITER) {
+        throw new Error('Client IP or newsletter rate limiter binding is missing');
+      }
+      rateLimitCheck = await env.NEWSLETTER_RATE_LIMITER.getByName(ipAddress).check();
+    } catch (error) {
+      console.error('Newsletter rate limiting unavailable', error);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Newsletter service is temporarily unavailable. Please try again later.'
+      } as APIResponse), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '300' }
+      });
+    }
     if (!rateLimitCheck.allowed) {
       return new Response(JSON.stringify({
         success: false,
-        error: rateLimitCheck.error
+        error: 'Too many attempts. Please try again later.'
       } as APIResponse), {
         status: 429,
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json',
-          'Retry-After': '900'
+          'Retry-After': String(rateLimitCheck.retryAfter)
         }
       });
     }

@@ -132,6 +132,13 @@ The removed `netlify.toml` was audited against the Workers deployment:
 `netlify/functions/` remains as legacy code with its own tests. It is not part
 of the Worker build and can be removed in a follow-up change.
 
+The newsletter endpoint uses a SQLite-backed Durable Object per client IP to
+enforce five attempts per 15 minutes across both subscription paths. The
+binding and class migration are deployed with the Worker, and each Preview has
+separate storage. Missing client IPs, missing bindings, and storage errors
+return 503 rather than bypassing the limit. The first deployment requires
+permission to create Durable Objects.
+
 ## First-release verification
 
 After the production job completes, confirm that the deployment reports the

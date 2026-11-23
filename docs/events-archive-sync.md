@@ -51,7 +51,8 @@ pointing at the events tree. At build time:
   fields are set, the page shows a teaser that links to the blog post. Omit them
   for older events — sections stay hidden with no empty states
 - Continue loading official gallery photos from `archiveLinks.photosUrl` when
-  local `src/assets/images/events/.../photos` is empty
+  local `src/assets/images/events/.../photos` is empty. Gallery pages are
+  prerendered, so updated photos appear after the site is rebuilt and deployed.
 
 Do not auto-ingest `community/**` into past-event pages until a moderated
 publication path exists.

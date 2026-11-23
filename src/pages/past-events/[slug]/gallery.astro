@@ -4,20 +4,18 @@ import EventGallery from "../../../components/EventGallery.astro";
 import { getCollection } from "astro:content";
 import { getExternalMediaLinks, getGitHubArchivePhotoImages, enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 
-const pastEventCollection = await getCollection("pastEvents");
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const events = await getCollection("pastEvents");
+  return events.map((event) => ({
+    params: { slug: event.id.replace(/\/index$/, '') },
+    props: { event },
+  }));
+}
+
 const { slug } = Astro.params;
-
-if (typeof slug !== 'string') {
-  return new Response("Past event not found", { status: 404 });
-}
-
-const event = pastEventCollection.find(
-  (entry) => entry.id.replace(/\/index$/, '') === slug
-);
-
-if (!event) {
-  return new Response("Past event not found", { status: 404 });
-}
+const { event } = Astro.props;
 
 const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
   title: event.data.title,

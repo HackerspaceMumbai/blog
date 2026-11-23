@@ -42,7 +42,7 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
 
     if (response.ok) {
       return 'healthy';
-    } else if (response.status >= 500) {
+    } else if (response.status === 401 || response.status === 403 || response.status >= 500) {
       return 'unhealthy';
     } else {
       return 'degraded';

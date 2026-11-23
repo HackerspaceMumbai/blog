@@ -67,6 +67,24 @@ assert.ok(postCount > 0, 'No prerendered blog posts found; run pnpm build first'
 const worker = JSON.parse(await readFile(new URL('../dist/server/wrangler.json', import.meta.url), 'utf8'));
 assert.ok(worker.main, 'Dynamic Worker entry point must be retained for APIs');
 assert.equal(worker.assets.binding, 'ASSETS');
+assert.ok(
+  worker.durable_objects?.bindings.some(
+    ({ name, class_name }) => name === 'NEWSLETTER_RATE_LIMITER' && class_name === 'NewsletterRateLimiter'
+  ),
+  'Worker must bind the newsletter rate limiter'
+);
+assert.ok(
+  worker.migrations?.some(({ new_sqlite_classes }) => new_sqlite_classes?.includes('NewsletterRateLimiter')),
+  'Worker must migrate the newsletter rate limiter'
+);
+const entry = await readFile(new URL(`../dist/server/${worker.main}`, import.meta.url), 'utf8');
+assert.match(entry, /\bas NewsletterRateLimiter\b/, 'Worker must export the rate limiter class');
+for (const slug of [
+  'september-2026-github-copilot-dev-days-mumbai',
+  'october-2026-hacktoberfest-hack-day-mumbai',
+]) {
+  await stat(new URL(`past-events/${slug}/gallery/index.html`, client));
+}
 assert.deepEqual(
   worker.assets.run_worker_first,
   ['/api/*', '/subscribe', '/health/newsletter'],
