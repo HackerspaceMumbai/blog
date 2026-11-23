@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { formatDate } from '../utils/formatting.js';
 import placeholderImage from '../assets/images/gallery/pinnedpic-1.jpg';
@@ -53,6 +54,9 @@ const getImageAltText = (post: CollectionEntry<'posts'>, coverImage: typeof plac
 
 const href = `/blog/${getBlogSlug(post)}/`;
 const coverImage = getBlogCoverImage(post);
+const imageSource = typeof coverImage === 'string'
+  ? { src: coverImage, width: 800, height: 450 }
+  : { src: coverImage, width: 800, height: 450 };
 const imageAltText = getImageAltText(post, coverImage);
 const formattedDate = formatDate(post.data.date.toString());
 ---
@@ -60,12 +64,10 @@ const formattedDate = formatDate(post.data.date.toString());
 <article class="card bg-base-100 border border-base-300 rounded-xl shadow-lg hover:shadow-xl hover:border-primary hover:scale-[1.02] hover:-translate-y-1 group cursor-pointer transition-all duration-300 ease-out overflow-hidden h-full flex flex-col">
   <figure class="relative aspect-[3/2] w-full overflow-hidden">
     <Image
-      src={coverImage}
+      {...imageSource}
       alt={imageAltText}
       widths={[320, 480, 640, 800]}
       sizes="(max-width: 640px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px"
-      width={800}
-      height={450}
       loading="lazy"
       format="webp"
       quality={80}

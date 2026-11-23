@@ -62,7 +62,9 @@ describe('Cloudflare newsletter handler', () => {
     async (failure) => {
       const fetchMock = vi.fn();
       vi.stubGlobal('fetch', fetchMock);
-      const env = environment(vi.fn().mockRejectedValue(new Error('unavailable')));
+      const env = failure === 'limiter error'
+        ? environment(vi.fn().mockRejectedValue(new Error('unavailable')))
+        : environment();
       if (failure === 'missing binding') {
         delete (env as Partial<typeof env>).NEWSLETTER_RATE_LIMITER;
       }
@@ -78,6 +80,9 @@ describe('Cloudflare newsletter handler', () => {
 
       expect(response.status).toBe(503);
       expect(fetchMock).not.toHaveBeenCalled();
+      if (failure === 'missing client IP') {
+        expect(env.NEWSLETTER_RATE_LIMITER.getByName).not.toHaveBeenCalled();
+      }
     }
   );
 

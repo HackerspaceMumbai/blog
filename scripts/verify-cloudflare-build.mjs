@@ -3,6 +3,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 import sharp from 'sharp';
+import { verifyImageDialogs, verifyWorkerExport } from './cloudflare-build-checks.mjs';
 
 const client = new URL('../dist/client/', import.meta.url);
 const blog = new URL('blog/', client);
@@ -28,13 +29,7 @@ for (const entry of await readdir(blog, { withFileTypes: true })) {
   const html = await readFile(path, 'utf8');
   const document = new JSDOM(html).window.document;
   assert.ok(document.querySelector('article.blog-content'), `${entry.name}: missing article`);
-  const dialogs = [...document.querySelectorAll('dialog.blog-image-dialog')];
-  assert.equal(new Set(dialogs.map(dialog => dialog.id)).size, dialogs.length, `${entry.name}: duplicate image dialog IDs`);
-  for (const trigger of document.querySelectorAll('[data-blog-image-open]')) {
-    const id = trigger.getAttribute('data-blog-image-open');
-    assert.ok(id && document.getElementById(id)?.matches('dialog.blog-image-dialog'), `${entry.name}: image trigger has no dialog`);
-    assert.equal(trigger.getAttribute('aria-controls'), id, `${entry.name}: image trigger and dialog must match`);
-  }
+  verifyImageDialogs(document, entry.name);
   assert.ok(document.querySelector('link[rel="stylesheet"][href^="/assets/"]'), `${entry.name}: CSS must be cacheable`);
   const inlineBytes = [...document.querySelectorAll('style')].reduce((sum, style) => sum + style.textContent.length, 0);
   assert.ok(inlineBytes < 20_000, `${entry.name}: excessive inline CSS (${inlineBytes} bytes)`);
@@ -84,8 +79,7 @@ assert.ok(
   worker.migrations?.some(({ new_sqlite_classes }) => new_sqlite_classes?.includes('NewsletterRateLimiter')),
   'Worker must migrate the newsletter rate limiter'
 );
-const entry = await readFile(new URL(`../dist/server/${worker.main}`, import.meta.url), 'utf8');
-assert.match(entry, /\bas NewsletterRateLimiter\b/, 'Worker must export the rate limiter class');
+verifyWorkerExport(fileURLToPath(new URL(`../dist/server/${worker.main}`, import.meta.url)), 'NewsletterRateLimiter');
 for (const slug of [
   'september-2026-github-copilot-dev-days-mumbai',
   'october-2026-hacktoberfest-hack-day-mumbai',
