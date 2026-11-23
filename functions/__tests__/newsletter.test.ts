@@ -23,9 +23,11 @@ afterEach(() => {
 
 describe('Cloudflare newsletter handler', () => {
   it('subscribes valid requests using the configured limiter and Kit', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
-      subscription: { state: 'active', subscriber: { id: 1 } },
-    }), { status: 200 }));
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(Response.json({ subscribers: [] }))
+      .mockResolvedValueOnce(Response.json({
+        subscription: { state: 'active', subscriber: { id: 1 } },
+      }));
     vi.stubGlobal('fetch', fetchMock);
     const env = environment();
 
@@ -36,8 +38,10 @@ describe('Cloudflare newsletter handler', () => {
 
     expect(response.status).toBe(200);
     expect(env.NEWSLETTER_RATE_LIMITER.getByName).toHaveBeenCalledWith('192.0.2.1');
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body).email_address).toBe('person@example.com');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get('email_address')).toBe('person@example.com');
+    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get('status')).toBe('all');
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body).email_address).toBe('person@example.com');
     expect(await response.json()).toMatchObject({ success: true });
   });
 
@@ -88,6 +92,37 @@ describe('Cloudflare newsletter handler', () => {
 
     const rejected = await onRequest({ request: request('{"email":"person@example.com"}'), env });
     expect(rejected.status).toBe(503);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('rejects existing subscribers before issuing an upsert', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(Response.json({
+      subscribers: [{ email_address: 'person@example.com', first_name: 'Alice', state: 'active' }],
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const response = await onRequest({
+      request: request('{"email":"person@example.com","firstName":"Bob"}'),
+      env: environment(),
+    });
+
+    expect(response.status).toBe(409);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock.mock.calls[0][1].method).toBeUndefined();
+  });
+
+  it.each([
+    ['HTTP error', () => Promise.resolve(new Response('{}', { status: 503 }))],
+    ['network error', () => Promise.reject(new Error('Network unavailable'))],
+    ['invalid response', () => Promise.resolve(Response.json({ subscribers: null }))],
+  ])('does not upsert when the subscriber lookup has an %s', async (_label, lookup) => {
+    const fetchMock = vi.fn().mockImplementation(lookup);
+    vi.stubGlobal('fetch', fetchMock);
+    const response = await onRequest({
+      request: request('{"email":"person@example.com"}'),
+      env: environment(),
+    });
+
+    expect(response.status).toBe(503);
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 });

@@ -139,6 +139,13 @@ separate storage. Missing client IPs, missing bindings, and storage errors
 return 503 rather than bypassing the limit. The first deployment requires
 permission to create Durable Objects.
 
+Before subscribing, the Worker checks Kit for existing subscribers (including
+inactive ones) and returns 409 if found. Lookup failures return 503 without
+writing to Kit. This is best-effort: Kit's subscriber list is eventually
+consistent and its create endpoint is an upsert, so a recently created or
+concurrently added subscriber could still be updated. Do not rely on this check
+as an atomic create-only guarantee.
+
 ## First-release verification
 
 After the production job completes, confirm that the deployment reports the

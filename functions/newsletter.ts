@@ -239,6 +239,40 @@ async function subscribeToKit(email: string, firstName: string, source: string, 
     };
   }
 
+  const lookupUrl = new URL(`${KIT_API_URL}/subscribers`);
+  lookupUrl.searchParams.set('email_address', email);
+  lookupUrl.searchParams.set('status', 'all');
+  const lookupController = new AbortController();
+  const lookupTimeout = setTimeout(() => lookupController.abort(), 10000);
+  try {
+    const response = await fetch(lookupUrl, {
+      headers: {
+        'X-Kit-Api-Key': KIT_API_KEY,
+        'User-Agent': 'Hackerspace Mumbai Newsletter/1.0',
+        'Accept': 'application/json'
+      },
+      signal: lookupController.signal
+    });
+    if (!response.ok) {
+      throw new Error(`Kit subscriber lookup returned ${response.status}`);
+    }
+    const data: unknown = await response.json();
+    if (!data || typeof data !== 'object' || !('subscribers' in data) || !Array.isArray(data.subscribers)) {
+      throw new Error('Kit subscriber lookup returned an invalid response');
+    }
+    if (data.subscribers.length > 0) {
+      return { success: false, error: 'This email is already subscribed to our newsletter' };
+    }
+  } catch (error) {
+    console.error('Kit subscriber lookup failed', error);
+    return {
+      success: false,
+      error: 'Newsletter service is temporarily unavailable. Please try again later.'
+    };
+  } finally {
+    clearTimeout(lookupTimeout);
+  }
+
   const maxRetries = 3;
   let lastError: any = null;
 
