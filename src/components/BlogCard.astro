@@ -17,7 +17,7 @@ const getBlogSlug = (post: CollectionEntry<'posts'>) => {
 };
 
 // Robust image resolution function
-const getBlogCoverImage = (post: CollectionEntry<'posts'>) => {
+const getBlogCoverImage = (post: { data?: { cover?: ImageMetadata | string } }) => {
   try {
     // Handle the case where post.data.cover might be ImageMetadata or undefined
     const cover = post?.data?.cover;
@@ -28,6 +28,10 @@ const getBlogCoverImage = (post: CollectionEntry<'posts'>) => {
     
     // If it's an ImageMetadata object, return it directly
     if (typeof cover === 'object' && cover.src) {
+      return cover;
+    }
+
+    if (typeof cover === 'string' && cover.trim().length > 0) {
       return cover;
     }
     

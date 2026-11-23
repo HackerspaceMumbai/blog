@@ -31,8 +31,7 @@ const {
 } = Astro.props;
 
 const isFigure = wide || expandable || Boolean(caption);
-const imageName = (props.src.src.split('?')[0].split('/').pop() ?? 'image').split('.')[0];
-const dialogId = expandable ? `blog-image-dialog-${imageName.replace(/[^a-zA-Z0-9-]/g, '-')}` : undefined;
+const dialogId = expandable ? `blog-image-dialog-${crypto.randomUUID()}` : undefined;
 ---
 
 {!isFigure && <Image {...props} quality={quality} widths={widths} sizes={sizes} />}

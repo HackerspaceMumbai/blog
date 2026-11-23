@@ -1,19 +1,18 @@
 # Events archive sync
 
-Hackmum past-event pages can rebuild automatically when the canonical archive
-([HackerspaceMumbai/events](https://github.com/HackerspaceMumbai/events)) changes
-official published artifacts. This legacy integration currently points to an
-externally managed Netlify Build Hook; it is separate from the Cloudflare
-production workflow and is not changed by this repository migration.
+Hackmum past-event pages use the canonical archive
+([HackerspaceMumbai/events](https://github.com/HackerspaceMumbai/events)).
+Archive changes do not automatically deploy the Cloudflare production site.
+The existing Netlify Build Hook is a legacy integration and does not update
+`hackmum.in`.
 
 ## Flow
 
 ```text
 Speaker/organizer PR merges on events main
-  → events workflow "Notify website sync" validates + POSTs HACKMUM_SYNC_WEBHOOK
-  → Netlify Build Hook rebuilds this site
-  → Build fetches event.yml + speakers/*/speaker.md (and media/photos) from GitHub
-  → Past-event pages show updated metadata and speaker resources
+  → Maintainer runs the blog's "Deploy production" workflow on main
+  → Cloudflare build fetches gallery data; detail pages also fetch archive data on demand
+  → Production deploy publishes the rebuilt site
 ```
 
 Community contributions under `community/**` in the events archive are **not**
@@ -23,20 +22,21 @@ agenda/recap, `speakers/**`, `resources/**`, `media/**`).
 
 ## Maintainer setup
 
-1. In Netlify → Site configuration → Build & deploy → Build hooks, create a hook
-   (for example `events-archive-sync`).
-2. In the **events** repository Actions secrets, set `HACKMUM_SYNC_WEBHOOK` to
-   that Build Hook URL.
-3. In the events repo, run workflow **Notify website sync** (`workflow_dispatch`)
-   and confirm a Netlify deploy starts.
-4. Confirm a past-event page with `archiveLinks` (for example
-   `/past-events/september-2026-github-copilot-dev-days-mumbai/`) shows speaker
-   resources sourced from `speakers/*/speaker.md` after rebuild.
+1. After official archive changes merge, run **Deploy production** in the blog
+   repository Actions tab using `main`, or run
+   `gh workflow run production-deploy.yml --repo HackerspaceMumbai/blog --ref main`.
+2. Complete any required production environment approval and confirm that the
+   workflow succeeds and deploys `hackmum-blog`.
+3. Check the relevant past-event page and gallery on `hackmum.in` for the
+   updated official archive content. A Netlify deploy alone is not verification
+   of production.
 
 ## Content contract
 
 Past-event markdown may keep hand-authored fields and should set `archiveLinks`
-pointing at the events tree. At build time:
+pointing at the events tree. Gallery pages ingest archive data at build time;
+event detail pages fetch it on demand and memoize successful results per Worker
+isolate. Both use local frontmatter when archive data is unavailable:
 
 - Prefer `event.yml` for title, date, description, and venue/city when available
 - Merge speaker resources from `speakers/*/speaker.md` frontmatter (`slides`,

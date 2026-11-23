@@ -39,4 +39,15 @@ describe('Cloudflare newsletter health handler', () => {
     expect(response.status).toBe(503);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it('reports a network failure as unhealthy', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network unavailable')));
+    const response = await onRequest({ request, env });
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({
+      status: 'unhealthy',
+      checks: { kit_api: 'unhealthy' },
+    });
+  });
 });

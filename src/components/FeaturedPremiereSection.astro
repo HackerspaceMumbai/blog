@@ -12,6 +12,11 @@ const bounds = getPremiereTimeBounds(premiere);
 const state = resolvePremiereState(premiere);
 
 const premiereDate = new Date(premiere.startAt);
+const formattedDate = new Intl.DateTimeFormat('en-IN', {
+  day: 'numeric',
+  month: 'long',
+  timeZone: 'Asia/Kolkata',
+}).format(premiereDate);
 const formattedDateTime = new Intl.DateTimeFormat('en-IN', {
   day: 'numeric',
   month: 'long',
@@ -40,6 +45,9 @@ const watchLabel = getPremiereWatchLabel(state);
         rel="noopener noreferrer"
         class="group block overflow-hidden rounded-lg border border-base-300 bg-base-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         aria-label={`${watchLabel} on YouTube: ${premiere.sessionTitle} (opens in new window)`}
+        data-premiere-aria-upcoming={`Watch Premiere on YouTube: ${premiere.sessionTitle} (opens in new window)`}
+        data-premiere-aria-live={`Watch Premiere on YouTube: ${premiere.sessionTitle} (opens in new window)`}
+        data-premiere-aria-post={`Watch Recording on YouTube: ${premiere.sessionTitle} (opens in new window)`}
       >
         {premiere.thumbnailUrl ? (
           <img
@@ -62,11 +70,11 @@ const watchLabel = getPremiereWatchLabel(state);
           <span
             class="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-content"
             data-premiere-label
-            data-label-upcoming="🚀 PREMIERING TONIGHT"
+            data-label-upcoming={`🚀 PREMIERES ${formattedDate}`}
             data-label-live="🔴 PREMIERING NOW"
             data-label-post="▶ SESSION RECORDING"
           >
-            {state === 'live' ? '🔴 PREMIERING NOW' : state === 'post' ? '▶ SESSION RECORDING' : '🚀 PREMIERING TONIGHT'}
+            {state === 'live' ? '🔴 PREMIERING NOW' : state === 'post' ? '▶ SESSION RECORDING' : `🚀 PREMIERES ${formattedDate}`}
           </span>
 
           <span class="inline-flex items-center gap-1.5 rounded-full border border-base-300 px-3 py-1 text-xs font-semibold text-base-content/70">

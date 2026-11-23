@@ -12,7 +12,17 @@ const bounds = getPremiereTimeBounds(premiere);
 const state = resolvePremiereState(premiere);
 const show = Boolean(premiere?.enabled && bounds && state !== 'post');
 
-const upcomingPrefix = premiere?.announcementPrefix ?? 'PREMIERING TONIGHT';
+const premiereDate = premiere && bounds
+  ? new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'long',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Kolkata',
+    }).format(new Date(bounds.startMs)).toUpperCase()
+  : '';
+const upcomingPrefix = premiere?.announcementPrefix ?? `PREMIERING ${premiereDate} IST`;
 const livePrefix = premiere?.announcementLivePrefix ?? 'PREMIERING NOW';
 const ctaText = premiere?.announcementCtaText ?? 'Watch Now';
 const prefix = state === 'live' ? livePrefix : upcomingPrefix;
@@ -40,6 +50,8 @@ const dismissKey = premiere ? `hm-announcement-dismissed:${premiere.eventSlug}:$
         href={premiere.eventUrl}
         class="group flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-center text-xs font-semibold leading-snug sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral rounded"
         aria-label={ariaLabel}
+        data-premiere-aria-upcoming={`${upcomingPrefix}: ${premiere.sessionTitle} with ${premiere.speakerName}. ${ctaText}.`}
+        data-premiere-aria-live={`${livePrefix}: ${premiere.sessionTitle} with ${premiere.speakerName}. ${ctaText}.`}
       >
         <span aria-hidden="true">🚀</span>
         <span

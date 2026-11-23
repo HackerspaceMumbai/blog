@@ -25,10 +25,9 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
     return 'unhealthy';
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
     const response = await fetch(`${KIT_API_URL}/subscribers?per_page=1`, {
       method: 'GET',
       headers: {
@@ -38,8 +37,6 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
       signal: controller.signal
     });
 
-    clearTimeout(timeoutId);
-
     if (response.ok) {
       return 'healthy';
     } else if (response.status === 401 || response.status === 403 || response.status >= 500) {
@@ -48,10 +45,10 @@ async function checkKitAPI(env: any): Promise<'healthy' | 'degraded' | 'unhealth
       return 'degraded';
     }
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      return 'unhealthy'; // Timeout
-    }
-    return 'degraded'; // Network error, but service can still work with fallback
+    console.error('Kit API health check failed', error);
+    return 'unhealthy';
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

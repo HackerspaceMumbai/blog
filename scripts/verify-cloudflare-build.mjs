@@ -28,6 +28,13 @@ for (const entry of await readdir(blog, { withFileTypes: true })) {
   const html = await readFile(path, 'utf8');
   const document = new JSDOM(html).window.document;
   assert.ok(document.querySelector('article.blog-content'), `${entry.name}: missing article`);
+  const dialogs = [...document.querySelectorAll('dialog.blog-image-dialog')];
+  assert.equal(new Set(dialogs.map(dialog => dialog.id)).size, dialogs.length, `${entry.name}: duplicate image dialog IDs`);
+  for (const trigger of document.querySelectorAll('[data-blog-image-open]')) {
+    const id = trigger.getAttribute('data-blog-image-open');
+    assert.ok(id && document.getElementById(id)?.matches('dialog.blog-image-dialog'), `${entry.name}: image trigger has no dialog`);
+    assert.equal(trigger.getAttribute('aria-controls'), id, `${entry.name}: image trigger and dialog must match`);
+  }
   assert.ok(document.querySelector('link[rel="stylesheet"][href^="/assets/"]'), `${entry.name}: CSS must be cacheable`);
   const inlineBytes = [...document.querySelectorAll('style')].reduce((sum, style) => sum + style.textContent.length, 0);
   assert.ok(inlineBytes < 20_000, `${entry.name}: excessive inline CSS (${inlineBytes} bytes)`);

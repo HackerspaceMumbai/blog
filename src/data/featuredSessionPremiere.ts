@@ -25,7 +25,6 @@ export const FEATURED_SESSION_PREMIERE: FeaturedSessionPremiere | null = {
     "Your Server-Rendered App Doesn't Know Who It's Talking To — session premiere with Anshul Bansal",
   startAt: '2026-10-15T21:00:00+05:30',
   endAt: '2026-10-15T22:00:00+05:30',
-  announcementPrefix: 'PREMIERING TONIGHT AT 9:00 PM IST',
   announcementLivePrefix: 'PREMIERING NOW',
   announcementCtaText: 'Watch Now',
 };

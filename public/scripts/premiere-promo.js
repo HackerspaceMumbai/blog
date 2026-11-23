@@ -48,6 +48,8 @@
     var hideAfterEnd = root.dataset.hideAfterEnd === 'true';
     var statePanels = root.querySelectorAll('[data-premiere-state]');
     var labels = root.querySelectorAll('[data-premiere-label]');
+    var accessibleLabels = Array.prototype.slice.call(root.querySelectorAll('[data-premiere-aria-upcoming]'));
+    if (root.hasAttribute('data-premiere-aria-upcoming')) accessibleLabels.push(root);
     var countdownEl = root.querySelector('[data-premiere-countdown]');
     var countdownA11yEl = root.querySelector('[data-premiere-countdown-a11y]');
     var dismissButton = root.querySelector('[data-premiere-dismiss]');
@@ -89,6 +91,11 @@
         if (text) {
           label.textContent = text;
         }
+      });
+
+      accessibleLabels.forEach(function (element) {
+        var text = element.dataset['premiereAria' + state.charAt(0).toUpperCase() + state.slice(1)];
+        if (text) element.setAttribute('aria-label', text);
       });
     }
 
