@@ -17,6 +17,9 @@ if (!announcement) throw new Error(`Missing upcoming event announcement: ${slug}
   title={announcement.data.title}
   date="Saturday, 28 November 2026"
   location="Microsoft Mumbai"
-  description="Organized by Hackerspace Mumbai. Programme and registration details will be announced when available."
+  description={announcement.data.description}
+  kicker="Upcoming event · #Nov26MTP"
+  image={announcement.data.cover}
+  rsvpLink="https://luma.com/7vc4d9xb"
   announcementLink={`/blog/${announcement.slug}/`}
 />

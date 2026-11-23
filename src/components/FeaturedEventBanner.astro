@@ -28,14 +28,16 @@ const {
 
 <section id={sectionId} class="home-gutter py-2 md:py-3" aria-labelledby="featured-event-heading">
   <div class:list={["event-banner home-column", { "event-banner-with-photo": image }]}>
-    {image && <img
-      src={image.src}
-      alt=""
-      width={image.width}
-      height={image.height}
-      class="event-banner-photo"
-      decoding="async"
-    />}
+    {image && <div class="event-banner-media">
+      <img
+        src={image.src}
+        alt=""
+        width={image.width}
+        height={image.height}
+        class="event-banner-photo"
+        decoding="async"
+      />
+    </div>}
     <div class="event-banner-copy">
       <p class="event-banner-kicker">{kicker}</p>
       <h2 id="featured-event-heading" class="event-banner-title">{title}</h2>
@@ -54,6 +56,8 @@ const {
     </div>
   </div>
 </section>
+
+{image && <script src="/scripts/event-banner-fit.js" defer></script>}
 
 <style>
   .event-banner-with-photo {
@@ -108,20 +112,44 @@ const {
     line-height: 1.65;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1100px) {
     .event-banner {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    /* The copy sets the banner height; the photo is scaled to fit within it, never taller. */
+    .event-banner-media {
+      position: relative;
+      grid-column: 2;
+      grid-row: 1;
+      align-self: stretch;
     }
 
     .event-banner-photo {
-      grid-column: 2;
-      grid-row: 1;
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: contain;
+      object-position: right center;
     }
 
     .event-banner-copy {
       grid-column: 1;
       grid-row: 1;
       padding: 2rem;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .event-banner {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+  }
+
+  /* Set by /scripts/event-banner-fit.js: the photo column is sized so the photo matches the copy height. */
+  @media (min-width: 1100px) {
+    .event-banner-with-photo[data-media-fit] {
+      grid-template-columns: minmax(0, 1fr) var(--event-banner-media-size);
     }
   }
 </style>
