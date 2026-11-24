@@ -6,20 +6,16 @@ import { enrichPastEventFromArchive } from "../../../utils/pastEventArchive";
 import { getPremiereForEvent } from "../../../utils/premiere";
 import { FEATURED_SESSION_PREMIERE } from "../../../data/featuredSessionPremiere";
 
-const pastEventCollection = await getCollection("pastEvents");
+export async function getStaticPaths() {
+  const events = await getCollection("pastEvents");
+  return events.map((event) => ({
+    params: { slug: event.id.replace(/\/index$/, '') },
+    props: { event },
+  }));
+}
+
 const { slug } = Astro.params;
-
-if (typeof slug !== 'string') {
-  return new Response("Past event not found", { status: 404 });
-}
-
-const event = pastEventCollection.find(
-  (entry) => entry.id.replace(/\/index$/, '') === slug
-);
-
-if (!event) {
-  return new Response("Past event not found", { status: 404 });
-}
+const { event } = Astro.props;
 
 const enriched = await enrichPastEventFromArchive(event.data.archiveLinks, {
   title: event.data.title,

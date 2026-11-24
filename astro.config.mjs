@@ -10,7 +10,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://hackmum.in',
   integrations: [mdx()],
-  output: 'server',
+  output: 'static',
   adapter: cloudflare({
     imageService: { build: 'compile', runtime: 'cloudflare-binding' }
   }),

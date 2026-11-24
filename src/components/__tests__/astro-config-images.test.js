@@ -40,7 +40,7 @@ describe('Astro Configuration for Image Optimization', () => {
   });
 
   it('should have static output mode for optimal image handling', () => {
-    expect(astroConfig.content).toContain("output: 'server'");
+    expect(astroConfig.content).toContain("output: 'static'");
   });
 });
 
